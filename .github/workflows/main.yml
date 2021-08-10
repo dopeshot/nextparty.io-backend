@@ -10,6 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
     # merged...this should be changed if unit tests are implemented
       - name: cache and build
         run: |
