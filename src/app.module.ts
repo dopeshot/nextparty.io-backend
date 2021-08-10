@@ -9,10 +9,32 @@ import { CategoryModule } from './category/category.module';
 import { SearchModule } from './search/search.module';
 import { ReportModule } from './report/report.module';
 import { SystemModule } from './system/system.module';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
-  imports: [AuthModule, UserModule, TaskModule, SetModule, CategoryModule, SearchModule, ReportModule, SystemModule],
+  imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.env.development', '.env']
+    }),
+    MongooseModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
+        uri: configService.get<string>('DB_URI'),
+        useCreateIndex: true
+      }),
+      inject: [ConfigService]
+    }),
+    AuthModule,
+    UserModule,
+    TaskModule,
+    SetModule,
+    CategoryModule,
+    SearchModule,
+    ReportModule,
+    SystemModule
+  ],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
