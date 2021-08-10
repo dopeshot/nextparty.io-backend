@@ -1,11 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserDocument } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
+  constructor(@InjectModel('User') private userSchema: Model<UserDocument>) {}
+
+  async create(credentials: CreateUserDto) {
+    try {
+      const user = new this.userSchema({
+        ...credentials
+      })
+      const result = await user.save()
+
+      return result
+    } catch (error) {
+      console.error(error)
+      throw new InternalServerErrorException()
+    }
   }
 
   findAll() {
