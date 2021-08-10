@@ -17,9 +17,8 @@ Content-Type: application/json
 
 {
     "role": "d",
-    "username": "hgj",
-    "email": "sssdasdasaddsas@email.com",
-    "password": "sdaadsdssadsdasaddsa"
+    "username": "Haha",
+    "email": "45@email.com"
 }
 
 ### Delete User
