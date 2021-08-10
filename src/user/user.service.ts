@@ -18,13 +18,12 @@ export class UserService {
 
       return result
     } catch (error) {
-      console.error(error)
       throw new InternalServerErrorException()
     }
   }
 
   findAll() {
-    return `This action returns all user`;
+    return this.userSchema.find();
   }
 
   findOne(id: number) {
