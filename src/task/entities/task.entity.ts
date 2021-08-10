@@ -16,11 +16,11 @@ export class Task {
     @Prop({required: true})
     task: string
 
-    @Prop({required: true})
+    @Prop({required: true, /*default: "anonymous"*/})
     author: User
 
-    @Prop()
-    votes: any // Standard should be 0, then +x and -x
+    @Prop({default: 0})
+    votes: number
 
     @Prop({default: TaskStatus.NORMAL})
     status: TaskStatus
