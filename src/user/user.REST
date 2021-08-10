@@ -11,5 +11,16 @@ Content-Type: application/json
 ### Get all User
 GET http://localhost:3000/api/user
 
+### Patch user by id 
+PATCH http://localhost:3000/api/user/6112decedf446d7fe06f64ef
+Content-Type: application/json
+
+{
+    "role": "d",
+    "username": "hgj",
+    "email": "sssdasdasaddsas@email.com",
+    "password": "sdaadsdssadsdasaddsa"
+}
+
 ### Delete User
 DELETE http://localhost:3000/api/user/6112ccf23ee20f3f705a3fed
