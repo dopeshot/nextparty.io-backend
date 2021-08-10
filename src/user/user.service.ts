@@ -27,7 +27,7 @@ export class UserService {
   }
 
   async findOneById(id: Types.ObjectId): Promise<UserDocument> {
-    let user = await this.userSchema.findById(id)
+    let user = await this.userSchema.findById(id).lean()
 
     if (!user)
       throw new NotFoundException()
@@ -36,7 +36,7 @@ export class UserService {
   }
 
   async findOneByUsername(username: string): Promise<UserDocument> {
-    let user = await this.userSchema.findOne({ username })
+    let user = await this.userSchema.findOne({ username }).lean()
 
     if (!user)
       throw new NotFoundException()
