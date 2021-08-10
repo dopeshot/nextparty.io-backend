@@ -15,7 +15,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: ['.env.development', '.env']
+      envFilePath: ['.development.env', '.env']
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
