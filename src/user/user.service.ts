@@ -1,15 +1,15 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserDocument } from './entities/user.entity';
+import { User, UserDocument } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('User') private userSchema: Model<UserDocument>) {}
+  constructor(@InjectModel('User') private userSchema: Model<UserDocument>) { }
 
-  async create(credentials: CreateUserDto) {
+  async create(credentials: CreateUserDto): Promise<UserDocument> {
     try {
       const user = new this.userSchema({
         ...credentials
@@ -18,24 +18,55 @@ export class UserService {
 
       return result
     } catch (error) {
-      console.error(error)
       throw new InternalServerErrorException()
     }
   }
 
-  findAll() {
-    return `This action returns all user`;
+  async findAll(): Promise<UserDocument[]> {
+    return await this.userSchema.find()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOneById(id: Types.ObjectId): Promise<UserDocument> {
+    let user = await this.userSchema.findById(id).lean()
+
+    if (!user)
+      throw new NotFoundException()
+
+    return user
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findOneByUsername(username: string): Promise<UserDocument> {
+    let user = await this.userSchema.findOne({ username }).lean()
+
+    if (!user)
+      throw new NotFoundException()
+
+    return user
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  /**
+   * Update the user
+   * @param id ObjectId
+   * @param updateUserDto Dto for updates 
+   * @returns updated user (with changed fields)
+   */
+  async updateUser(id: ObjectId, updateUserDto: UpdateUserDto): Promise<User> {
+    const updatedUser: User = await this.userSchema.findByIdAndUpdate(id, {
+      ...updateUserDto
+    }, {
+      new: true
+    })
+
+    return updatedUser
+  }
+
+
+  async remove(id: ObjectId): Promise<UserDocument> {
+    let user = await this.userSchema.findByIdAndDelete(id)
+
+    if (!user)
+      throw new NotFoundException()
+    
+    return user 
   }
 }

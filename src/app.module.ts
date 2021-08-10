@@ -21,7 +21,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         uri: configService.get<string>('DB_URI'),
-        useCreateIndex: true
+        useCreateIndex: true,
+        useFindAndModify: false
       }),
       inject: [ConfigService]
     }),
