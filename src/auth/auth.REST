@@ -1,0 +1,9 @@
+###Create User
+POST http://localhost:3000/api/auth/register
+Content-Type: application/json
+
+{
+    "username": "1234",
+    "email": "Hahaaa@gmail.com",
+    "password": "12345678"
+}
