@@ -1,15 +1,31 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
 import { CreateSetDto } from './dto/create-set.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
+import { Set, SetDocument } from './entities/set.entity';
+import { Model, Types } from 'mongoose';
 
 @Injectable()
 export class SetService {
-  create(createSetDto: CreateSetDto) {
-    return 'This action adds a new set';
+  constructor(@InjectModel('Set') private setSchema: Model<SetDocument>) { }
+
+  async create(metaData: CreateSetDto): Promise<SetDocument> {
+    try {
+      const set = new this.setSchema({
+        ...metaData
+      })
+      const result = await set.save()
+
+      return result
+    } catch (error) {
+      console.log(error)
+      throw new InternalServerErrorException()
+    }
   }
 
-  findAll() {
-    return `This action returns all set`;
+
+  async findAll(): Promise<SetDocument[]> {
+    return await this.setSchema.find()
   }
 
   findOne(id: number) {
