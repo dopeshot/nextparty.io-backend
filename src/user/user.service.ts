@@ -26,7 +26,7 @@ export class UserService {
     return await this.userSchema.find()
   }
 
-  async findOneById(id: Types.ObjectId): Promise<UserDocument> {
+  async findOneById(id: ObjectId): Promise<UserDocument> {
     let user = await this.userSchema.findById(id).lean()
 
     if (!user)
