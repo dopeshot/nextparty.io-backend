@@ -2,7 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } fro
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Types } from 'mongoose';
+import { ObjectId } from 'mongoose';
+import { User } from './entities/user.entity';
 
 @Controller('user')
 export class UserController {
@@ -19,12 +20,15 @@ export class UserController {
   }
 
   @Patch('/:id')
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return await this.userService.updateUser(+id, updateUserDto);
+  async update(@Param('id') id: ObjectId, @Body(new ValidationPipe({
+    // whitelist will strip all fields which are not in the DTO
+    whitelist: true
+  })) updateUserDto: UpdateUserDto): Promise<User> {
+    return await this.userService.updateUser(id, updateUserDto);
   }
 
   @Delete('/:id')
-  async remove(@Param('id') id: Types.ObjectId): Promise<any> {
+  async remove(@Param('id') id: ObjectId): Promise<any> {
     return await this.userService.remove(id);
   }
 }

@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
@@ -26,8 +26,8 @@ export class UserService {
     return await this.userSchema.find()
   }
 
-  async findOneById(id: Types.ObjectId): Promise<UserDocument> {
-    let user = await this.userSchema.findById(id)
+  async findOneById(id: ObjectId): Promise<UserDocument> {
+    const user = await this.userSchema.findById(id)
 
     if (!user)
       throw new NotFoundException()
@@ -36,7 +36,7 @@ export class UserService {
   }
 
   async findOneByUsername(username: string): Promise<UserDocument> {
-    let user = await this.userSchema.findOne({ username })
+    const user = await this.userSchema.findOne({ username })
 
     if (!user)
       throw new NotFoundException()
@@ -44,13 +44,24 @@ export class UserService {
     return user
   }
 
-  //TODO
-  updateUser(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`
+  /**
+   * Update the user
+   * @param id ObjectId
+   * @param updateUserDto Dto for updates 
+   * @returns updated user (with changed fields)
+   */
+  async updateUser(id: ObjectId, updateUserDto: UpdateUserDto): Promise<User> {
+    const updatedUser: User = await this.userSchema.findByIdAndUpdate(id, {
+      ...updateUserDto
+    }, {
+      new: true
+    })
+
+    return updatedUser
   }
 
 
-  async remove(id: Types.ObjectId): Promise<UserDocument> {
+  async remove(id: ObjectId): Promise<UserDocument> {
     let user = await this.userSchema.findByIdAndDelete(id)
 
     if (!user)
