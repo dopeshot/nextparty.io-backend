@@ -3,10 +3,13 @@ POST http://localhost:3000/api/user
 Content-Type: application/json
 
 {
-    "username": "1234",
-    "email": "Hahaaa@gmail.com",
+    "username": "Haha",
+    "email": "sdd@gmail.com",
     "password": "12345678"
 }
 
-### Find all user
+### Get all User
 GET http://localhost:3000/api/user
+
+### Delete User
+DELETE http://localhost:3000/api/user/6112ccf23ee20f3f705a3fed

@@ -1,15 +1,15 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { UserDocument } from './entities/user.entity';
+import { User, UserDocument } from './entities/user.entity';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('User') private userSchema: Model<UserDocument>) {}
+  constructor(@InjectModel('User') private userSchema: Model<UserDocument>) { }
 
-  async create(credentials: CreateUserDto) {
+  async create(credentials: CreateUserDto): Promise<UserDocument> {
     try {
       const user = new this.userSchema({
         ...credentials
@@ -22,19 +22,40 @@ export class UserService {
     }
   }
 
-  findAll() {
-    return this.userSchema.find();
+  async findAll(): Promise<UserDocument[]> {
+    return await this.userSchema.find()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOneById(id: Types.ObjectId): Promise<UserDocument> {
+    let user = await this.userSchema.findById(id)
+
+    if (!user)
+      throw new NotFoundException()
+
+    return user
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findOneByUsername(username: string): Promise<UserDocument> {
+    let user = await this.userSchema.findOne({ username })
+
+    if (!user)
+      throw new NotFoundException()
+
+    return user
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  //TODO
+  updateUser(id: number, updateUserDto: UpdateUserDto) {
+    return `This action updates a #${id} user`
+  }
+
+
+  async remove(id: Types.ObjectId): Promise<UserDocument> {
+    let user = await this.userSchema.findByIdAndDelete(id)
+
+    if (!user)
+      throw new NotFoundException()
+    
+    return user 
   }
 }
