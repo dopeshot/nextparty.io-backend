@@ -12,6 +12,20 @@ Content-Type: application/json
     }
 }
 
+###Create Task
+POST http://localhost:3000/api/task
+Content-Type: application/json
+
+{
+    "language": "de",
+    "type": "dare",
+    "content": 
+    {
+        "currentPlayerGender": "@ca",
+        "message": "Stick your ringfinger into @m's nose and then into @a's ear."
+    }
+}
+
 ### Update Task
 PATCH http://localhost:3000/api/task/611405824f65c71804580796
 Content-Type: application/json

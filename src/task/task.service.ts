@@ -13,6 +13,7 @@ export class TaskService {
       const task = new this.taskSchema({
         ...createTaskDto
       })
+      this.parseForPersonCounts(task)
       const result = await task.save()
 
       return result
@@ -30,7 +31,7 @@ export class TaskService {
     let task = await this.taskSchema.findById(id).lean()
     if (!task)
       throw new NotFoundException()
-  
+
     return task;
   }
 
@@ -38,13 +39,13 @@ export class TaskService {
     let task = await this.taskSchema.findById(id)
     if (!task)
       throw new NotFoundException()
-    
+
     task.content.message = createTaskDto.content.message
     task.content.currentPlayerGender = createTaskDto.content.currentPlayerGender
     task.language = createTaskDto.language
     task.type = createTaskDto.type
     task.save()
-      
+
     return task;
   }
 
@@ -53,19 +54,21 @@ export class TaskService {
 
   //   if (!task)
   //     throw new NotFoundException()
-    
+
   //   return task 
   // }
 
-  private parseForPersonCounts(createTaskDto: CreateTaskDto): TaskContent {
+  private parseForPersonCounts(task: Task): void {
     const maleCountSymbol = "@m"
-    const femaleCountSymbol = "@"
-    createTaskDto.content.message.split
-    return 
+    const femaleCountSymbol = "@f"
+    const anyoneCountSymbol = "@a"
+    task.content.maleCount = this.countOccurrence(task.content.message, maleCountSymbol)
+    task.content.femaleCount = this.countOccurrence(task.content.message, femaleCountSymbol)
+    task.content.anyoneCount = this.countOccurrence(task.content.message, anyoneCountSymbol)
   }
 
   private countOccurrence(string: string, substring: string): number {
-    return string.split(substring).length-1
+    return string.split(substring).length - 1
   }
 
 }
