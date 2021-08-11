@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserDocument } from 'src/user/entities/user.entity';
+import { User, UserDocument } from 'src/user/entities/user.entity';
 import { UserService } from '../user/user.service'
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto'
@@ -17,7 +17,7 @@ export class AuthService {
      * @param credentials of the user
      * @returns the new registered User
      */
-    async registerUser(credentials: RegisterDto): Promise<UserDocument> {  
+    async registerUser(credentials: RegisterDto): Promise<User> {  
         //While this might seem unnecessary now, this way of implementing this allows us to add logic to register later without affecting the user create itself  
         const result = await this.userService.create(credentials)
         return result
