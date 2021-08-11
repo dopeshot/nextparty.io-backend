@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, Provider } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User } from 'src/user/entities/user.entity';
 import { UserService } from '../user/user.service'
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto'
 import * as bcrypt from 'bcrypt'
+import { AccessTokenDto } from './dto/jwt.dto';
 
 @Injectable()
 export class AuthService {
@@ -30,7 +31,7 @@ export class AuthService {
      * @param password of the user
      * @returns user without password or if user do not exist returns null 
      */
-    async validateUser(username: string, password: string): Promise<any> {
+    async validateUserWithUsernamePassword(username: string, password: string): Promise<any> {
         const user = await this.userService.findOneByUsername(username)
         if (user && await bcrypt.compare(password, user.password)) {
             const { password, ...result } = user
@@ -44,7 +45,7 @@ export class AuthService {
      * @param user logged in user
      * @returns access token 
      */
-    async createLoginPayload(user: LoginDto): Promise<any> {
+    async createLoginPayload(user: LoginDto): Promise<AccessTokenDto> {
         const payload = { 
             username: user.username,
             sub: user._id
@@ -52,6 +53,31 @@ export class AuthService {
 
         return {
             access_token: this.jwtService.sign(payload)
+        }
+    }
+
+    async createOAuthLoginJwt(thirdPartyId: string, provider: any): Promise<AccessTokenDto> {
+        try {
+            // here register logic to register user in Data pase
+            const payload = {
+                thirdPartyId,
+                provider
+            }
+
+            return {
+                access_token : this.jwtService.sign(payload)
+            } 
+        } catch (error) {
+            throw new InternalServerErrorException('OAuthLoginPayload', error.message)
+        }
+    }
+
+    async googleLogin(req): Promise<any> {
+        if (!req.user)
+            return "No user from Google"
+        
+        return {
+            ...req.user.access_token
         }
     }
 }
