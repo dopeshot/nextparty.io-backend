@@ -9,7 +9,7 @@ import { ObjectId, SchemaTypes, Document } from "mongoose"
 import { CurrentPlayerGender } from "../enums/currentplayergender.enum"
 
 @Schema()
-class TaskContent extends Document {
+class TaskContent {
     @Prop({ default: CurrentPlayerGender.ANYONE })
     currentPlayerGender: CurrentPlayerGender
 
@@ -19,12 +19,14 @@ class TaskContent extends Document {
     @Prop({ default: 0 })
     femaleCount: number
 
-    @Prop({ required: true/*, default: 0 */ })
+    @Prop({ required: true, default: 0 })
     anyoneCount: number
 
     @Prop({ required: true })
     message: string
 }
+
+const TaskContentSchema = SchemaFactory.createForClass(TaskContent)
 
 @Schema({ timestamps: true })
 export class Task {
@@ -34,7 +36,7 @@ export class Task {
     @Prop({ required: true })
     type: TaskType
 
-    @Prop({ type: TaskContent, required: true })
+    @Prop({ type: TaskContentSchema, required: true })
     content: TaskContent
 
     @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: false })
