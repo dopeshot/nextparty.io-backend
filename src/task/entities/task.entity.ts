@@ -4,26 +4,50 @@ import { User } from "src/user/entities/user.entity"
 import { Language } from "../enums/language.enum"
 import { TaskType } from "../enums/tasktype.enum"
 import { TaskStatus } from "../enums/taskstatus.enum"
+import { ContentTaskDto } from "../dto/content-task.dto"
+import { ObjectId, SchemaTypes, Document } from "mongoose"
+import { CurrentPlayerGender } from "../enums/currentplayergender.enum"
+
+@Schema()
+class TaskContent extends Document {
+    @Prop({ default: CurrentPlayerGender.ANYONE })
+    currentPlayerGender: CurrentPlayerGender
+
+    @Prop({ default: 0 })
+    maleCount: number
+
+    @Prop({ default: 0 })
+    femaleCount: number
+
+    @Prop({ required: true/*, default: 0 */ })
+    anyoneCount: number
+
+    @Prop({ required: true })
+    message: string
+}
 
 @Schema({ timestamps: true })
 export class Task {
-    @Prop({required: true})
-    lang: Language
+    @Prop({ required: true })
+    language: Language
 
-    @Prop({required: true})
+    @Prop({ required: true })
     type: TaskType
 
-    @Prop({required: true})
-    task: string
+    @Prop({ type: TaskContent, required: true })
+    content: TaskContent
 
-    @Prop({required: true, /*default: "anonymous"*/})
-    author: User
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: false })
+    author: ObjectId
 
-    @Prop({default: 0})
-    votes: number
+    @Prop({ default: 0 })
+    likes: number | 0
 
-    @Prop({default: TaskStatus.NORMAL})
-    status: TaskStatus
+    @Prop({ default: 0 })
+    dislikes: number | 0
+
+    @Prop({ default: TaskStatus.ACTIVE })
+    status: TaskStatus | TaskStatus.ACTIVE
 }
 
 export type TaskDocument = Task & Document

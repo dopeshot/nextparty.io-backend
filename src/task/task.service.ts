@@ -1,19 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { Task } from './entities/task.entity';
+import { Task, TaskDocument, TaskSchema } from './entities/task.entity';
 
 @Injectable()
 export class TaskService {
-  tasks: Task[] = [];
-  create(createTaskDto: CreateTaskDto) {
+  constructor(@InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
+  async create(createTaskDto: CreateTaskDto): Promise<TaskDocument> {
+    try {
+      const task = new this.taskSchema({
+        ...createTaskDto
+      })
+      const result = await task.save()
 
-    this.tasks.push(this.CreateTaskDtoToTask(createTaskDto));
-    return 'This action adds a new task';
+      return result
+    } catch (error) {
+      console.log(error)
+      throw new InternalServerErrorException()
+    }
   }
 
-  findAll() {
-    return this.tasks;
+  async findAll(): Promise<TaskDocument[]> {
+    return await this.taskSchema.find()
   }
 
   findOne(id: number) {
@@ -26,12 +36,6 @@ export class TaskService {
 
   remove(id: number) {
     return `This action removes a #${id} task`;
-  }
-
-  CreateTaskDtoToTask(createTaskDto: CreateTaskDto): Task { 
-    const cacheTask = new Task;
-    // TODO: 
-    return cacheTask; 
   }
 }
 

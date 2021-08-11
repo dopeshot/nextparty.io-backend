@@ -1,5 +1,6 @@
 export enum TaskStatus {
-    NORMAL = "normal",
+    ACTIVE = "active",
     DELETED = "deleted",
-    REVIEW = "toBeReviewed"
+    APPROVED = "approved",
+    AWAITINGAPPROVAL = "awaitingapproval"
 }

@@ -3,16 +3,22 @@ POST http://localhost:3000/api/task
 Content-Type: application/json
 
 {
-    "lang": "de", //is this correct? how do I use the enum
+    "language": "de",
     "type": "dare",
-    "task": "Convince a male preferably named Michael, that long beards are manlier. YOU WANNA BE A MAN OR NOT!"
-
+    "content": 
+    {
+        "currentPlayerGender": "@ca",
+        "message": "This is a valid question"
+    }
 }
 
-###Update Task
+### Update Task
 PATCH http://localhost:3000/api/task
 Content-Type: application/json
 
 {
     // TODO
 }
+
+### Get all Tasks
+GET http://localhost:3000/api/task
