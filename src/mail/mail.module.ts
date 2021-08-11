@@ -3,18 +3,21 @@ import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import { MailController } from './mail.controller';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({
+      envFilePath: ['.development.env', '.env']
+    }),
     MailerModule.forRoot({
       transport: {
-        host: 'localhost',
-        port: 1025,
-        ignoreTLS: true,
+        host: process.env.MAIL_HOST,
+        port: process.env.MAIL_HOST_PORT,
         secure: false,
         auth: {
-          user: process.env.MAILDEV_INCOMING_USER,
-          pass: process.env.MAILDEV_INCOMING_PASS,
+          user: process.env.MAIL_USER,
+          pass: process.env.MAIL_PASS
         },
       },
       defaults: {

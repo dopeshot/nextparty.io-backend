@@ -14,12 +14,12 @@ export class MailService {
     this.mailerService
     .sendMail({
         to: recipient,
-        from: 'noreply@lapdanceforfood.com',
+        from: 'watson.schulist@ethereal.email',
         subject: subject,
         html: message,
       })
       .then(() => {})
-      .catch(() => {});
+      .catch((err) => {console.log(err)});
   }
   
   async  mailTest(recipient: string){
@@ -29,6 +29,6 @@ export class MailService {
         code: 'cf1a3f828287',
         username: 'john doe',
      });
-    this.sendMail(recipient, "testing", message)
+    this.sendMail(recipient, "test3", message)
   }
 }
