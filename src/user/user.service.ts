@@ -4,6 +4,7 @@ import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
+import * as bcyrpt from 'bcrypt'
 
 @Injectable()
 export class UserService {
@@ -11,8 +12,10 @@ export class UserService {
 
   async create(credentials: CreateUserDto): Promise<UserDocument> {
     try {
+      const hash = await bcyrpt.hash(credentials.password, 12)
       const user = new this.userSchema({
-        ...credentials
+        ...credentials,
+        password: hash
       })
       const result = await user.save()
 

@@ -1,22 +1,24 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ObjectId } from 'mongoose';
 import { User } from './entities/user.entity';
+import { JwtAuthGuard } from 'src/auth/strategies/jwt/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  async create(@Body(ValidationPipe) credentials: CreateUserDto): Promise<any> {
-    return await this.userService.create(credentials);
-  }
-
   @Get()
   async findAll(): Promise<any> {
     return await this.userService.findAll();
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('/profile')
+  getProfile(@Request() req): Promise<any> {
+    return req.user
   }
 
   @Patch('/:id')

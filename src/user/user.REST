@@ -1,13 +1,6 @@
-###Create User
-POST http://localhost:3000/api/user
-Content-Type: application/json
-
-{
-    "username": "Haha",
-    "email": "sdd@gmail.com",
-    "password": "12345678"
-}
-
+### Get current User
+GET http://localhost:3000/api/user/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlpvZSIsInN1YiI6IjYxMTNiZDRjODdjYzg1MDVkODg5NjU2YSIsImlhdCI6MTYyODY4MzYwMiwiZXhwIjoxNjI4NzE5NjAyfQ.v2OOnKQH8t5nMFnzOrAjLx38MWungKx_JUwfTYTGO4E
 ### Get all User
 GET http://localhost:3000/api/user
 
