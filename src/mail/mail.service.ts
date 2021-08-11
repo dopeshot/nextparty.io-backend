@@ -8,14 +8,17 @@ export class MailService {
   public sendMail(): void {
     this.mailerService
     .sendMail({
-        to: 'test@nestjs.com', // list of receivers
-        from: 'noreply@nestjs.com', // sender address
-        subject: 'Testing Nest MailerModule ✔', // Subject line
-        text: 'welcome', // plaintext body
-        html: '<b>welcome</b>', // HTML body content
+        to: 'test@nestjs.com',
+        from: 'noreply@nestjs.com',
+        subject: 'Testing Nest Mailermodule with template ✔',
+        template:  __dirname + '/templates/test', // The `.pug`, `.ejs` or `.hbs` extension is appended automatically.
+        context: {
+          // Data to be sent to template engine.
+          code: 'cf1a3f828287',
+          username: 'john doe',
+        },
       })
       .then(() => {})
       .catch((err) => {console.log(err)});
-      console.log("send mail")
   }
 }
