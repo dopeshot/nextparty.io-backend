@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { ObjectId } from 'mongoose';
+import { DeleteTaskDto } from './dto/delete-task.dto';
 
 @Controller('task')
 export class TaskController {
@@ -28,8 +29,9 @@ export class TaskController {
     return this.taskService.update(id, createTaskDto);
   }
 
-  // @Delete(':id')
-  // remove(@Param('id') id: ObjectId) {
-  //   return this.taskService.remove(id);
-  // }
+  @HttpCode(204)
+  @Delete(':id')
+  remove(@Param(ValidationPipe) { id }: DeleteTaskDto, @Query('type') type: string) {
+    this.taskService.remove(id, type);
+  }
 }

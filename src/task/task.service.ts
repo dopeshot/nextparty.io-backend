@@ -4,6 +4,7 @@ import { Model, ObjectId } from 'mongoose';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Task, TaskContent, TaskDocument, TaskSchema, TaskContentSchema } from './entities/task.entity';
+import { TaskStatus } from './enums/taskstatus.enum';
 
 @Injectable()
 export class TaskService {
@@ -48,14 +49,30 @@ export class TaskService {
     return task;
   }
 
-  // async remove(id: ObjectId): Promise<TaskDocument> {
-  //   let task = await this.taskSchema.findByIdAndDelete(id)
-
-  //   if (!task)
-  //     throw new NotFoundException()
+  async remove(id: ObjectId, type: string): Promise<void> {    
+    // Check query
+    const isHardDelete = type ? type.includes('hard') : false
     
-  //   return task 
-  // }
+    // true is for admin check later
+    if(true && isHardDelete) {
+      // Check if there is a task with this id and remove it
+      const task = await this.taskSchema.findByIdAndDelete(id)
+      if(!task)
+        throw new NotFoundException()
+      
+      // We have to return here to exit process
+      return
+    }
+
+    // Soft delete
+    const task = await this.taskSchema.findByIdAndUpdate(id, {
+      status: TaskStatus.DELETED
+    }, {
+      new: true
+    })
+    if(!task)
+      throw new NotFoundException()
+  }
 
   private parseForPersonCounts(createTaskDto: CreateTaskDto): TaskContent {
     const maleCountSymbol = "@m"
