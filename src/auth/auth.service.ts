@@ -1,11 +1,11 @@
-import { Injectable, InternalServerErrorException, Provider } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Provider } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from 'src/user/entities/user.entity';
+import { User, UserDocument } from 'src/user/entities/user.entity';
 import { UserService } from '../user/user.service'
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto'
 import * as bcrypt from 'bcrypt'
-import { AccessTokenDto } from './dto/jwt.dto';
+import { AccessTokenDto, JwtPayloadDto } from './dto/jwt.dto';
 
 @Injectable()
 export class AuthService {
@@ -19,10 +19,14 @@ export class AuthService {
      * @param credentials of the user
      * @returns the new registered User
      */
-    async registerUser(credentials: RegisterDto): Promise<User> {  
+    async registerUser(credentials: RegisterDto): Promise<any> {  
         //While this might seem unnecessary now, this way of implementing this allows us to add logic to register later without affecting the user create itself  
-        const result = await this.userService.create(credentials)
-        return result
+        const user: User = await this.userService.create(credentials)
+
+        if(!user)
+            new BadRequestException()
+            
+        return this.createLoginPayload(user)
     }
 
     /**
@@ -45,7 +49,7 @@ export class AuthService {
      * @param user logged in user
      * @returns access token 
      */
-    async createLoginPayload(user: LoginDto): Promise<AccessTokenDto> {
+    async createLoginPayload(user: User): Promise<AccessTokenDto> {
         const payload = { 
             username: user.username,
             sub: user._id
@@ -58,8 +62,7 @@ export class AuthService {
 
     async createOAuthLoginJwt(thirdPartyId: string, provider: any): Promise<AccessTokenDto> {
         try {
-            // here register logic to register user in Data pase
-            const payload = {
+             const payload = {
                 thirdPartyId,
                 provider
             }

@@ -11,12 +11,13 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async findAll(): Promise<any> {
     return await this.userService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/profile')
+  @UseGuards(JwtAuthGuard)
   getProfile(@Request() req): Promise<any> {
     return req.user
   }

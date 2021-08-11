@@ -7,10 +7,11 @@ import { LocalStrategy } from './strategies/local/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt/jwt.strategy';
+import { GoogleStrategy } from './strategies/google/google.strategy';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy],
   imports: [UserModule, PassportModule, JwtModule.registerAsync({
     imports: [ConfigModule],
     useFactory: (configService: ConfigService) => ({

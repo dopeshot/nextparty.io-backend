@@ -21,6 +21,11 @@ export class UserService {
 
       return result
     } catch (error) {
+      console.log(error)
+      if (error.code === 11000 && error.keyPattern.username)
+        throw new ConflictException('Username is already taken.')
+      else if (error.code === 11000 && error.keyPattern.email)
+        throw new ConflictException('Email is already taken.')
       throw new InternalServerErrorException()
     }
   }
