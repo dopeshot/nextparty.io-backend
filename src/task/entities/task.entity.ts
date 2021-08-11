@@ -4,12 +4,11 @@ import { User } from "src/user/entities/user.entity"
 import { Language } from "../enums/language.enum"
 import { TaskType } from "../enums/tasktype.enum"
 import { TaskStatus } from "../enums/taskstatus.enum"
-import { ContentTaskDto } from "../dto/content-task.dto"
-import { ObjectId, SchemaTypes, Document } from "mongoose"
+import { ObjectId, SchemaTypes} from "mongoose"
 import { CurrentPlayerGender } from "../enums/currentplayergender.enum"
 
-@Schema()
-class TaskContent {
+@Schema({_id: false})
+export class TaskContent {
     @Prop({ default: CurrentPlayerGender.ANYONE })
     currentPlayerGender: CurrentPlayerGender
 
@@ -26,7 +25,7 @@ class TaskContent {
     message: string
 }
 
-const TaskContentSchema = SchemaFactory.createForClass(TaskContent)
+export const TaskContentSchema = SchemaFactory.createForClass(TaskContent)
 
 @Schema({ timestamps: true })
 export class Task {
@@ -36,7 +35,7 @@ export class Task {
     @Prop({ required: true })
     type: TaskType
 
-    @Prop({ type: TaskContentSchema, required: true })
+    @Prop({ type: TaskContentSchema, required: true})
     content: TaskContent
 
     @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: false })

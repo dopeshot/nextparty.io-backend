@@ -1,9 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { Task, TaskDocument, TaskSchema } from './entities/task.entity';
+import { Task, TaskContent, TaskDocument, TaskSchema, TaskContentSchema } from './entities/task.entity';
 
 @Injectable()
 export class TaskService {
@@ -26,16 +26,47 @@ export class TaskService {
     return await this.taskSchema.find()
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  async findOne(id: ObjectId): Promise<TaskDocument> {
+    let task = await this.taskSchema.findById(id).lean()
+    if (!task)
+      throw new NotFoundException()
+  
+    return task;
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async update(id: ObjectId, createTaskDto: CreateTaskDto): Promise<TaskDocument> {
+    let task = await this.taskSchema.findById(id)
+    if (!task)
+      throw new NotFoundException()
+    
+    task.content.message = createTaskDto.content.message
+    task.content.currentPlayerGender = createTaskDto.content.currentPlayerGender
+    task.language = createTaskDto.language
+    task.type = createTaskDto.type
+    task.save()
+      
+    return task;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  // async remove(id: ObjectId): Promise<TaskDocument> {
+  //   let task = await this.taskSchema.findByIdAndDelete(id)
+
+  //   if (!task)
+  //     throw new NotFoundException()
+    
+  //   return task 
+  // }
+
+  private parseForPersonCounts(createTaskDto: CreateTaskDto): TaskContent {
+    const maleCountSymbol = "@m"
+    const femaleCountSymbol = "@"
+    createTaskDto.content.message.split
+    return 
   }
+
+  private countOccurrence(string: string, substring: string): number {
+    return string.split(substring).length-1
+  }
+
 }
 
