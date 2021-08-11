@@ -30,7 +30,10 @@ Content-Type: application/json
 GET http://localhost:3000/api/task
 
 ### Get one Task
-GET http://localhost:3000/api/task/611405824f65c71804580796
+GET http://localhost:3000/api/task/611425c34d352da6b00ee998
 
-### Remove one Task
-### DELETE http://http://localhost:3000/api/task/611405824f65c71804580796
+### Soft Delete Task by Id
+DELETE http://localhost:3000/api/task/611425c34d352da6b00ee998
+
+### Hard Delete Task by Id (require admin role)
+DELETE http://localhost:3000/api/task/611425c34d352da6b00ee998?type=hard
