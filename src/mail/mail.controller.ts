@@ -5,8 +5,8 @@ import { MailService } from './mail.service';
 export class MailController {
   constructor(private readonly mailService: MailService) {}
 
-  @Get()
-  async sendMail() {
-    return await this.mailService.sendMail();
+  @Post()
+  async sendMail(@Body('recipient') recipient: string) {
+    return await this.mailService.mailTest(recipient);
   }
 }
