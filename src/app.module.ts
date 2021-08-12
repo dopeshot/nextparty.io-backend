@@ -11,9 +11,11 @@ import { ReportModule } from './report/report.module';
 import { SystemModule } from './system/system.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MailModule } from './mail/mail.module';
 
 @Module({
   imports: [
+    //this has to be done to ensure that env variables work
     ConfigModule.forRoot({
       envFilePath: ['.development.env', '.env']
     }),
@@ -33,7 +35,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     CategoryModule,
     SearchModule,
     ReportModule,
-    SystemModule
+    SystemModule,
+    MailModule,
   ],
   controllers: [AppController],
   providers: [AppService],
