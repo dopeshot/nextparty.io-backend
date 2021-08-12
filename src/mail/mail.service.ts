@@ -10,6 +10,12 @@ const readFile = promisify(_readFile);
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
+  /**
+   * Method that communicates with mailserver to send mail
+   * @param recipient - mail adress of receiver
+   * @param subject - subject of email
+   * @param message - message body of the email
+   */
   public sendMail(recipient: string, subject: string, message:string): void {
     this.mailerService
     .sendMail({
@@ -22,6 +28,10 @@ export class MailService {
       .catch((err) => {console.log(err)});
   }
   
+  /**
+   * Method called by the test endpoint
+   * @param recipient - receiver for the email to be send
+   */
   async  mailTest(recipient: string){
     const tmpl =   await readFile(__dirname + '/templates/test.ejs', 'utf-8')
     const message = render(tmpl, { 
