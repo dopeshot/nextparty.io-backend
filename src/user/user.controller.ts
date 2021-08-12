@@ -4,7 +4,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ObjectId } from 'mongoose';
 import { User } from './entities/user.entity';
-import { JwtAuthGuard } from 'src/auth/strategies/jwt/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
