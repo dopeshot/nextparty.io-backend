@@ -65,16 +65,20 @@ export class TaskService {
   async vote(id: ObjectId, vote: string): Promise<TaskDocument> {
     // Find Object
     let task = await this.taskSchema.findById(id)
-    console.log(task)
-    if (!task) { throw new NotFoundException() }
+
+    if(!task) 
+      throw new NotFoundException()
 
     // Query check
-    const isUpvote = vote ? vote.includes('upvote') : false
-    const isDownvote = vote ? vote.includes('downvote') : false
+    const isUpvote = vote && vote === 'upvote'
+    const isDownvote = vote && vote === 'downvote'
 
     // Handle vote
-    if (isUpvote) { task.likes += 1 }
-    if (isDownvote) { task.dislikes += 1 }
+    if (isUpvote)
+      task.likes += 1
+      
+    if (isDownvote)
+      task.dislikes += 1
 
     return await task.save()
   }
