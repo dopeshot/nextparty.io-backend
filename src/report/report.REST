@@ -1,0 +1,12 @@
+###Create Report
+POST http://localhost:3000/api/report
+Content-Type: application/json
+
+{
+    "taskID": "611426b2952b3b9be0b0b39d",
+    "userID": "611426b2952b3b9be0b0b39d",
+    "reason": "harmful"
+}
+
+### Get all sets
+GET http://localhost:3000/api/report

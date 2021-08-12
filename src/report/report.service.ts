@@ -6,14 +6,14 @@ import { ReportDocument } from './entities/report.entity';
 
 @Injectable()
 export class ReportService {
-    constructor(@InjectModel('Set') private reportSchema: Model<ReportDocument>) { }
+    constructor(@InjectModel('Report') private reportSchema: Model<ReportDocument>) { }
 
     async create(metaData: CreateReportDto): Promise<ReportDocument> {
         try {
-            const set = new this.reportSchema({
+            const report = new this.reportSchema({
             ...metaData
             })
-            const result = await set.save()
+            const result = await report.save()
 
             return result
         } catch (error) {

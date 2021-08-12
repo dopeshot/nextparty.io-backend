@@ -1,7 +1,7 @@
 export enum Reason {
-    Spam = 0,
-    HatredAndBullying = 1,
-    Harmful = 2,
-    IllegalActivity = 3,
-    Other = 4 
+    Spam = 'spam',
+    HatredAndBullying = 'hatred and bullying',
+    Harmful = 'harmful',
+    IllegalActivity = 'illegal activity',
+    Other = 'other'
 }

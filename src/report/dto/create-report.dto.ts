@@ -1,16 +1,16 @@
-import { IsNumber, Length } from "class-validator"
+import { IsEnum, IsMongoId, IsNumber, Length } from "class-validator"
+import { ObjectId } from "mongoose"
+import { Reason } from "../enums/reason.enum"
 
 export class CreateReportDto  {
-    @IsNumber()
+    @IsMongoId()
     // TODO: How does a task ID look like? Set length
-    @Length(0, 124)
-    taskID: number
+    taskID: ObjectId
 
-    @IsNumber()
+    @IsMongoId()
     // TODO: How does a user ID look like? Set length
-    @Length(0, 124)
-    userID: number
+    userID: ObjectId
 
-    @IsNumber()
-    reason: number
+    @IsEnum(Reason)
+    reason: Reason
 }

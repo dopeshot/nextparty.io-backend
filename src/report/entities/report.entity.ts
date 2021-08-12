@@ -1,20 +1,21 @@
 import { Prop, Schema, SchemaFactory} from "@nestjs/mongoose"
+import { ObjectId } from "mongoose"
 import { Reason } from "../enums/reason.enum"
 import { Severity } from "../enums/severity.enum"
 
 @Schema({ timestamps: true })
 export class Report {
-    @Prop({ required: true })
-    reportID: number
+
+    _id: ObjectId
 
     @Prop({ required: true })
-    taskID: number
+    taskID: string
 
     @Prop({ required: true, default: Reason.Other })
     reason: Reason
 
     @Prop({ required: true })
-    userID: number
+    userID: string
 
     @Prop()
     severity: Severity
