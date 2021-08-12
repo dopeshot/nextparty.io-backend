@@ -3,21 +3,23 @@ import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EjsAdapter } from '@nestjs-modules/mailer/dist/adapters/ejs.adapter';
 import { MailController } from './mail.controller';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: ['.development.env', '.env']
     }),
-    MailerModule.forRoot({
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      useFactory: (configService: ConfigService) => ({
       transport: {
-        host: process.env.MAIL_HOST,
-        port: process.env.MAIL_HOST_PORT,
+        host: configService.get<string>('MAIL_HOST'),
+        port: configService.get<number>('MAIL_HOST_PORT'),
         secure: false,
         auth: {
-          user: process.env.MAIL_USER,
-          pass: process.env.MAIL_PASS
+          user: configService.get<string>('MAIL_USER'),
+          pass: configService.get<string>('MAIL_PASS')
         },
       },
       defaults: {
@@ -31,8 +33,9 @@ import { ConfigModule } from '@nestjs/config';
           strict: true,
         },
       },
-    }),
-  ],
+    }), 
+    inject: [ConfigService]
+  })],
   controllers: [MailController],
   providers: [MailService],
   exports: [MailService]
