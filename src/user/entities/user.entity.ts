@@ -7,13 +7,15 @@ import { Status } from "../enums/status.enum"
 export class User {
     _id: ObjectId
 
-    @Prop({ required: true, unique: true })
+    @Prop({ required: true })
     username: string
 
     @Prop({ required: true, unique: true })
     email: string
 
-    @Prop({ required: true })
+    // Need to be ignored (throws undefined error) because we want to look if provider is undefined or not, if it is undefined, required is set to true 
+    // @ts-ignore 
+    @Prop({ required: () => this.provider ? true : false})
     password: string
 
     @Prop({ default: Role.User })
@@ -21,6 +23,9 @@ export class User {
 
     @Prop({ default: Status.Active })
     status: Status
+
+    @Prop()
+    provider: string
 }
 
 export type UserDocument = User & Document
