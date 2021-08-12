@@ -1,4 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { ObjectId } from 'mongoose';
 import { CreateReportDto } from './dto/create-report.dto';
 import { ReportService } from './report.service';
 
@@ -17,12 +18,12 @@ export class ReportController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.reportService.findOne(+id);
+  findOne(@Param('id') id: ObjectId) {
+    return this.reportService.findOne(id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: number) {
-    return this.reportService.remove(+id);
+  remove(@Param('id') id: ObjectId) {
+    return this.reportService.remove(id);
   }
 }

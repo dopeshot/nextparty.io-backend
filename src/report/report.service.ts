@@ -1,6 +1,6 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ObjectId } from 'mongoose';
 import { CreateReportDto } from './dto/create-report.dto';
 import { ReportDocument } from './entities/report.entity';
 
@@ -26,11 +26,22 @@ export class ReportService {
         return await this.reportSchema.find()
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} report`;
+    async findOne(id: ObjectId): Promise<ReportDocument> {
+        let report = await this.reportSchema.findById(id).lean()
+        if (!report)
+            throw new NotFoundException()
+
+        return report;
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} report`;
+    // hard delete report
+    async remove(id: ObjectId): Promise<void> {
+        // Check if there is a report with this id and remove it
+        const report = await this.reportSchema.findByIdAndDelete(id)
+        if (!report)
+            throw new NotFoundException()
+
+        // We have to return here to exit process
+        return
     }
 }
