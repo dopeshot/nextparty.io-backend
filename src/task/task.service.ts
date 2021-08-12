@@ -9,6 +9,8 @@ import { TaskStatus } from './enums/taskstatus.enum';
 @Injectable()
 export class TaskService {
   constructor(@InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
+  
+  // Creates a new Task and checks if the message content accounts for extra user interaction
   async create(createTaskDto: CreateTaskDto): Promise<TaskDocument> {
     try {
       const task = new this.taskSchema({
@@ -24,10 +26,12 @@ export class TaskService {
     }
   }
 
+  // Returns all Tasks
   async findAll(): Promise<TaskDocument[]> {
     return await this.taskSchema.find()
   }
 
+  // Returns the Task with matching id
   async findOne(id: ObjectId): Promise<TaskDocument> {
     let task = await this.taskSchema.findById(id).lean()
     if (!task)
@@ -36,15 +40,15 @@ export class TaskService {
     return task;
   }
 
+  // Updates the content language and type of a Task
   async update(id: ObjectId, updateTaskDto: UpdateTaskDto): Promise<TaskDocument> {
 
     // Find Object
     let task = await this.taskSchema.findById(id)
-    console.log(task)
+    //console.log(task)
     if (!task) { throw new NotFoundException() }
 
-    console.log(updateTaskDto)
-    console.log(typeof updateTaskDto)
+    //console.log(updateTaskDto)
     try {
       if (updateTaskDto.content.hasOwnProperty("message")) { task.content.message = updateTaskDto.content.message; this.parseForPersonCounts(task) }
       if (updateTaskDto.content.hasOwnProperty("currentPlayerGender")) { task.content.currentPlayerGender = updateTaskDto.content.currentPlayerGender }
@@ -57,6 +61,7 @@ export class TaskService {
     return result;
   }
 
+  // Up- Downvotes a Task
   async vote(id: ObjectId, vote: string): Promise<TaskDocument> {
     // Find Object
     let task = await this.taskSchema.findById(id)
