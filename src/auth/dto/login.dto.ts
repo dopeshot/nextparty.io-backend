@@ -6,7 +6,7 @@ export class LoginDto {
 
     @IsString()
     @Length(3, 24)
-    username: string
+    email: string
 
     @IsString()
     @Length(8, 124)

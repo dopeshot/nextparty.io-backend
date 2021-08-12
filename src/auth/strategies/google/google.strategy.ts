@@ -1,12 +1,15 @@
-import { Injectable } from "@nestjs/common"
+import { Injectable, InternalServerErrorException } from "@nestjs/common"
 import { PassportStrategy } from "@nestjs/passport"
 import { Strategy, VerifyCallback } from "passport-google-oauth20"
-import { AuthService } from "src/auth/auth.service"
-import { Provider } from "src/auth/enums/provider.enum"
+import { UserService } from "../../../user/user.service"
+import { AuthService } from "../../auth.service"
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
-    constructor(private readonly authService: AuthService) {
+    constructor(
+        private readonly authService: AuthService,
+        private readonly userService: UserService
+    ) {
         super({
             clientID: process.env.GOOGLE_CLIENTID,
             clientSecret: process.env.GOOGLE_CLIENTKEY,
@@ -15,20 +18,21 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         })
     }
 
+    /**
+     * For store userdata in @Request req
+     * @param access_token token from google
+     * @param refreshToken  token from google
+     * @param profile  user data
+     * @param done callback
+     */
     async validate(access_token: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
-        const {
-            name,
-            emails,
-            photos
-        } = profile
+        const user = profile
 
-        const user = {
-            email: emails[0],
-            firstName: name.givenName,
-            lastName: name.familyName,
-            picture: photos[0].value,
-            access_token: await this.authService.createOAuthLoginJwt(profile.id, Provider.GOOGLE)
-        }
+        const checkUser = await this.userService.findOneByEmail(user.emails[0].value)
+        if (checkUser)
+            throw new InternalServerErrorException("User already has an Account")
+
+        // Set @Request req user
         done(null, user)
     }
 }

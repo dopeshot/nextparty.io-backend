@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Provider } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User, UserDocument } from 'src/user/entities/user.entity';
 import { UserService } from '../user/user.service'
@@ -6,6 +6,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto'
 import * as bcrypt from 'bcrypt'
 import { AccessTokenDto, JwtPayloadDto } from './dto/jwt.dto';
+import { Provider } from './enums/provider.enum';
 
 @Injectable()
 export class AuthService {
@@ -25,7 +26,7 @@ export class AuthService {
 
         if(!user)
             new BadRequestException()
-            
+
         return this.createLoginPayload(user)
     }
 
@@ -35,8 +36,11 @@ export class AuthService {
      * @param password of the user
      * @returns user without password or if user do not exist returns null 
      */
-    async validateUserWithUsernamePassword(username: string, password: string): Promise<any> {
-        const user = await this.userService.findOneByUsername(username)
+    async validateUserWithEmailPassword(email: string, password: string): Promise<any> {
+        const user = await this.userService.findOneByEmail(email)
+        if (user.provider)
+            throw new InternalServerErrorException("Google User can't login with Username and Password")
+
         if (user && await bcrypt.compare(password, user.password)) {
             const { password, ...result } = user
             return result
@@ -60,27 +64,25 @@ export class AuthService {
         }
     }
 
-    async createOAuthLoginJwt(thirdPartyId: string, provider: any): Promise<AccessTokenDto> {
-        try {
-             const payload = {
-                thirdPartyId,
-                provider
-            }
-
-            return {
-                access_token : this.jwtService.sign(payload)
-            } 
-        } catch (error) {
-            throw new InternalServerErrorException('OAuthLoginPayload', error.message)
-        }
-    }
-
     async googleLogin(req): Promise<any> {
+        // Should not happen
         if (!req.user)
-            return "No user from Google"
+            throw new InternalServerErrorException("No user found")
+
+        const {
+            user
+        } = req
         
-        return {
-            ...req.user.access_token
-        }
+        // Find user
+        const googleuser = await this.userService.findOneByEmail(user.emails[0].value)
+
+        // If user exist create Jwt
+        if (googleuser)
+            return this.createLoginPayload(user)
+        
+        // If user does not exist jet create new one
+        const newUser = await this.userService.createWithoutPassword(user)
+        // Create Jwt
+        return this.createLoginPayload(newUser)
     }
 }

@@ -5,6 +5,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikpve
 ### Get all User
 GET http://localhost:3000/api/user
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0aGlyZFBhcnR5SWQiOiIxMDMwNDYwNDE3MTgxMTMwMjUxODYiLCJwcm92aWRlciI6Imdvb2dsZSIsImlhdCI6MTYyODY5NTk1NCwiZXhwIjoxNjI4NzMxOTU0fQ.vuFkjAOFlBHsT41u83SK2Nys0dc2Zo9nF7TXOt-s7bE
+
 ### Patch user by id 
 PATCH http://localhost:3000/api/user/6112decedf446d7fe06f64ef
 Content-Type: application/json
@@ -16,4 +17,4 @@ Content-Type: application/json
 }
 
 ### Delete User
-DELETE http://localhost:3000/api/user/6112ccf23ee20f3f705a3fed
+DELETE http://localhost:3000/api/user/61152d6fb3dac55cbcd081f2
