@@ -1,5 +1,6 @@
 import { Type } from "class-transformer";
-import { IsEnum, IsNotEmpty, ValidateNested } from "class-validator";
+import { IsEnum, IsMongoId, IsNotEmpty, IsObject, ValidateNested } from "class-validator";
+import { isValidObjectId, ObjectId } from "mongoose";
 import { Language } from "../enums/language.enum";
 import { TaskType } from "../enums/tasktype.enum";
 import { ContentTaskDto } from "./content-task.dto";
@@ -15,4 +16,8 @@ export class CreateTaskDto {
     @Type(()=> ContentTaskDto)
     @IsNotEmpty()
     content: ContentTaskDto
+
+    @IsMongoId()
+    @IsNotEmpty()
+    author: ObjectId
 }

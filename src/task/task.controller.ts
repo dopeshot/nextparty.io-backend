@@ -3,7 +3,7 @@ import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { ObjectId } from 'mongoose';
-import { DeleteTaskDto } from './dto/delete-task.dto';
+import { IdTaskDto } from './dto/id-task.dto';
 
 @Controller('task')
 export class TaskController {
@@ -24,14 +24,20 @@ export class TaskController {
     return this.taskService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: ObjectId, @Body() createTaskDto: CreateTaskDto) {
-    return this.taskService.update(id, createTaskDto);
+  @Patch(':id/:vote')
+  vote(@Param(ValidationPipe){id}: IdTaskDto, @Param('vote') vote: string) {
+    return this.taskService.vote(id,vote);
   }
+
+  @Patch(':id')
+  update(@Param(ValidationPipe){id}: IdTaskDto, @Body()updateTaskDto: UpdateTaskDto) {
+    return this.taskService.update(id, updateTaskDto);
+  }
+  
 
   @HttpCode(204)
   @Delete(':id')
-  remove(@Param(ValidationPipe) { id }: DeleteTaskDto, @Query('type') type: string) {
+  remove(@Param(ValidationPipe) { id }: IdTaskDto, @Query('type') type: string) {
     this.taskService.remove(id, type);
   }
 }

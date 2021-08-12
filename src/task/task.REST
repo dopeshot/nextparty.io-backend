@@ -5,6 +5,7 @@ Content-Type: application/json
 {
     "language": "de",
     "type": "dare",
+    "author": "6113cee6f951fe3e4059c5da",
     "content": 
     {
         "currentPlayerGender": "@ca",
@@ -19,6 +20,7 @@ Content-Type: application/json
 {
     "language": "de",
     "type": "dare",
+    "author": "6113cee6f951fe3e4059c5da",
     "content": 
     {
         "currentPlayerGender": "@ca",
@@ -27,27 +29,33 @@ Content-Type: application/json
 }
 
 ### Update Task
-PATCH http://localhost:3000/api/task/611405824f65c71804580796
+PATCH http://localhost:3000/api/task/6114edf7b4bd8303888ec67d
 Content-Type: application/json
 
 {
     "language": "en",
-    "type": "dare",
+    "type": "truth",
     "content": 
     {
         "currentPlayerGender": "@cm",
-        "message": "Grow a fullbeard!"
+        "message": "@m @m @m @m @a @a @a"
     }
 }
+
+### Update Task with upvote
+PATCH http://localhost:3000/api/task/6114edf7b4bd8303888ec67d/upvote
+
+### Update Task with upvote
+PATCH http://localhost:3000/api/task/6114edf7b4bd8303888ec67d/downvote
 
 ### Get all Tasks
 GET http://localhost:3000/api/task
 
 ### Get one Task
-GET http://localhost:3000/api/task/611425c34d352da6b00ee998
+GET http://localhost:3000/api/task/6114edf7b4bd8303888ec67d
 
 ### Soft Delete Task by Id
-DELETE http://localhost:3000/api/task/611425c34d352da6b00ee998
+DELETE http://localhost:3000/api/task/6114edf7b4bd8303888ec67d
 
 ### Hard Delete Task by Id (require admin role)
-DELETE http://localhost:3000/api/task/611425c34d352da6b00ee998?type=hard
+DELETE http://localhost:3000/api/task/6114edf7b4bd8303888ec67d?type=hard

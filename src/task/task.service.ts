@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -36,31 +36,55 @@ export class TaskService {
     return task;
   }
 
-  async update(id: ObjectId, createTaskDto: CreateTaskDto): Promise<TaskDocument> {
+  async update(id: ObjectId, updateTaskDto: UpdateTaskDto): Promise<TaskDocument> {
+
+    // Find Object
     let task = await this.taskSchema.findById(id)
-    if (!task)
-      throw new NotFoundException()
+    console.log(task)
+    if (!task) { throw new NotFoundException() }
 
-    task.content.message = createTaskDto.content.message
-    task.content.currentPlayerGender = createTaskDto.content.currentPlayerGender
-    task.language = createTaskDto.language
-    task.type = createTaskDto.type
-    task.save()
+    console.log(updateTaskDto)
+    console.log(typeof updateTaskDto)
+    try {
+      if (updateTaskDto.content.hasOwnProperty("message")) { task.content.message = updateTaskDto.content.message; this.parseForPersonCounts(task) }
+      if (updateTaskDto.content.hasOwnProperty("currentPlayerGender")) { task.content.currentPlayerGender = updateTaskDto.content.currentPlayerGender }
+      if (updateTaskDto.hasOwnProperty("language")) { task.language = updateTaskDto.language }
+      if (updateTaskDto.hasOwnProperty("type")) { task.type = updateTaskDto.type }
 
-    return task;
+    } catch (error) {throw new UnprocessableEntityException }
+    const result = await task.save()
+
+    return result;
   }
 
-  async remove(id: ObjectId, type: string): Promise<void> {    
+  async vote(id: ObjectId, vote: string): Promise<TaskDocument> {
+    // Find Object
+    let task = await this.taskSchema.findById(id)
+    console.log(task)
+    if (!task) { throw new NotFoundException() }
+
+    // Query check
+    const isUpvote = vote ? vote.includes('upvote') : false
+    const isDownvote = vote ? vote.includes('downvote') : false
+
+    // Handle vote
+    if (isUpvote) { task.likes += 1 }
+    if (isDownvote) { task.dislikes += 1 }
+
+    return await task.save()
+  }
+
+  async remove(id: ObjectId, type: string): Promise<void> {
     // Check query
     const isHardDelete = type ? type.includes('hard') : false
-    
+
     // true is for admin check later
-    if(true && isHardDelete) {
+    if (true && isHardDelete) {
       // Check if there is a task with this id and remove it
       const task = await this.taskSchema.findByIdAndDelete(id)
-      if(!task)
+      if (!task)
         throw new NotFoundException()
-      
+
       // We have to return here to exit process
       return
     }
@@ -71,7 +95,7 @@ export class TaskService {
     }, {
       new: true
     })
-    if(!task)
+    if (!task)
       throw new NotFoundException()
   }
 

@@ -1,7 +1,7 @@
 import { IsMongoId } from "class-validator";
 import { ObjectId } from "mongoose";
 
-export class DeleteTaskDto {
+export class IdTaskDto {
     
     @IsMongoId()
     id: ObjectId
