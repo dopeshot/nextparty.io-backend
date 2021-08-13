@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory} from "@nestjs/mongoose"
-import { ObjectId } from "mongoose"
+import { ObjectId, SchemaTypes } from "mongoose"
 import { Reason } from "../enums/reason.enum"
 import { Severity } from "../enums/severity.enum"
 
@@ -8,14 +8,14 @@ export class Report {
 
     _id: ObjectId
 
-    @Prop({ required: true })
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'Task', required: true })
     taskID: string
 
     @Prop({ required: true, default: Reason.Other })
     reason: Reason
 
-    @Prop({ required: true })
-    userID: string
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
+    userID: ObjectId
 
     @Prop()
     severity: Severity
