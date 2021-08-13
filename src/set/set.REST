@@ -5,7 +5,7 @@ Content-Type: application/json
 {
     "creator": "6112ba6ea4a2b02db05c423a",
     "description": "wow this is a set as well",
-    "taskList": ["61151f10c4885a2fdcfbb124", "61151f11c4885a2fdcfbb126"],
+    "taskList": ["6116ac812a8b143164f7f007"],
     "language": "de",
     "name": "super cool set"
 }
@@ -15,7 +15,7 @@ GET http://localhost:3000/api/set
 
 ### Get one set
 
-GET http://localhost:3000/api/set/611520190a92523f38489c02
+GET http://localhost:3000/api/set/6116ac912a8b143164f7f00b
 
 ### Update set task list
 POST http://localhost:3000/api/set/611655486b75b93ec02ca557/add
@@ -25,13 +25,19 @@ Content-Type: application/json
     "tasks": ["6115984b28079c2b507d42e5"]
 }
 
+### Get Tasks in Set
+GET http://localhost:3000/api/set/6116ac912a8b143164f7f00b/tasks
+
+### Get Set metadata
+GET http://localhost:3000/api/set/6116ac912a8b143164f7f00b/meta
+ 
 ### Update set metadata
-PATCH  http://localhost:3000/api/set/611655486b75b93ec02ca557/meta
+PATCH  http://localhost:3000/api/set/6116ac912a8b143164f7f00b/meta
 Content-Type: application/json
 
 {
-    "name": "new name",
-    "description": "I have been changed via the api"
+    "name": "better name",
+    "description": "gang gang"
 }
 
 ### Soft Delete Set by Id

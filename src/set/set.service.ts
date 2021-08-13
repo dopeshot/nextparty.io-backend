@@ -6,10 +6,12 @@ import { Set, SetDocument } from './entities/set.entity';
 import { Model, ObjectId, Types } from 'mongoose';
 import { SetStatus } from './enums/setstatus.enum';
 import { UpdateSetDto } from './dto/update-set-metadata.dto';
+import { Task, TaskContent, TaskDocument, TaskSchema, TaskContentSchema } from '../task/entities/task.entity';
 
 @Injectable()
 export class SetService {
-  constructor(@InjectModel('Set') private setSchema: Model<SetDocument>) { }
+  constructor(@InjectModel('Set') private setSchema: Model<SetDocument>,
+  @InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
 
   async create(metaData: CreateSetDto): Promise<SetDocument> {
     try {
@@ -84,9 +86,9 @@ export class SetService {
 
     // true is for admin check later
     if (true && isHardDelete) {
-      // Check if there is a task with this id and remove it
-      const task = await this.setSchema.findByIdAndDelete(id)
-      if (!task)
+      // Check if there is a set with this id and remove it
+      const set = await this.setSchema.findByIdAndDelete(id)
+      if (!set)
         throw new NotFoundException()
 
       // We have to return here to exit process
@@ -94,12 +96,43 @@ export class SetService {
     }
 
     // Soft delete
-    const task = await this.setSchema.findByIdAndUpdate(id, {
+    const set = await this.setSchema.findByIdAndUpdate(id, {
       status: SetStatus.DELETED
     }, {
       new: true
     })
-    if (!task)
+    if (!set)
       throw new NotFoundException()
+  }
+
+  async getTasks(id: ObjectId){
+    const set = await this.setSchema.findById(id)
+
+    if (!set)
+      throw new NotFoundException()
+   
+    let taskList: TaskDocument[] = []
+
+    for (const taskId of set.taskList){
+      let task = await this.taskSchema.findById(taskId)
+      if (task){
+        taskList.push(task)
+      }
+      
+    }
+
+    return taskList
+  }
+
+  async getMetadata(id: ObjectId){
+    const set = await this.setSchema.findById(id)
+
+    if (!set)
+      throw new NotFoundException()
+    
+    return {
+      "description": set.description,
+      "name": set.name
+    }  
   }
 }

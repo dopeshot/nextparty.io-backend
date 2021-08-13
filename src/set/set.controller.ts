@@ -25,9 +25,25 @@ export class SetController {
     return this.setService.findOne(id);
   }
 
-  @Patch(':id/:meta')
-  update(@Param('id') id: ObjectId, @Body() updateSetDto: UpdateSetDto) {
+  @HttpCode(204)
+  @Delete(':id')
+  remove(@Param('id') id: ObjectId, @Query('type') type: string) {
+    this.setService.remove(id, type);
+  }
+
+  @Get(':id/tasks')
+  getSetTasks(@Param('id') id:  ObjectId) {
+    return this.setService.getTasks(id);
+  }
+
+  @Patch(':id/meta')
+  updateMeta(@Param('id') id: ObjectId, @Body() updateSetDto: UpdateSetDto) {
     return this.setService.updateMetadata(id, updateSetDto);
+  }
+
+  @Get(':id/meta')
+  getMeta(@Param('id') id: ObjectId, @Body() updateSetDto: UpdateSetDto) {
+    return this.setService.getMetadata(id);
   }
 
   @Post(':id/add')
@@ -40,9 +56,4 @@ export class SetController {
     return this.setService.alterTasks(id, "remove", updateSetTasksDto);
   }
 
-  @HttpCode(204)
-  @Delete(':id')
-  remove(@Param('id') id: ObjectId, @Query('type') type: string) {
-    this.setService.remove(id, type);
-  }
 }
