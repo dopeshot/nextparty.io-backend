@@ -8,10 +8,10 @@ import { TaskVoteDto } from './dto/task-vote-dto';
 
 @Controller('task')
 export class TaskController {
-  constructor(private readonly taskService: TaskService) {}
+  constructor(private readonly taskService: TaskService) { }
 
   @Post()
-  create(@Body(new ValidationPipe({whitelist: true, transform: true})) createTaskDto: CreateTaskDto) {
+  create(@Body(new ValidationPipe({ whitelist: true, transform: true })) createTaskDto: CreateTaskDto) {
     return this.taskService.create(createTaskDto);
   }
 
@@ -20,10 +20,17 @@ export class TaskController {
     return this.taskService.findAll();
   }
 
+  @Get('topten')
+  findTop10Tasks() {
+    return this.taskService.findTop10Tasks();
+  }
+  
   @Get(':id')
-  findOne(@Param('id') id:ObjectId) {
+  findOne(@Param('id') id: ObjectId) {
     return this.taskService.findOne(id);
   }
+
+  
 
   @Patch(':id/:vote')
   vote(@Param(ValidationPipe) taskVoteDto: TaskVoteDto,) {
@@ -31,10 +38,10 @@ export class TaskController {
   }
 
   @Patch(':id')
-  update(@Param(ValidationPipe){id}: IdTaskDto, @Body()updateTaskDto: UpdateTaskDto) {
+  update(@Param(ValidationPipe) { id }: IdTaskDto, @Body() updateTaskDto: UpdateTaskDto) {
     return this.taskService.update(id, updateTaskDto);
   }
-  
+
 
   @HttpCode(204)
   @Delete(':id')

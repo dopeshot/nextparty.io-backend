@@ -38,7 +38,7 @@ export class Task {
     @Prop({ type: TaskContentSchema, required: true})
     content: TaskContent
 
-    @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: false })
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
     author: ObjectId
 
     @Prop({ default: 0 })
