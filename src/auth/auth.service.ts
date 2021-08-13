@@ -13,18 +13,18 @@ export class AuthService {
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService
-    ) {}
-    
+    ) { }
+
     /**
      * Register User (Creates a new one)
      * @param credentials of the user
      * @returns the new registered User
      */
-    async registerUser(credentials: RegisterDto): Promise<any> {  
+    async registerUser(credentials: RegisterDto): Promise<any> {
         //While this might seem unnecessary now, this way of implementing this allows us to add logic to register later without affecting the user create itself  
         const user: User = await this.userService.create(credentials)
 
-        if(!user)
+        if (!user)
             new BadRequestException()
 
         return this.createLoginPayload(user)
@@ -54,7 +54,7 @@ export class AuthService {
      * @returns access token 
      */
     async createLoginPayload(user: User): Promise<AccessTokenDto> {
-        const payload = { 
+        const payload = {
             username: user.username,
             sub: user._id
         }
@@ -72,14 +72,36 @@ export class AuthService {
         const {
             user
         } = req
-        
+
         // Find user
         const googleuser = await this.userService.findOneByEmail(user.emails[0].value)
 
         // If user exist create Jwt
         if (googleuser)
             return this.createLoginPayload(user)
-        
+
+        // If user does not exist jet create new one
+        const newUser = await this.userService.createWithoutPassword(user)
+        // Create Jwt
+        return this.createLoginPayload(newUser)
+    }
+
+    async facebookLogin(req): Promise<any> {
+        // Should not happen
+        if (!req.user)
+            throw new InternalServerErrorException("No user found")
+
+        const {
+            user
+        } = req
+
+        // Find user
+        const facebookuser = await this.userService.findOneByEmail(user.emails[0].value)
+
+        // If user exist create Jwt
+        if (facebookuser)
+            return this.createLoginPayload(user)
+
         // If user does not exist jet create new one
         const newUser = await this.userService.createWithoutPassword(user)
         // Create Jwt

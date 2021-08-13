@@ -1,9 +1,10 @@
-import { Post, Controller, Body, ValidationPipe, Request, UseGuards, Get } from '@nestjs/common';
+import { Post, Controller, Body, ValidationPipe, Request, UseGuards, Get, HttpCode } from '@nestjs/common';
 import { RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service'
 import { LocalAuthGuard } from './strategies/local/local-auth.guard';
 import { User } from 'src/user/entities/user.entity';
 import { GoogleAuthGuard } from './strategies/google/google-auth.guard';
+import { FacebookAuthGuard } from './strategies/facebook/facebook-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -30,5 +31,19 @@ export class AuthController {
     @UseGuards(GoogleAuthGuard)
     googleLoginRedirect(@Request() req): Promise<any> {
       return this.authService.googleLogin(req)
+    }
+
+    @Get('/facebook')
+    @UseGuards(FacebookAuthGuard)
+    @HttpCode(200)
+    async facebookLogin(@Request() req): Promise<any> {
+      // initiates the Facebook OAuth2 login flow
+    }
+
+    @Get('/facebook/redirect')
+    @UseGuards(FacebookAuthGuard)
+    @HttpCode(200)
+    async facebookLoginRedirect(@Request() req): Promise<any> {
+      return this.authService.facebookLogin(req)
     }
 }
