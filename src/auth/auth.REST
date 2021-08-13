@@ -4,7 +4,7 @@ Content-Type: application/json
 
 {
     "username": "Haha",
-    "email": "sakurakaaaaa@gmail.com",
+    "email": "joy-js@web.de",
     "password": "12345678"
 }
 
@@ -19,3 +19,6 @@ Content-Type: application/json
 
 ### Google Auth
 GET http://localhost:3000/api/auth/google
+
+### Facebook Auth
+GET http://localhost:3000/api/auth/facebook
