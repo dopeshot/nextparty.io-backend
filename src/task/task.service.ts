@@ -8,6 +8,7 @@ import { TaskStatus } from './enums/taskstatus.enum';
 
 @Injectable()
 export class TaskService {
+  // Constructor
   constructor(@InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
   
   // Creates a new Task and checks if the message content accounts for extra user interaction
@@ -38,6 +39,27 @@ export class TaskService {
       throw new NotFoundException()
 
     return task;
+  }
+
+  async findTop10Tasks(): Promise<TaskDocument[]> {
+    const topTasks = await this.taskSchema.aggregate([
+      {
+        '$addFields': {
+          'difference': {
+            '$subtract': [
+              '$likes', '$dislikes'
+            ]
+          }
+        }
+      }, {
+        '$sort': {
+          'difference': -1
+        }
+      }, {
+        '$limit': 10
+      }
+    ])
+    return topTasks
   }
 
   // Updates the content language and type of a Task
