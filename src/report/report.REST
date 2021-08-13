@@ -1,0 +1,18 @@
+### Create Report
+POST http://localhost:3000/api/report
+Content-Type: application/json
+
+{
+    "taskID": "611426b2952b3b9be0b0b39b",
+    "userID": "611426b2952b3b9be0b0b39c",
+    "reason": "harmful"
+}
+
+### Get all reports
+GET http://localhost:3000/api/report
+
+### Get report by id
+GET http://localhost:3000/api/report/6115370e5d81e0c0e033f2f9
+
+### delete report by id
+DELETE http://localhost:3000/api/report/6115370e5d81e0c0e033f2f9

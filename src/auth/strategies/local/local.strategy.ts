@@ -8,13 +8,14 @@ import { User } from "src/user/entities/user.entity";
 export class LocalStrategy extends PassportStrategy(Strategy) {
     constructor(private authService: AuthService) {
         super({
-            usernameField: 'email'
+            usernameField: 'email',
+            role: 'role'
         })
     }
 
     /**
-     * Validate User with Username and Password 
-     * @param username of the user
+     * Validate User with Email and Password 
+     * @param email of the user
      * @param password of the user
      * @returns a user if he is valid, if not throw an Unauthorized Exception
      */

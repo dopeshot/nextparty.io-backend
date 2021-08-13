@@ -5,8 +5,7 @@ import { UserService } from '../user/user.service'
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto'
 import * as bcrypt from 'bcrypt'
-import { AccessTokenDto, JwtPayloadDto } from './dto/jwt.dto';
-import { Provider } from './enums/provider.enum';
+import { AccessTokenDto, JwtPayloadDto } from './dto/jwt.dto'
 
 @Injectable()
 export class AuthService {
@@ -59,7 +58,8 @@ export class AuthService {
     async createLoginPayload(user: User): Promise<AccessTokenDto> {
         const payload = {
             username: user.username,
-            sub: user._id
+            sub: user._id,
+            role: user.role
         }
 
         return {

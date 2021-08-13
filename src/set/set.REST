@@ -3,10 +3,48 @@ POST http://localhost:3000/api/set
 Content-Type: application/json
 
 {
-    "setName": "Haha2",
+    "creator": "6112ba6ea4a2b02db05c423a",
     "description": "wow this is a set as well",
-    "creator": "you"
+    "taskList": ["6116ac812a8b143164f7f007"],
+    "language": "de",
+    "name": "super cool set"
 }
 
 ### Get all sets
 GET http://localhost:3000/api/set
+
+### Get one set
+
+GET http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf
+
+### Update set task list
+POST http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf/add
+Content-Type: application/json
+
+{
+    "tasks": ["6116ac812a8b143164f7f007", "6116ac822a8b143164f7f009","6116b31c96042b074c0d9b11", "6116b31c96042b074c0d9b13","6113cee6f951fe3e4059c5da"]
+}
+
+### Get Tasks in Set
+GET http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf/tasks
+
+### Get Tasks in Set paginated
+GET http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf/tasks?page=0
+
+### Get Set metadata
+GET http://localhost:3000/api/set/6116ac912a8b143164f7f00b/meta
+ 
+### Update set metadata
+PATCH  http://localhost:3000/api/set/6116ac912a8b143164f7f00b/meta
+Content-Type: application/json
+
+{
+    "name": "better name",
+    "description": "gang gang"
+}
+
+### Soft Delete Set by Id
+DELETE http://localhost:3000/api/set/611520190a92523f38489c02
+
+### Hard Delete Set by Id (require admin role)
+DELETE http://localhost:3000/api/set/611659725b415a2d2072bc92?type=hard

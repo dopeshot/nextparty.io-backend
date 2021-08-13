@@ -5,6 +5,7 @@ import { LocalAuthGuard } from './strategies/local/local-auth.guard';
 import { User } from 'src/user/entities/user.entity';
 import { GoogleAuthGuard } from './strategies/google/google-auth.guard';
 import { FacebookAuthGuard } from './strategies/facebook/facebook-auth.guard';
+import { JwtAuthGuard } from './strategies/jwt/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {

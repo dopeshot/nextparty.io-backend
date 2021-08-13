@@ -1,7 +1,10 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode} from '@nestjs/common';
 import { SetService } from './set.service';
 import { CreateSetDto } from './dto/create-set.dto';
-import { UpdateSetDto } from './dto/update-set.dto';
+import { UpdateSetTasksDto } from './dto/update-set-tasks.dto';
+import {UpdateSetDto} from './dto/update-set-metadata.dto'
+import { IdTaskDto } from 'src/task/dto/id-task.dto';
+import { ObjectId } from 'mongoose';
 
 @Controller('set')
 export class SetController {
@@ -18,17 +21,39 @@ export class SetController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.setService.findOne(+id);
+  findOne(@Param('id') id: ObjectId) {
+    return this.setService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSetDto: UpdateSetDto) {
-    return this.setService.update(+id, updateSetDto);
-  }
-
+  @HttpCode(204)
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.setService.remove(+id);
+  remove(@Param('id') id: ObjectId, @Query('type') type: string) {
+    this.setService.remove(id, type);
   }
+
+  @Get(':id/tasks')
+  getSetTasks(@Param('id') id:  ObjectId,  @Query('page') page: number) {
+    return this.setService.getTasks(id, page);
+  }
+
+  @Patch(':id/meta')
+  updateMeta(@Param('id') id: ObjectId, @Body() updateSetDto: UpdateSetDto) {
+    return this.setService.updateMetadata(id, updateSetDto);
+  }
+
+  @Get(':id/meta')
+  getMeta(@Param('id') id: ObjectId, @Body() updateSetDto: UpdateSetDto) {
+    return this.setService.getMetadata(id);
+  }
+
+  @Post(':id/add')
+  addTask(@Param('id') id: ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto) {
+    return this.setService.alterTasks(id, "add", updateSetTasksDto);
+  }
+  
+  @Post(':id/remove')
+  removeTask(@Param('id') id:  ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto) {
+    return this.setService.alterTasks(id, "remove", updateSetTasksDto);
+  }
+
 }

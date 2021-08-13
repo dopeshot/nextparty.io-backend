@@ -4,13 +4,17 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ObjectId } from 'mongoose';
 import { User } from './entities/user.entity';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
+import { Roles } from '../auth/roles/roles.decorator';
+import { Role } from './enums/role.enum';
+import { RolesGuard } from '../auth/roles/roles.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
   async findAll(): Promise<any> {
     return await this.userService.findAll();
   }
