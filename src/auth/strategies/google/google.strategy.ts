@@ -28,10 +28,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     async validate(access_token: string, refreshToken: string, profile: any, done: VerifyCallback): Promise<any> {
         const user = profile
 
-        const checkUser = await this.userService.findOneByEmail(user.emails[0].value)
-        if (checkUser)
-            throw new InternalServerErrorException("User already has an Account")
-
         // Set @Request req user
         done(null, user)
     }
