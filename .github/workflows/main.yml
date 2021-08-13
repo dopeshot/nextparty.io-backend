@@ -18,8 +18,8 @@ jobs:
         run: npm i  
         
     # run unit tests    
-      - name: unit tests
-        run: npm run test:e2e
+    #  - name: unit tests
+    #    run: npm run test:e2e
         
     # build     
       - name: build
