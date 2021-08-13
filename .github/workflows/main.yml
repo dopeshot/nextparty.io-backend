@@ -19,7 +19,7 @@ jobs:
         
     # run unit tests    
       - name: unit tests
-        run: npm run test:e2e
+        run: npm run test
         
     # build     
       - name: build
