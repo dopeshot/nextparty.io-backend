@@ -20,17 +20,15 @@ export class TaskController {
     return this.taskService.findAll();
   }
 
-  @Get('topten')
-  findTop10Tasks() {
-    return this.taskService.findTop10Tasks();
-  }
+  // @Get('topten')
+  // findTop10Tasks() {
+  //   return this.taskService.findTop10Tasks();
+  // }
   
   @Get(':id')
   findOne(@Param('id') id: ObjectId) {
     return this.taskService.findOne(id);
   }
-
-  
 
   @Patch(':id/:vote')
   vote(@Param(ValidationPipe) taskVoteDto: TaskVoteDto,) {

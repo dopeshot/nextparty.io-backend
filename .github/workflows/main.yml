@@ -12,12 +12,20 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-    # merged...this should be changed if unit tests are implemented
-      - name: cache and build
-        run: |
-          npm i
-          npm run build
-      # save build as artifact
+        
+    # install/cache npm dependencies
+      - name: cache packages
+        run: npm i  
+        
+    # run unit tests    
+    #  - name: unit tests
+    #    run: npm run test:e2e
+        
+    # build     
+      - name: build
+        run: npm run build
+        
+    # save build as artifact
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
         with:
