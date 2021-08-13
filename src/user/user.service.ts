@@ -96,7 +96,7 @@ export class UserService {
    * @returns User
    */
   async findOneByEmail(email: string): Promise<User | null > {
-    let user = await this.userSchema.findOne({ email })
+    let user = await this.userSchema.findOne({ email }).lean()
 
     if (!user)
       return null

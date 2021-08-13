@@ -20,7 +20,8 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         // If needed, here could be some bussiness logic (like a database lookup) if we need more information about the user
         return {
             userId: payload.sub,
-            username: payload.username
+            username: payload.username,
+            role: payload.role
         }
     }
 }

@@ -58,7 +58,8 @@ export class AuthService {
     async createLoginPayload(user: User): Promise<AccessTokenDto> {
         const payload = {
             username: user.username,
-            sub: user._id
+            sub: user._id,
+            role: user.role
         }
 
         return {
