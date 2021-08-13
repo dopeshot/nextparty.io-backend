@@ -4,6 +4,7 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { ObjectId } from 'mongoose';
 import { IdTaskDto } from './dto/id-task.dto';
+import { TaskVoteDto } from './dto/task-vote-dto';
 
 @Controller('task')
 export class TaskController {
@@ -32,8 +33,8 @@ export class TaskController {
   
 
   @Patch(':id/:vote')
-  vote(@Param(ValidationPipe) { id }: IdTaskDto, @Param('vote') vote: string) {
-    return this.taskService.vote(id, vote);
+  vote(@Param(ValidationPipe) taskVoteDto: TaskVoteDto,) {
+    return this.taskService.vote(taskVoteDto.id, taskVoteDto.vote);
   }
 
   @Patch(':id')
