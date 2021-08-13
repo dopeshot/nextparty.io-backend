@@ -7,9 +7,9 @@ import { UserService } from "../../../user/user.service";
 export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
     constructor(private readonly userService: UserService) {
         super({
-            clientID: '875779982390075402',
-            clientSecret: 'nHZS2G3QwWJR3OYF9W5W51V4utS-U1cQ',
-            callbackURL: 'http://localhost:3000/api/auth/discord/redirect',
+            clientID: process.env.DISCORD_CLIENT_ID,
+            clientSecret: process.env.DISCORD_CLIENT_SECRET,
+            callbackURL: process.env.DISCORD_CALLBACK_URL,
             scope: ['identify', 'email']
         })
     }
