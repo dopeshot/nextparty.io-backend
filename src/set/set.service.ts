@@ -36,12 +36,11 @@ export class SetService {
       if (mode==="add"){
         //Check if element is not already in array
         if (set.taskList.indexOf(task) == -1){
-          console.log("adding")
-          set.taskList.push(id)
+          set.taskList.push(task)
         } 
       }else{
         //Check if element exists and therefore can be deleted
-        const index = set.taskList.indexOf(id)
+        const index = set.taskList.indexOf(task)
         if ( index != -1){
           set.taskList.splice(index, 1)
         }
