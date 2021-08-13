@@ -6,6 +6,7 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto'
 import * as bcrypt from 'bcrypt'
 import { AccessTokenDto, JwtPayloadDto } from './dto/jwt.dto'
+import { DiscordUser } from './strategies/discord/discord-user.interface';
 
 @Injectable()
 export class AuthService {
@@ -108,5 +109,18 @@ export class AuthService {
         const newUser = await this.userService.createWithoutPassword(user)
         // Create Jwt
         return this.createLoginPayload(newUser)
+    }
+
+    async discordLogin(req): Promise<any> {
+        if(!req.user)
+            throw new InternalServerErrorException('Request does not have a user. Please contact the administrator')
+        
+        const user: DiscordUser = req.user
+        const discordUser = await this.userService.findOneByEmail(user.email)
+
+        if(discordUser)
+            return this.createLoginPayload(discordUser)
+
+        // New user should be here
     }
 }

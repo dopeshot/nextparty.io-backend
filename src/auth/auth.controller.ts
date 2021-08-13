@@ -5,6 +5,7 @@ import { LocalAuthGuard } from './strategies/local/local-auth.guard';
 import { User } from 'src/user/entities/user.entity';
 import { GoogleAuthGuard } from './strategies/google/google-auth.guard';
 import { FacebookAuthGuard } from './strategies/facebook/facebook-auth.guard';
+import { DiscordAuthGuard } from './strategies/discord/discord-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -45,5 +46,20 @@ export class AuthController {
     @HttpCode(200)
     async facebookLoginRedirect(@Request() req): Promise<any> {
       return this.authService.facebookLogin(req)
+    }
+
+
+    @Get('/discord')
+    @UseGuards(DiscordAuthGuard)
+    @HttpCode(200)
+    async discordLogin(@Request() req): Promise<any> {
+      // initiates the Discord OAuth2 login flow
+    }
+
+    @Get('/discord/redirect')
+    @UseGuards(DiscordAuthGuard)
+    @HttpCode(200)
+    async discordLoginRedirect(@Request() req): Promise<any> {
+      return this.authService.discordLogin(req)
     }
 }

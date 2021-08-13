@@ -22,3 +22,6 @@ GET http://localhost:3000/api/auth/google
 
 ### Facebook Auth
 GET http://localhost:3000/api/auth/facebook
+
+### Discord Auth
+GET http://localhost:3000/api/auth/discord

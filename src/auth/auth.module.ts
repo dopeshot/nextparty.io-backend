@@ -9,10 +9,11 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './strategies/jwt/jwt.strategy';
 import { GoogleStrategy } from './strategies/google/google.strategy';
 import { FacebookStrategy } from './strategies/facebook/facebook.strategy';
+import { DiscordStrategy } from './strategies/discord/discord.strategy';
 
 @Module({
   controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy, FacebookStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy, FacebookStrategy, DiscordStrategy],
   imports: [UserModule, PassportModule, JwtModule.registerAsync({
     imports: [ConfigModule],
     useFactory: (configService: ConfigService) => ({
