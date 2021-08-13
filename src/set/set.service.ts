@@ -35,7 +35,8 @@ export class SetService {
     for(let task of Tasks.tasks){
       if (mode==="add"){
         //Check if element is not already in array
-        if (set.taskList.indexOf(id) == -1){
+        if (set.taskList.indexOf(task) == -1){
+          console.log("adding")
           set.taskList.push(id)
         } 
       }else{
@@ -105,18 +106,35 @@ export class SetService {
       throw new NotFoundException()
   }
 
-  async getTasks(id: ObjectId){
+  async getTasks(id: ObjectId, page: number){
+
+    const isPaged = page? true: false
+
     const set = await this.setSchema.findById(id)
 
-    if (!set)
+    if (!set){
       throw new NotFoundException()
-   
+    }
+        
     let taskList: TaskDocument[] = []
 
-    for (const taskId of set.taskList){
+    let list = set.taskList
+
+    if (isPaged){
+      if (list.length > +process.env.SET_PAGE_LENGTH * (page)){
+        list = list.slice(+process.env.SET_PAGE_LENGTH * (page))
+      }
+    }
+
+    for (const taskId of list){    
       let task = await this.taskSchema.findById(taskId)
       if (task){
         taskList.push(task)
+      }
+
+      if (isPaged && taskList.length === +process.env.SET_PAGE_LENGTH){
+        console.log(taskList)
+        break
       }
       
     }

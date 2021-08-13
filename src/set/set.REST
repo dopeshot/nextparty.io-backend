@@ -15,18 +15,21 @@ GET http://localhost:3000/api/set
 
 ### Get one set
 
-GET http://localhost:3000/api/set/6116ac912a8b143164f7f00b
+GET http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf
 
 ### Update set task list
-POST http://localhost:3000/api/set/611655486b75b93ec02ca557/add
+POST http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf/add
 Content-Type: application/json
 
 {
-    "tasks": ["6115984b28079c2b507d42e5"]
+    "tasks": ["6116ac812a8b143164f7f007", "6116ac822a8b143164f7f009","6116b31c96042b074c0d9b11", "6116b31c96042b074c0d9b13","6113cee6f951fe3e4059c5da"]
 }
 
 ### Get Tasks in Set
-GET http://localhost:3000/api/set/6116ac912a8b143164f7f00b/tasks
+GET http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf/tasks
+
+### Get Tasks in Set paginated
+GET http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf/tasks?page=0
 
 ### Get Set metadata
 GET http://localhost:3000/api/set/6116ac912a8b143164f7f00b/meta

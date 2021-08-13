@@ -32,8 +32,8 @@ export class SetController {
   }
 
   @Get(':id/tasks')
-  getSetTasks(@Param('id') id:  ObjectId) {
-    return this.setService.getTasks(id);
+  getSetTasks(@Param('id') id:  ObjectId,  @Query('page') page: number) {
+    return this.setService.getTasks(id, page);
   }
 
   @Patch(':id/meta')
