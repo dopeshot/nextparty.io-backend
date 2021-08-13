@@ -1,3 +1,5 @@
 export enum Status {
-    Active = "active"
+    Active = "active",
+    Reported = "reported",
+    Banned = "banned"
 }

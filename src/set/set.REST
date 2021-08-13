@@ -1,0 +1,12 @@
+###Create Set
+POST http://localhost:3000/api/set
+Content-Type: application/json
+
+{
+    "setName": "Haha2",
+    "description": "wow this is a set as well",
+    "creator": "you"
+}
+
+### Get all sets
+GET http://localhost:3000/api/set
