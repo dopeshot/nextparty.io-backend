@@ -33,6 +33,18 @@ describe('AppController (e2e)', () => {
       token = res.body.access_token
       return res
     })
+    
+    it('/auth/register (POST) duplicate', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/auth/register')
+        .send({
+          username: "Zoe",
+          email: "zoe@gmail.com",
+          password: "12345678"
+        })
+        .expect(409)
+      return res
+    })
 
     it('/auth/login (POST)', async () => {
       return request(app.getHttpServer())
@@ -42,6 +54,16 @@ describe('AppController (e2e)', () => {
           password: "12345678"
         })
         .expect(201)
+    })
+
+    it('/auth/login (POST) Wrong Password', async () => {
+      return request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send({
+          email: "zoe@gmail.com",
+          password: "123"
+        })
+        .expect(401)
     })
 
     it('/user/profile (GET)', async () => {

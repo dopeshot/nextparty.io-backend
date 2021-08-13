@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User, UserDocument } from 'src/user/entities/user.entity';
 import { UserService } from '../user/user.service'
@@ -38,10 +38,13 @@ export class AuthService {
      */
     async validateUserWithEmailPassword(email: string, password: string): Promise<any> {
         const user = await this.userService.findOneByEmail(email)
-        if (user.provider)
-            throw new InternalServerErrorException("Google User can't login with Username and Password")
+        if (!user)
+            throw new BadRequestException(`There is no user with the email: ${email}`)
 
-        if (user && await bcrypt.compare(password, user.password)) {
+        if (user.provider)
+            throw new UnauthorizedException(`User can't login with Username and Password, already has account on ${user.provider}`)
+        
+        if (await bcrypt.compare(password, user.password)) {
             const { password, ...result } = user
             return result
         }
