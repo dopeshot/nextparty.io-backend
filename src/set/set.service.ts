@@ -132,8 +132,8 @@ export class SetService {
         taskList.push(task)
       }
 
+      // break if page length is reached
       if (isPaged && taskList.length === +process.env.SET_PAGE_LENGTH){
-        console.log(taskList)
         break
       }
       
