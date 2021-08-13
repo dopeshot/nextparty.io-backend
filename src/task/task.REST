@@ -54,6 +54,9 @@ GET http://localhost:3000/api/task
 ### Get one Task
 GET http://localhost:3000/api/task/6114edf7b4bd8303888ec67d
 
+### Get top 10 Task
+GET http://localhost:3000/api/task/topten
+
 ### Soft Delete Task by Id
 DELETE http://localhost:3000/api/task/6114edf7b4bd8303888ec67d
 

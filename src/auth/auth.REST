@@ -3,8 +3,8 @@ POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-    "username": "Zoe",
-    "email": "zoe@gmail.com",
+    "username": "Haha",
+    "email": "hehe@web.de",
     "password": "12345678"
 }
 
@@ -13,6 +13,12 @@ POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-    "username": "Zoe",
+    "email": "joy-js@web.de",
     "password": "12345678"
 }
+
+### Google Auth
+GET http://localhost:3000/api/auth/google
+
+### Facebook Auth
+GET http://localhost:3000/api/auth/facebook

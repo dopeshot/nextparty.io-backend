@@ -1,11 +1,13 @@
 ### Get current User
 GET http://localhost:3000/api/user/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlpvZSIsInN1YiI6IjYxMTNiZDRjODdjYzg1MDVkODg5NjU2YSIsImlhdCI6MTYyODY4MzYwMiwiZXhwIjoxNjI4NzE5NjAyfQ.v2OOnKQH8t5nMFnzOrAjLx38MWungKx_JUwfTYTGO4E
-### Get all User
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExNmFmMDhkYWIwNjEzNTc0MzVlMGU5Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjI4ODc2NzgwLCJleHAiOjE2Mjg5MTI3ODB9.PCzWu_EDhEqAoP4T95RfQZWbudImpUWlS0wYZ7SHSlo
+
+### Get all User (Protected Route for Testing Reasons, access only with admin role)
 GET http://localhost:3000/api/user
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExNmFmMDhkYWIwNjEzNTc0MzVlMGU5Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjI4ODc2NzgwLCJleHAiOjE2Mjg5MTI3ODB9.PCzWu_EDhEqAoP4T95RfQZWbudImpUWlS0wYZ7SHSlo
 
 ### Patch user by id 
-PATCH http://localhost:3000/api/user/6112decedf446d7fe06f64ef
+PATCH http://localhost:3000/api/user/6116b5a5c5eae23f344d2d23
 Content-Type: application/json
 
 {
@@ -15,4 +17,4 @@ Content-Type: application/json
 }
 
 ### Delete User
-DELETE http://localhost:3000/api/user/6112ccf23ee20f3f705a3fed
+DELETE http://localhost:3000/api/user/61152d6fb3dac55cbcd081f2

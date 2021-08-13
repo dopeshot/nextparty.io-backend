@@ -8,6 +8,7 @@ import { TaskStatus } from './enums/taskstatus.enum';
 
 @Injectable()
 export class TaskService {
+  // Constructor
   constructor(@InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
   
   // Creates a new Task and checks if the message content accounts for extra user interaction
@@ -40,6 +41,27 @@ export class TaskService {
     return task;
   }
 
+  async findTop10Tasks(): Promise<TaskDocument[]> {
+    const topTasks = await this.taskSchema.aggregate([
+      {
+        '$addFields': {
+          'difference': {
+            '$subtract': [
+              '$likes', '$dislikes'
+            ]
+          }
+        }
+      }, {
+        '$sort': {
+          'difference': -1
+        }
+      }, {
+        '$limit': 10
+      }
+    ])
+    return topTasks
+  }
+
   // Updates the content language and type of a Task
   async update(id: ObjectId, updateTaskDto: UpdateTaskDto): Promise<TaskDocument> {
 
@@ -65,16 +87,20 @@ export class TaskService {
   async vote(id: ObjectId, vote: string): Promise<TaskDocument> {
     // Find Object
     let task = await this.taskSchema.findById(id)
-    console.log(task)
-    if (!task) { throw new NotFoundException() }
+
+    if(!task) 
+      throw new NotFoundException()
 
     // Query check
-    const isUpvote = vote ? vote.includes('upvote') : false
-    const isDownvote = vote ? vote.includes('downvote') : false
+    const isUpvote = vote && vote === 'upvote'
+    const isDownvote = vote && vote === 'downvote'
 
     // Handle vote
-    if (isUpvote) { task.likes += 1 }
-    if (isDownvote) { task.dislikes += 1 }
+    if (isUpvote)
+      task.likes += 1
+      
+    if (isDownvote)
+      task.dislikes += 1
 
     return await task.save()
   }
