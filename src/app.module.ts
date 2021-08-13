@@ -17,7 +17,7 @@ import { MailModule } from './mail/mail.module';
   imports: [
     //this has to be done to ensure that env variables work
     ConfigModule.forRoot({
-      envFilePath: ['.development.env', '.env']
+      envFilePath: ['.env', '.development.env']
     }),
     MongooseModule.forRootAsync({
       imports: [ConfigModule],

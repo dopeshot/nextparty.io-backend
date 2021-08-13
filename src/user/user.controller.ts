@@ -3,19 +3,20 @@ import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ObjectId } from 'mongoose';
 import { User } from './entities/user.entity';
-import { JwtAuthGuard } from 'src/auth/strategies/jwt/jwt-auth.guard';
+import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async findAll(): Promise<any> {
     return await this.userService.findAll();
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('/profile')
+  @UseGuards(JwtAuthGuard)
   getProfile(@Request() req): Promise<any> {
     return req.user
   }
