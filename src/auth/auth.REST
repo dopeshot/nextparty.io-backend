@@ -3,7 +3,7 @@ POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-    "username": "Haha",
+    "username": "Hello",
     "email": "joy-js@web.de",
     "password": "12345678"
 }
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
     "email": "joy-js@web.de",
-    "password": "123"
+    "password": "12345678"
 }
 
 ### Google Auth
