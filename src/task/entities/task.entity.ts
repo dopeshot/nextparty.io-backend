@@ -4,10 +4,10 @@ import { User } from "src/user/entities/user.entity"
 import { Language } from "../enums/language.enum"
 import { TaskType } from "../enums/tasktype.enum"
 import { TaskStatus } from "../enums/taskstatus.enum"
-import { Document, ObjectId, SchemaTypes} from "mongoose"
+import { Document, ObjectId, SchemaTypes } from "mongoose"
 import { CurrentPlayerGender } from "../enums/currentplayergender.enum"
 
-@Schema({_id: false})
+@Schema({ _id: false })
 export class TaskContent {
     @Prop({ default: CurrentPlayerGender.ANYONE })
     currentPlayerGender: CurrentPlayerGender
@@ -35,7 +35,7 @@ export class Task {
     @Prop({ required: true })
     type: TaskType
 
-    @Prop({ type: TaskContentSchema, required: true})
+    @Prop({ type: TaskContentSchema, required: true })
     content: TaskContent
 
     @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
