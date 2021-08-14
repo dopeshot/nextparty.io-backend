@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode } from '@nestjs/common';
 import { ObjectId } from 'mongoose';
 import { IdTaskDto } from 'src/task/dto/id-task.dto';
 import { CategoryService } from './category.service';
@@ -20,6 +20,11 @@ export class CategoryController {
     return this.categoryService.findAll();
   }
 
+  @Get(':id/topten')
+  findTopTen(@Param(ValidationPipe) { id }: IdTaskDto) {
+    return this.categoryService.findTopTen(id);
+  }
+
   @Get(':id')
   findOne(@Param(ValidationPipe) { id }: IdTaskDto) {
     return this.categoryService.findOne(id);
@@ -31,10 +36,11 @@ export class CategoryController {
   }
 
   @Patch(':id')
-  update(@Param(ValidationPipe) { id }: IdTaskDto, @Body() updateCategoryDto: UpdateCategoryDto) {
+  update(@Param(ValidationPipe) { id }: IdTaskDto, @Body(new ValidationPipe({ whitelist: true })) updateCategoryDto: UpdateCategoryDto) {
     return this.categoryService.updateMetadata(id, updateCategoryDto);
   }
 
+  @HttpCode(204)
   @Delete(':id')
   remove(@Param(ValidationPipe) { id }: IdTaskDto) {
     return this.categoryService.remove(id);

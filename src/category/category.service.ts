@@ -32,13 +32,13 @@ export class CategoryService {
 
     // Add Set
     if (option == "addset") {
-      result = await this.categorySchema.findByIdAndUpdate(filter, { $addToSet: { set: setId } }, { returnOriginal: false}).lean()
+      result = await this.categorySchema.findByIdAndUpdate(filter, { $addToSet: { set: setId } }, { returnOriginal: false }).lean()
       if (!result) { throw new NotFoundException() }
     }
 
     // Delete Set
     else if (option == "removeset") {
-      result = await this.categorySchema.findByIdAndUpdate(filter, { $pull: { set: setId } }, { returnOriginal: false}).lean()
+      result = await this.categorySchema.findByIdAndUpdate(filter, { $pull: { set: setId } }, { returnOriginal: false }).lean()
       if (!result) { throw new NotFoundException() }
     }
 
@@ -50,24 +50,8 @@ export class CategoryService {
 
   async updateMetadata(id: ObjectId, updateCategoryDto: UpdateCategoryDto) {
     const filter = { _id: id }
-    let result;
-    if (updateCategoryDto.language && updateCategoryDto.name) {
-      result = await this.categorySchema.findByIdAndUpdate
-        (filter, { $set: { language: updateCategoryDto.language, name: updateCategoryDto.name } },
-          { returnOriginal: false }).lean()
-    }
-    else if (updateCategoryDto.language) {
-      result = await this.categorySchema.findByIdAndUpdate
-        (filter, { $set: { language: updateCategoryDto.language } },
-          { returnOriginal: false }).lean()
-    }
-    else if (updateCategoryDto.name) {
-      result = await this.categorySchema.findByIdAndUpdate
-        (filter, { $set: { name: updateCategoryDto.name } },
-          { returnOriginal: false }).lean()
-    }
-    console.log(result)
-    console.log(updateCategoryDto)
+    const result = await this.categorySchema.findByIdAndUpdate
+      (filter, updateCategoryDto, { returnOriginal: false }).lean()
     if (!result) { throw new NotFoundException }
 
     return result;
@@ -77,7 +61,12 @@ export class CategoryService {
     return await this.categorySchema.find()
   }
 
-  async findOne(id: ObjectId) {
+  async findTopTen(id: ObjectId): Promise<SetDocument[]> {
+    
+    return
+  }
+
+  async findOne(id: ObjectId): Promise<CategoryDocument> {
     let category = await this.categorySchema.findById(id).lean()
     if (!category)
       throw new NotFoundException()
@@ -85,9 +74,10 @@ export class CategoryService {
     return category;
   }
 
-
-
-  remove(id: ObjectId) {
-    return `This action removes a #${id} category`;
+  async remove(id: ObjectId): Promise<void> {
+    const result = await this.categorySchema.findByIdAndDelete(id)
+    if (!result) { throw NotFoundException }
+    
+    return;
   }
 }

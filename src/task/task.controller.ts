@@ -36,7 +36,7 @@ export class TaskController {
   }
 
   @Patch(':id')
-  update(@Param(ValidationPipe) { id }: IdTaskDto, @Body() updateTaskDto: UpdateTaskDto) {
+  update(@Param(ValidationPipe) { id }: IdTaskDto, @Body(new ValidationPipe({whitelist: true})) updateTaskDto: UpdateTaskDto) {
     return this.taskService.update(id, updateTaskDto);
   }
 

@@ -24,16 +24,20 @@ Content-Type: application/json
 ### Add Set to Category
 PATCH http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/6116846b13b64460047a8413?option=addset
 
-### Remove Set from Category
+### Remove Set from Categorya
 PATCH http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/6116846b13b64460047a8413?option=removeset
 
-### Update Category Metadata
+### Update Category Metadata ---- set author and xx are supposed to be ignored!
 PATCH http://localhost:3000/api/category/6116c92520c4bf5834f0fef2
 Content-Type: application/json
 
 {
     "language": "en",
-    "name": "Big PP gayming"
+    "name": "Big PP gayming",
+    "author": "6113cee6f951fe3e4059c5db",
+    "set": ["6116846b13b64460047a8413","6116846b13b64460047a8412"],
+    "xx": "xxx"
+    
 }
 
 ### Get all Categories
@@ -42,11 +46,11 @@ GET http://localhost:3000/api/category
 ### Get one Category
 GET http://localhost:3000/api/category/6116b7142de49944c4becb88
 
-# ### Get top 10 Sets in this Category TODO!!!!
-# GET http://localhost:3000/api/category
+# ### Get top 10 Sets in this Category
+# GET http://localhost:3000/api/category/
 
-### Soft Delete Category by Id TODO!!!!
-DELETE http://localhost:3000/api/category
+### Soft Delete Category by Id
+#DELETE http://localhost:3000/api/category
 
 ### Hard Delete Category by Id (require admin role)
-DELETE http://localhost:3000/api/category
+DELETE http://localhost:3000/api/category/61178b822b1bb82310784141
