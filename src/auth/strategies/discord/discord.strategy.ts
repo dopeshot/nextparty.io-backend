@@ -2,7 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { doesNotMatch } from "assert";
 import { Strategy } from 'passport-discord'
+import { userDataFromProvider } from "src/user/interfaces/userDataFromProvider.interface";
 import { UserService } from "../../../user/user.service";
+import { DiscordUser } from "./discord-user.interface";
 @Injectable()
 export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
     constructor(private readonly userService: UserService) {
@@ -14,8 +16,18 @@ export class DiscordStrategy extends PassportStrategy(Strategy, 'discord') {
         })
     }
 
-    async validate(accessToken: string, refreshToken: string, profile: any, done: (err: any, user: any, info?: any) => void) {
-        const user = profile
-        done(null, user)
+    async validate(accessToken: string, refreshToken: string, profile: DiscordUser, done: (err: any, user: any, info?: any) => void) {
+        const {
+            username,
+            email,
+            provider
+        } = profile
+
+        const userDataFromProvider: userDataFromProvider = {
+            username,
+            email,
+            provider
+        }
+        done(null, userDataFromProvider)
     }
 }

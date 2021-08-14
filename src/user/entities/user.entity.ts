@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
-import { ObjectId } from "mongoose"
+import { Document, ObjectId } from "mongoose"
 import { Role } from "../enums/role.enum"
 import { Status } from "../enums/status.enum"
 

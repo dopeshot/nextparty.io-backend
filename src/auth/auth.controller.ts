@@ -31,7 +31,7 @@ export class AuthController {
     @Get('/google/redirect')
     @UseGuards(GoogleAuthGuard)
     googleLoginRedirect(@Request() req): Promise<any> {
-      return this.authService.googleLogin(req)
+      return this.authService.handleProviderLogin(req.user)
     }
 
     @Get('/facebook')
@@ -45,7 +45,7 @@ export class AuthController {
     @UseGuards(FacebookAuthGuard)
     @HttpCode(200)
     async facebookLoginRedirect(@Request() req): Promise<any> {
-      return this.authService.facebookLogin(req)
+      return this.authService.handleProviderLogin(req.user)
     }
 
 
@@ -60,6 +60,6 @@ export class AuthController {
     @UseGuards(DiscordAuthGuard)
     @HttpCode(200)
     async discordLoginRedirect(@Request() req): Promise<any> {
-      return this.authService.discordLogin(req)
+      return this.authService.handleProviderLogin(req.user)
     }
 }

@@ -5,6 +5,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
 import * as bcyrpt from 'bcrypt'
+import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
 
 @Injectable()
 export class UserService {
@@ -35,22 +36,18 @@ export class UserService {
   }
 
   /**
-   * Create new User for auth without username and password
+   * Create new User for auth without password
    * @param credentials user data
    * @returns user
    */
-  async createWithoutPassword(credentials: any): Promise<any> {
+  async createUserFromProvider(userDataFromProvider: userDataFromProvider): Promise<User> {
     try {
-      const user = new this.userSchema({
-        username: credentials.displayName,
-        email: credentials.emails[0].value,
-        provider: credentials.provider
-      })
+      const user: UserDocument = new this.userSchema(userDataFromProvider)
       const result = await user.save()
 
       return result
     } catch (error) {
-      throw new InternalServerErrorException(error)
+      throw new InternalServerErrorException('Error occured while saving user from provider.')
     }
   }
 
