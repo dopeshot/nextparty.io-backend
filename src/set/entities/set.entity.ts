@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory} from "@nestjs/mongoose"
 import { Status } from '../enums/status.enum'
-import { Types } from 'mongoose';
+import { Document, Types } from 'mongoose';
 
 @Schema({ timestamps: true })
 export class Set {

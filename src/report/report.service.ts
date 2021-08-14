@@ -2,7 +2,7 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { CreateReportDto } from './dto/create-report.dto';
-import { ReportDocument } from './entities/report.entity';
+import { Report, ReportDocument } from './entities/report.entity';
 
 @Injectable()
 export class ReportService {
@@ -22,11 +22,11 @@ export class ReportService {
         }
     }
 
-    async findAll(): Promise<ReportDocument[]> {
+    async findAll(): Promise<Report[]> {
         return await this.reportSchema.find()
     }
 
-    async findOne(id: ObjectId): Promise<ReportDocument> {
+    async findOne(id: ObjectId): Promise<Report> {
         let report = await this.reportSchema.findById(id).lean()
         if (!report)
             throw new NotFoundException()

@@ -33,7 +33,7 @@ export class TaskService {
   }
 
   // Returns the Task with matching id
-  async findOne(id: ObjectId): Promise<TaskDocument> {
+  async findOne(id: ObjectId): Promise<Task> {
     let task = await this.taskSchema.findById(id).lean()
     if (!task)
       throw new NotFoundException()

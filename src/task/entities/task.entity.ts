@@ -4,7 +4,7 @@ import { User } from "src/user/entities/user.entity"
 import { Language } from "../enums/language.enum"
 import { TaskType } from "../enums/tasktype.enum"
 import { TaskStatus } from "../enums/taskstatus.enum"
-import { ObjectId, SchemaTypes} from "mongoose"
+import { Document, ObjectId, SchemaTypes} from "mongoose"
 import { CurrentPlayerGender } from "../enums/currentplayergender.enum"
 
 @Schema({_id: false})
