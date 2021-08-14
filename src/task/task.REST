@@ -9,7 +9,7 @@ Content-Type: application/json
     "content": 
     {
         "currentPlayerGender": "@ca",
-        "message": "Grow a fullbeard!"
+        "message": "SGHGHSghhstdshhshsSD"
     }
 }
 

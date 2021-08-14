@@ -11,7 +11,7 @@ import { Task, TaskContent, TaskDocument, TaskSchema, TaskContentSchema } from '
 @Injectable()
 export class SetService {
   constructor(@InjectModel('Set') private setSchema: Model<SetDocument>,
-  @InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
+    @InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
 
   async create(metaData: CreateSetDto): Promise<SetDocument> {
     try {
@@ -27,21 +27,21 @@ export class SetService {
     }
   }
 
-  async alterTasks(id: ObjectId, mode: string, Tasks: UpdateSetTasksDto){
+  async alterTasks(id: ObjectId, mode: string, Tasks: UpdateSetTasksDto) {
     let set = await this.setSchema.findById(id)
-    
+
     if (!set) { throw new NotFoundException() }
 
-    for(let task of Tasks.tasks){
-      if (mode==="add"){
+    for (let task of Tasks.tasks) {
+      if (mode === "add") {
         //Check if element is not already in array
-        if (set.taskList.indexOf(task) == -1){
+        if (set.taskList.indexOf(task) == -1) {
           set.taskList.push(task)
-        } 
-      }else{
+        }
+      } else {
         //Check if element exists and therefore can be deleted
         const index = set.taskList.indexOf(task)
-        if ( index != -1){
+        if (index != -1) {
           set.taskList.splice(index, 1)
         }
       }
@@ -64,20 +64,20 @@ export class SetService {
 
   async updateMetadata(id: ObjectId, updateSetDto: UpdateSetDto) {
 
-      // Find Object
-      let set = await this.setSchema.findById(id)
-      
-      if (!set) { throw new NotFoundException() }
-  
-      
-      try {
-        if (updateSetDto.hasOwnProperty("description")) { set.description = updateSetDto.description}
-        if (updateSetDto.hasOwnProperty("name")) { set.name = updateSetDto.name }
+    // Find Object
+    let set = await this.setSchema.findById(id)
 
-      } catch (error) {throw new UnprocessableEntityException }
-      const result = await set.save()
-  
-      return result;
+    if (!set) { throw new NotFoundException() }
+
+
+    try {
+      if (updateSetDto.hasOwnProperty("description")) { set.description = updateSetDto.description }
+      if (updateSetDto.hasOwnProperty("name")) { set.name = updateSetDto.name }
+
+    } catch (error) { throw new UnprocessableEntityException }
+    const result = await set.save()
+
+    return result;
   }
 
   async remove(id: ObjectId, type: string): Promise<void> {
@@ -105,51 +105,137 @@ export class SetService {
       throw new NotFoundException()
   }
 
-  async getTasks(id: ObjectId, page: number){
+  async getTasks(id: ObjectId, page: number) {
 
-    const isPaged = page? true: false
-
+    const isPaged = page ? true : false
+    const startTime = Date.now();
     const set = await this.setSchema.findById(id)
 
-    if (!set){
+    if (!set) {
       throw new NotFoundException()
     }
-        
+
     let taskList: TaskDocument[] = []
 
     let list = set.taskList
 
-    if (isPaged){
-      if (list.length > +process.env.SET_PAGE_LENGTH * (page)){
+    if (isPaged) {
+      if (list.length > +process.env.SET_PAGE_LENGTH * (page)) {
         list = list.slice(+process.env.SET_PAGE_LENGTH * (page))
       }
     }
 
-    for (const taskId of list){    
+    for (const taskId of list) {
       let task = await this.taskSchema.findById(taskId)
-      if (task){
+      if (task) {
         taskList.push(task)
       }
 
       // break if page length is reached
-      if (isPaged && taskList.length === +process.env.SET_PAGE_LENGTH){
+      if (isPaged && taskList.length === +process.env.SET_PAGE_LENGTH) {
         break
       }
-      
-    }
 
+    }
+    console.log("Runtime in ms: ", Date.now() - startTime)
     return taskList
   }
 
-  async getMetadata(id: ObjectId){
+  async getTasks2(id: ObjectId, page: number, limit: number): Promise<TaskDocument[]> {
+    if (!page) { page = 0 }
+    if (!limit) {limit = 99999 }
+    limit = 10
+    const skip = page * limit
+    limit+= skip
+    const idd = id.toString()
+
+    const startTime = Date.now();
+    const result = await this.setSchema.aggregate([
+      { '$match': { '_id': Types.ObjectId(idd) } },
+      {
+        '$lookup': {
+          'from': 'tasks',
+          'localField': 'taskList',
+          'foreignField': '_id',
+          'pipeline': [
+            {
+              '$addFields': {
+                'difference': {
+                  '$subtract': [
+                    '$likes', '$dislikes'
+                  ]
+                }
+              }
+            }, {
+              '$sort': {
+                'difference': -1
+              }
+            }, {
+              '$limit': limit
+            }, {
+              '$skip': skip
+            }
+          ],
+          'as': 'objects'
+        }
+      }, {
+        '$project': {
+          'objects': 1
+        }
+      }
+    ])
+    console.log("Runtime in ms: ", Date.now() - startTime)
+    if (result.length == 0) { throw new NotFoundException }
+    return result
+  }
+
+  async findTopTenTasks(id: ObjectId): Promise<TaskDocument[]> {
+    const idd = id.toString()
+    const result = await this.setSchema.aggregate([
+      { '$match': { '_id': Types.ObjectId(idd) } },
+      {
+        '$lookup': {
+          'from': 'tasks',
+          'localField': 'taskList',
+          'foreignField': '_id',
+          'pipeline': [
+            {
+              '$addFields': {
+                'difference': {
+                  '$subtract': [
+                    '$likes', '$dislikes'
+                  ]
+                }
+              }
+            }, {
+              '$sort': {
+                'difference': -1
+              }
+            }, {
+              '$limit': 10
+            }
+          ],
+          'as': 'objects'
+        }
+      }, {
+        '$project': {
+          'objects': 1
+        }
+      }
+    ])
+    if (!result) { throw new NotFoundException }
+    return result
+  }
+
+  async getMetadata(id: ObjectId) {
     const set = await this.setSchema.findById(id)
 
     if (!set)
       throw new NotFoundException()
-    
+
     return {
       "description": set.description,
       "name": set.name
-    }  
+    }
   }
 }

@@ -34,8 +34,18 @@ export class SetController {
   }
 
   @Get(':id/tasks')
-  getSetTasks(@Param('id') id:  ObjectId,  @Query('page') page: number) {
+  getSetTasks(@Param('id') id:  ObjectId,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
+    return this.setService.getTasks2(id, page);
+  }
+
+  @Get(':id/tasks1')
+  getSetTasks1(@Param('id') id:  ObjectId,  @Query('page') page: number) {
     return this.setService.getTasks(id, page);
+  }
+
+  @Get(':id/tentasks')
+  getSetTopTenTasks(@Param('id') id:  ObjectId) {
+    return this.setService.findTopTenTasks(id);
   }
 
   @Patch(':id/meta')
