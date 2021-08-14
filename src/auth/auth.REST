@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
     "email": "joy-js@web.de",
-    "password": "123"
+    "password": "12345678"
 }
 
 ### Google Auth
