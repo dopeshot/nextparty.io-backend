@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { InjectModel, MongooseModule } from '@nestjs/mongoose';
 import { exception } from 'console';
-import { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 import { SetDocument, SetSchema } from 'src/set/entities/set.entity';
 import { SetService } from 'src/set/set.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -61,9 +61,78 @@ export class CategoryService {
     return await this.categorySchema.find()
   }
 
-  async findTopTen(id: ObjectId): Promise<SetDocument[]> {
-    
-    return
+  async findTopTenSets(id: ObjectId): Promise<SetDocument[]> {
+    const idd = id.toString()
+    const result = await this.categorySchema.aggregate([
+      { '$match': { '_id': Types.ObjectId(idd)  } },
+      {
+        '$lookup': {
+          'from': 'sets',
+          'localField': 'set',
+          'foreignField': '_id',
+          'pipeline': [
+            {
+              '$addFields': {
+                'difference': {
+                  '$subtract': [
+                    '$likes', '$dislikes'
+                  ]
+                }
+              }
+            }, {
+              '$sort': {
+                'difference': -1
+              }
+            }, {
+              '$limit': 10
+            }
+          ],
+          'as': 'objects'
+        }
+      }, {
+        '$project': {
+          'objects': 1
+        }
+      }
+    ])
+    if (!result) { throw new NotFoundException }
+    return result
+  }
+
+  async findAllSets(id: ObjectId): Promise<SetDocument[]> {
+    const idd = id.toString()
+    const result = await this.categorySchema.aggregate([
+      { '$match': { '_id': Types.ObjectId(idd)  } },
+      {
+        '$lookup': {
+          'from': 'sets',
+          'localField': 'set',
+          'foreignField': '_id',
+          'pipeline': [
+            {
+              '$addFields': {
+                'difference': {
+                  '$subtract': [
+                    '$likes', '$dislikes'
+                  ]
+                }
+              }
+            }, {
+              '$sort': {
+                'difference': -1
+              }
+            }
+          ],
+          'as': 'objects'
+        }
+      }, {
+        '$project': {
+          'objects': 1
+        }
+      }
+    ])
+    if (!result) { throw new NotFoundException }
+    return result
   }
 
   async findOne(id: ObjectId): Promise<CategoryDocument> {
@@ -77,7 +146,7 @@ export class CategoryService {
   async remove(id: ObjectId): Promise<void> {
     const result = await this.categorySchema.findByIdAndDelete(id)
     if (!result) { throw NotFoundException }
-    
+
     return;
   }
 }
