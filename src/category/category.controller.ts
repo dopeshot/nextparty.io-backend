@@ -20,9 +20,13 @@ export class CategoryController {
     return this.categoryService.findAll();
   }
 
-  @Get(':id/topten')
-  findTopTen(@Param(ValidationPipe) { id }: IdTaskDto) {
-    return this.categoryService.findTopTen(id);
+  @Get(':id/toptensets')
+  findTopTenSets(@Param(ValidationPipe) { id }: IdTaskDto) {
+    return this.categoryService.findTopTenSets(id);
+  }
+  @Get(':id/allsets')
+  findAllSets(@Param(ValidationPipe) { id }: IdTaskDto) {
+    return this.categoryService.findAllSets(id);
   }
 
   @Get(':id')
