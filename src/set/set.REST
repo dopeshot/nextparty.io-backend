@@ -35,7 +35,7 @@ GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tasks
 GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tentasks
 
 ### Get Tasks in Set paginated
-GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tasks?page=2
+GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tasks?page=0&limit=99999
 
 ### Get Set metadata
 GET http://localhost:3000/api/set/6116ac912a8b143164f7f00b/meta

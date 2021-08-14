@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Quer
 import { ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { IdTaskDto } from 'src/task/dto/id-task.dto';
+import { PaginationDto } from 'src/task/dto/paginationDto.dto';
 import { CategoryService } from './category.service';
 import { addSetIdCategoryDto } from './dto/addSet-category.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -27,8 +28,8 @@ export class CategoryController {
     return this.categoryService.findTopTenSets(id);
   }
   @Get(':id/allsets')
-  findAllSets(@Param(ValidationPipe) { id }: IdTaskDto) {
-    return this.categoryService.findAllSets(id);
+  findAllSets(@Param('id') id:  ObjectId,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
+    return this.categoryService.findAllSets(id, +paginationDto.page,+paginationDto.limit);
   }
 
   @Get(':id')

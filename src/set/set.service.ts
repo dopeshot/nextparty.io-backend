@@ -142,9 +142,6 @@ export class SetService {
   }
 
   async getTasks2(id: ObjectId, page: number, limit: number): Promise<TaskDocument[]> {
-    if (!page) { page = 0 }
-    if (!limit) {limit = 99999 }
-    limit = 10
     const skip = page * limit
     limit+= skip
     const idd = id.toString()
@@ -168,7 +165,7 @@ export class SetService {
               }
             }, {
               '$sort': {
-                'difference': -1
+                'difference': -1, '_id': 1
               }
             }, {
               '$limit': limit
@@ -209,7 +206,7 @@ export class SetService {
               }
             }, {
               '$sort': {
-                'difference': -1
+                'difference': -1, '_id': 1
               }
             }, {
               '$limit': 10

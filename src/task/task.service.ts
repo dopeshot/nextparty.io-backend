@@ -76,7 +76,7 @@ export class TaskService {
             },
             {
                 $sort: {
-                    difference: -1,
+                    difference: -1, '_id': 1
                 },
             },
             {

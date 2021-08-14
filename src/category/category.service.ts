@@ -80,7 +80,7 @@ export class CategoryService {
               }
             }, {
               '$sort': {
-                'difference': -1
+                'difference': -1, '_id': 1
               }
             }, {
               '$limit': 10
@@ -98,10 +98,18 @@ export class CategoryService {
     return result
   }
 
-  async findAllSets(id: ObjectId): Promise<SetDocument[]> {
+  async findAllSets(id: ObjectId, page: number, limit: number): Promise<SetDocument[]> {
+    console.log(page," page")
+    console.log(limit," page")
+    console.log(id," page")
+
+    const skip = page * limit
+    limit+= skip
     const idd = id.toString()
+
+    const startTime = Date.now();
     const result = await this.categorySchema.aggregate([
-      { '$match': { '_id': Types.ObjectId(idd)  } },
+      { '$match': { '_id': Types.ObjectId(idd) } },
       {
         '$lookup': {
           'from': 'sets',
@@ -118,8 +126,12 @@ export class CategoryService {
               }
             }, {
               '$sort': {
-                'difference': -1
+                'difference': -1, '_id': 1
               }
+            }, {
+              '$limit': limit
+            }, {
+              '$skip': skip
             }
           ],
           'as': 'objects'
@@ -130,7 +142,8 @@ export class CategoryService {
         }
       }
     ])
-    if (!result) { throw new NotFoundException }
+    console.log("Runtime in ms: ", Date.now() - startTime)
+    if (result.length == 0) { throw new NotFoundException }
     return result
   }
 
