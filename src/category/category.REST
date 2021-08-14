@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ### Add Set to Category
-PATCH http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/6116846b13b64460047a8413?option=addset
+PATCH http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/61179270d45adc1f50dea884?option=addset
 
 ### Remove Set from Categorya
 PATCH http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/6116846b13b64460047a8413?option=removeset
@@ -37,7 +37,6 @@ Content-Type: application/json
     "author": "6113cee6f951fe3e4059c5db",
     "set": ["6116846b13b64460047a8413","6116846b13b64460047a8412"],
     "xx": "xxx"
-    
 }
 
 ### Get all Categories
