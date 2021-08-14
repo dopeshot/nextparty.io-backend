@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { IdTaskDto } from 'src/task/dto/id-task.dto';
 import { CategoryService } from './category.service';
@@ -6,6 +7,7 @@ import { addSetIdCategoryDto } from './dto/addSet-category.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 
+@ApiTags('category')
 @Controller('category')
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) { }

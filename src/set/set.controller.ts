@@ -5,7 +5,9 @@ import { UpdateSetTasksDto } from './dto/update-set-tasks.dto';
 import {UpdateSetDto} from './dto/update-set-metadata.dto'
 import { IdTaskDto } from 'src/task/dto/id-task.dto';
 import { ObjectId } from 'mongoose';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('set')
 @Controller('set')
 export class SetController {
   constructor(private readonly setService: SetService) {}

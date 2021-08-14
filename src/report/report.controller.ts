@@ -1,8 +1,10 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { CreateReportDto } from './dto/create-report.dto';
 import { ReportService } from './report.service';
 
+@ApiTags('report')
 @Controller('report')
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}

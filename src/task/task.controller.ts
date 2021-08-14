@@ -5,7 +5,9 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { ObjectId } from 'mongoose';
 import { IdTaskDto } from './dto/id-task.dto';
 import { TaskVoteDto } from './dto/task-vote-dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('task')
 @Controller('task')
 export class TaskController {
   constructor(private readonly taskService: TaskService) { }
