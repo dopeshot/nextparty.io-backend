@@ -1,7 +1,6 @@
-import { IsEnum, IsMongoId, IsNotEmpty, IsObject, IsString, Length } from "class-validator";
-import { ObjectId } from "mongoose";
-import { Set } from "src/set/entities/set.entity";
-import { Language } from "src/task/enums/language.enum";
+import { IsEnum, IsMongoId, IsNotEmpty, IsString, Length } from "class-validator"
+import { ObjectId } from "mongoose"
+import { Language } from "../../task/enums/language.enum";
 
 export class CreateCategoryDto {
     @IsEnum(Language)

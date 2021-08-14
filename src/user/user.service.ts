@@ -6,6 +6,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
 import * as bcyrpt from 'bcrypt'
 import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
+import { Role } from './enums/role.enum';
 
 @Injectable()
 export class UserService {
@@ -99,6 +100,26 @@ export class UserService {
       return null
 
     return user
+  }
+
+  /**
+   * FOR TESTING update role
+   * @param id object id
+   * @param role 
+   * @returns User
+   */
+  async patchRole(id: ObjectId, role: any): Promise<User> {
+    try {
+      const updatedUser: User = await this.userSchema.findByIdAndUpdate(id, {
+        role: role.role
+      }, {
+        new: true
+      })
+
+      return updatedUser
+    } catch (error) {
+        throw new InternalServerErrorException("Update Role failed")
+    }
   }
 
   /**

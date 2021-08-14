@@ -1,10 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode} from '@nestjs/common';
-import { SetService } from './set.service';
-import { CreateSetDto } from './dto/create-set.dto';
-import { UpdateSetTasksDto } from './dto/update-set-tasks.dto';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode} from '@nestjs/common'
+import { SetService } from './set.service'
+import { CreateSetDto } from './dto/create-set.dto'
+import { UpdateSetTasksDto } from './dto/update-set-tasks.dto'
 import {UpdateSetDto} from './dto/update-set-metadata.dto'
-import { IdTaskDto } from 'src/task/dto/id-task.dto';
-import { ObjectId } from 'mongoose';
+import { ObjectId } from 'mongoose'
 
 @Controller('set')
 export class SetController {

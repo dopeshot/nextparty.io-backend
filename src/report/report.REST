@@ -1,15 +1,17 @@
 ### Create Report
 POST http://localhost:3000/api/report
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlpvZSIsInN1YiI6IjYxMTdkNjJlOWZlZDhlMWYwMDFhNjRlZSIsImlhdCI6MTYyODk1MjExMCwiZXhwIjoxNjI4OTg4MTEwfQ.8TK3CVmqXZvyluA2tiGpRWYzywavCsFnrtPM1lKZ0vY
 
 {
-    "taskID": "611426b2952b3b9be0b0b39b",
-    "userID": "611426b2952b3b9be0b0b39c",
-    "reason": "harmful"
+    "contentType": "user",
+    "content": "6117d5a17045584ff8d3c689",
+    "reason": "offensive name"
 }
 
 ### Get all reports
 GET http://localhost:3000/api/report
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlpvZSIsInN1YiI6IjYxMTdkNjJlOWZlZDhlMWYwMDFhNjRlZSIsImlhdCI6MTYyODk1MjExMCwiZXhwIjoxNjI4OTg4MTEwfQ.8TK3CVmqXZvyluA2tiGpRWYzywavCsFnrtPM1lKZ0vY
 
 ### Get report by id
 GET http://localhost:3000/api/report/6115370e5d81e0c0e033f2f9

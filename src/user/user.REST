@@ -4,7 +4,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikhlb
 
 ### Get all User (Protected Route for Testing Reasons, access only with admin role)
 GET http://localhost:3000/api/user
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExNmFmMDhkYWIwNjEzNTc0MzVlMGU5Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjI4ODc2NzgwLCJleHAiOjE2Mjg5MTI3ODB9.PCzWu_EDhEqAoP4T95RfQZWbudImpUWlS0wYZ7SHSlo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJzdWIiOiI2MTE3ZDVhMTcwNDU1ODRmZjhkM2M2ODkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2Mjg5NTk2MzEsImV4cCI6MTYyODk5NTYzMX0.DSO_RoFUbefVMDuL7-2bHDBHuNb4ec_pHo5uF8VpjyI
 
 ### Patch user by id 
 PATCH http://localhost:3000/api/user/6116b5a5c5eae23f344d2d23
@@ -14,6 +14,14 @@ Content-Type: application/json
     "role": "d",
     "username": "Haha",
     "email": "45@email.com"
+}
+
+### Patch user by id 
+PATCH http://localhost:3000/api/user/testing/6117eeedb63fd833e0e5145e
+Content-Type: application/json
+
+{
+    "role": "admin"
 }
 
 ### Delete User

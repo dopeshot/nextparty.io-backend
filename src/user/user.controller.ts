@@ -25,6 +25,16 @@ export class UserController {
     return req.user
   }
 
+  /**
+   * FOR TESTING
+   * @param id Object Id
+   * @param role body
+   */
+  @Patch('/testing/:id')
+  async updateRole(@Param('id') id: ObjectId, @Body() role: Role) {
+    return await this.userService.patchRole(id, role)
+  }
+
   @Patch('/:id')
   async update(@Param('id') id: ObjectId, @Body(new ValidationPipe({
     // whitelist will strip all fields which are not in the DTO

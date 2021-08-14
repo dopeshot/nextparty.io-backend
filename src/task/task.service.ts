@@ -22,7 +22,6 @@ export class TaskService {
 
       return result
     } catch (error) {
-      console.log(error)
       throw new InternalServerErrorException()
     }
   }
@@ -67,10 +66,9 @@ export class TaskService {
 
     // Find Object
     let task = await this.taskSchema.findById(id)
-    //console.log(task)
+
     if (!task) { throw new NotFoundException() }
 
-    //console.log(updateTaskDto)
     try {
       if (updateTaskDto.content.hasOwnProperty("message")) { task.content.message = updateTaskDto.content.message; this.parseForPersonCounts(task) }
       if (updateTaskDto.content.hasOwnProperty("currentPlayerGender")) { task.content.currentPlayerGender = updateTaskDto.content.currentPlayerGender }

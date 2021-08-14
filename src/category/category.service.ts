@@ -1,9 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { exception } from 'console';
 import { Model, ObjectId } from 'mongoose';
-import { SetDocument, SetSchema } from 'src/set/entities/set.entity';
-import { SetService } from 'src/set/set.service';
+import { SetDocument } from 'src/set/entities/set.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryDocument } from './entities/category.entity';
@@ -21,7 +19,6 @@ export class CategoryService {
       return result
 
     } catch (error) {
-      console.log(error)
       throw new InternalServerErrorException()
     }
   }
