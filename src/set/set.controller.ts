@@ -6,6 +6,7 @@ import {UpdateSetDto} from './dto/update-set-metadata.dto'
 import { IdTaskDto } from 'src/task/dto/id-task.dto';
 import { ObjectId } from 'mongoose';
 import { ApiTags } from '@nestjs/swagger';
+import { PaginationDto } from 'src/task/dto/paginationDto.dto';
 
 @ApiTags('set')
 @Controller('set')
@@ -34,8 +35,18 @@ export class SetController {
   }
 
   @Get(':id/tasks')
-  getSetTasks(@Param('id') id:  ObjectId,  @Query('page') page: number) {
+  getSetTasks(@Param('id') id:  ObjectId,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
+    return this.setService.getTasks2(id, +paginationDto.page,+paginationDto.limit);
+  }
+
+  @Get(':id/tasks1')
+  getSetTasks1(@Param('id') id:  ObjectId,  @Query('page') page: number) {
     return this.setService.getTasks(id, page);
+  }
+
+  @Get(':id/tentasks')
+  getSetTopTenTasks(@Param('id') id:  ObjectId) {
+    return this.setService.findTopTenTasks(id);
   }
 
   @Patch(':id/meta')
