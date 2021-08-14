@@ -1,6 +1,5 @@
 import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel, MongooseModule } from '@nestjs/mongoose';
-import { exception } from 'console';
 import { Model, ObjectId, Types } from 'mongoose';
 import { SetDocument, SetSchema } from 'src/set/entities/set.entity';
 import { SetService } from 'src/set/set.service';
