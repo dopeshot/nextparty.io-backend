@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory} from "@nestjs/mongoose"
-import { ObjectId, SchemaTypes } from "mongoose"
+import { Document, ObjectId, SchemaTypes } from "mongoose"
 import { Reason } from "../enums/reason.enum"
 import { Severity } from "../enums/severity.enum"
 

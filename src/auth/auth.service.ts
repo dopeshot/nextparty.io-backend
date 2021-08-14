@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { User, UserDocument } from 'src/user/entities/user.entity';
 import { UserService } from '../user/user.service'
@@ -6,6 +6,8 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto'
 import * as bcrypt from 'bcrypt'
 import { AccessTokenDto, JwtPayloadDto } from './dto/jwt.dto'
+import { DiscordUser } from './strategies/discord/discord-user.interface';
+import { userDataFromProvider } from 'src/user/interfaces/userDataFromProvider.interface';
 
 @Injectable()
 export class AuthService {
@@ -50,63 +52,40 @@ export class AuthService {
         return null
     }
 
+    async handleProviderLogin(userDataFromProvider: userDataFromProvider): Promise<any> {
+        if(!userDataFromProvider)
+            throw new InternalServerErrorException('Request does not have a user. Please contact the administrator')
+
+        // Check if user already exits
+        const alreadyCreatedUser = await this.userService.findOneByEmail(userDataFromProvider.email)
+
+        // Check if provider is the same
+        if(alreadyCreatedUser.provider !== userDataFromProvider.provider)
+            throw new ForbiddenException(`This email is already registered with ${alreadyCreatedUser.provider ? alreadyCreatedUser.provider : 'Email and Password Auth'}`)
+
+        if(alreadyCreatedUser)
+            return this.createLoginPayload(alreadyCreatedUser)
+
+        // Create User
+        const newUser: User = await this.userService.createUserFromProvider(userDataFromProvider)
+
+        // Create Payload and JWT
+        return this.createLoginPayload(newUser)
+    }
+
     /**
      * Creates Login Payload and generate JWT with the payload
      * @param user logged in user
      * @returns access token 
      */
-    async createLoginPayload(user: User): Promise<AccessTokenDto> {
-        const payload = {
-            username: user.username,
-            sub: user._id
+         async createLoginPayload(user: User): Promise<AccessTokenDto> {
+            const payload = {
+                username: user.username,
+                sub: user._id
+            }
+    
+            return {
+                access_token: this.jwtService.sign(payload)
+            }
         }
-
-        return {
-            access_token: this.jwtService.sign(payload)
-        }
-    }
-
-    async googleLogin(req): Promise<any> {
-        // Should not happen
-        if (!req.user)
-            throw new InternalServerErrorException("No user found")
-
-        const {
-            user
-        } = req
-
-        // Find user
-        const googleuser = await this.userService.findOneByEmail(user.emails[0].value)
-
-        // If user exist create Jwt
-        if (googleuser)
-            return this.createLoginPayload(user)
-
-        // If user does not exist jet create new one
-        const newUser = await this.userService.createWithoutPassword(user)
-        // Create Jwt
-        return this.createLoginPayload(newUser)
-    }
-
-    async facebookLogin(req): Promise<any> {
-        // Should not happen
-        if (!req.user)
-            throw new InternalServerErrorException("No user found")
-
-        const {
-            user
-        } = req
-
-        // Find user
-        const facebookuser = await this.userService.findOneByEmail(user.emails[0].value)
-
-        // If user exist create Jwt
-        if (facebookuser)
-            return this.createLoginPayload(user)
-
-        // If user does not exist jet create new one
-        const newUser = await this.userService.createWithoutPassword(user)
-        // Create Jwt
-        return this.createLoginPayload(newUser)
-    }
 }
