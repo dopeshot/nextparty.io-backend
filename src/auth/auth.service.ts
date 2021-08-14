@@ -60,7 +60,7 @@ export class AuthService {
         const alreadyCreatedUser = await this.userService.findOneByEmail(userDataFromProvider.email)
 
         // Check if provider is the same
-        if(alreadyCreatedUser.provider !== userDataFromProvider.provider)
+        if(alreadyCreatedUser && alreadyCreatedUser.provider !== userDataFromProvider.provider)
             throw new ForbiddenException(`This email is already registered with ${alreadyCreatedUser.provider ? alreadyCreatedUser.provider : 'Email and Password Auth'}`)
 
         if(alreadyCreatedUser)
