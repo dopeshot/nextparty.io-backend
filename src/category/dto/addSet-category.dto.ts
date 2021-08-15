@@ -6,5 +6,5 @@ import { MongoIdDto } from "src/shared/dto/mongoId.dto";
 
 export class addSetIdCategoryDto extends PartialType(MongoIdDto){
     @IsMongoId()
-    id2: ObjectId
+    setId: ObjectId
 }
