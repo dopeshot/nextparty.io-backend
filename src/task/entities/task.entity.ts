@@ -21,7 +21,7 @@ export class TaskContent {
     @Prop({ required: true, default: 0 })
     anyoneCount: number
 
-    @Prop({ required: true })
+    @Prop({ required: true, index: true})
     message: string
 }
 
