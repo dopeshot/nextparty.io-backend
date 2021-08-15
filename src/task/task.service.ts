@@ -118,8 +118,8 @@ export class TaskService {
         } catch (error) {
             throw new UnprocessableEntityException()
         }
-        const result = await task.save()
 
+        const result = await task.save()
         return result
     }
 

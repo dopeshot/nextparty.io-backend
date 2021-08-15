@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { INestApplication, Req, Request } from '@nestjs/common'
+import { INestApplication } from '@nestjs/common'
 import * as request from 'supertest'
 import { AppModule } from './../src/app.module'
+import { ObjectId } from 'mongoose';
 
-describe('AppController (e2e)', () => {
+describe('ReportController (e2e)', () => {
   let app: INestApplication
-  let token
-  let userId
-
+  let token: string
+  let userId: ObjectId
+  let reportId: ObjectId
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -19,13 +20,13 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  describe('Auth and User', () => {
+  describe('Login', () => {
     it('/auth/register (POST)', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/auth/register')
         .send({
-          username: "Zoe",
-          email: "zoe@gmail.com",
+          username: "Haha",
+          email: "haha@gmail.com",
           password: "12345678"
         })
         .expect(201)
@@ -33,55 +34,30 @@ describe('AppController (e2e)', () => {
       token = res.body.access_token
       return res
     })
-    
-    it('/auth/register (POST) duplicate', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/api/auth/register')
-        .send({
-          username: "Zoe",
-          email: "zoe@gmail.com",
-          password: "12345678"
-        })
-        .expect(409)
-      return res
-    })
-
-    it('/auth/login (POST)', async () => {
-      return request(app.getHttpServer())
-        .post('/api/auth/login')
-        .send({
-          email: "zoe@gmail.com",
-          password: "12345678"
-        })
-        .expect(201)
-    })
-
-    it('/auth/login (POST) Wrong Password', async () => {
-      return request(app.getHttpServer())
-        .post('/api/auth/login')
-        .send({
-          email: "zoe@gmail.com",
-          password: "123"
-        })
-        .expect(401)
-    })
 
     it('/user/profile (GET)', async () => {
       const res = request(app.getHttpServer())
         .get('/api/user/profile')
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
+
       userId = (await res).body.userId
       return res
     })
   })
 
-  describe("Roles", () => {
-    it('/user (GET) Protected Route: No Admin Role', async () => {
-      const res = request(app.getHttpServer())
-        .get('/api/user')
+  describe('Reports', () => {
+    it('/report (POST)', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/report')
         .set('Authorization', `Bearer ${token}`)
-        .expect(403)
+        .send({
+          contentType: "user",
+          content: "6117d5a17045584ff8d3c689",
+          reason: "offensive name"
+        })
+        .expect(201)
+        reportId = res.body._id
       return res
     })
 
@@ -99,7 +75,7 @@ describe('AppController (e2e)', () => {
       const res = request(app.getHttpServer())
       .post('/api/auth/login')
       .send({
-        email: "zoe@gmail.com",
+        email: "haha@gmail.com",
         password: "12345678"
       })
       .expect(201)
@@ -108,16 +84,40 @@ describe('AppController (e2e)', () => {
       return res
     })
 
-    it('/user (GET) Protected Route: Admin Role', async () => {
-      const res = request(app.getHttpServer())
-        .get('/api/user')
+    it('/report (GET) Protected Route: Admin Role', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/report')
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
+      return res
+    })
+
+    it('/report/:id (GET) Protected Route: Admin Role', async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/api/report/${reportId}`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200)
+      return res
+    })
+
+    it('/report/:id (DELETE) type=soft', () => {
+      const res = request(app.getHttpServer())
+        .delete(`/api/report/${reportId}?type=soft`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(204)
       return res
     })
   })
 
   describe('Cleanup', () => {
+    it('/report/:id (DELETE) type=hard', () => {
+      const res = request(app.getHttpServer())
+        .delete(`/api/report/${reportId}?type=hard`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(204)
+      return res
+    })
+
     it('/user/:id (DELETE)', async () => {
       const res = request(app.getHttpServer())
         .delete(`/api/user/${userId}`)

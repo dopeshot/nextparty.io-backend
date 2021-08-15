@@ -11,8 +11,6 @@ import { MailService } from '../mail/mail.service';
 import { VerifyDocument } from './entities/verify.entity';
 import * as crypto from 'crypto'
 
-
-
 @Injectable()
 export class UserService {
   constructor(@InjectModel('User') private userSchema: Model<UserDocument>,
@@ -132,6 +130,26 @@ export class UserService {
       return null
 
     return user
+  }
+
+  /**
+   * FOR TESTING update role
+   * @param id object id
+   * @param role 
+   * @returns User
+   */
+  async patchRole(id: ObjectId, role: any): Promise<User> {
+    try {
+      const updatedUser: User = await this.userSchema.findByIdAndUpdate(id, {
+        role: role.role
+      }, {
+        new: true
+      })
+
+      return updatedUser
+    } catch (error) {
+        throw new InternalServerErrorException("Update Role failed")
+    }
   }
 
   /**
