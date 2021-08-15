@@ -1,11 +1,9 @@
 import { PartialType } from "@nestjs/mapped-types";
-import { IsEnum, IsMongoId, IsNotEmpty, IsObject } from "class-validator";
+import { IsMongoId } from "class-validator";
 import { ObjectId } from "mongoose";
-import { Set } from "src/set/entities/set.entity";
-import { IdTaskDto } from "src/task/dto/id-task.dto";
-import { Language } from "src/task/enums/language.enum";
+import { MongoIdDto } from "src/shared/dto/mongoId.dto";
 
-export class addSetIdCategoryDto extends PartialType(IdTaskDto){
+export class addSetIdCategoryDto extends PartialType(MongoIdDto){
     @IsMongoId()
     id2: ObjectId
 }
