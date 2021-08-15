@@ -47,6 +47,16 @@ export class UserService {
     }
   }
 
+  async parseJWTtOUsable(JWTuser): Promise<UserDocument>{
+    let user = await this.userSchema.findById(JWTuser.userId)
+
+    if (!user){
+      throw new NotFoundException()
+    }
+
+    return user
+  }
+
   async createVerification(user: UserDocument){
     const verifyCode = crypto.randomBytes(64).toString('hex');
     const verifyObject = new this.verifySchema({
@@ -164,23 +174,28 @@ export class UserService {
 
   async veryfiyUser(code: string){
 
-    const verifyObject = await this.verifySchema.findOne({"validationCode": {$eq: code}})
+    const verifyObject = await this.verifySchema.findOne({
+      'verificationCode': code
+    }).lean() 
 
     if (!verifyObject){
-      console.log("no object found")
       throw new NotFoundException()
+    }
+
+    if ( Date.now() - verifyObject._id.getTimestamp() > +process.env.VERIFY_TTL){
+      return {"error":"Expired"}
     }
 
     const user = await this.userSchema.findById(verifyObject.userId)
 
     if (!user){
-      console.log("no user found")
       throw new NotFoundException()
     }
 
     user.status = Status.Active
 
     const result = await user.save()
+
 
     return result
   }

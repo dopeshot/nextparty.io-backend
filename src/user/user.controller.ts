@@ -21,7 +21,6 @@ export class UserController {
 
   @Get("/verify/:code")
   async verifyMail(@Param('code') code: string): Promise<any> {
-    console.log(code)
     return await this.userService.veryfiyUser(code);
   }
 
@@ -29,6 +28,13 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   getProfile(@Request() req): Promise<any> {
     return req.user
+  }
+
+  @Get('/getVerify')
+  @UseGuards(JwtAuthGuard)
+  async regenerateVerify(@Request() req): Promise<any> {
+    return this.userService.createVerification(await this.userService.parseJWTtOUsable(req.user))
+
   }
 
   @Patch('/:id')
