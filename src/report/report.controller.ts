@@ -1,5 +1,4 @@
 import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query, Request, UseGuards, ValidationPipe } from '@nestjs/common'
-import { ObjectId } from 'mongoose'
 import { Roles } from '../auth/roles/roles.decorator'
 import { RolesGuard } from '../auth/roles/roles.guard'
 import { Role } from '../user/enums/role.enum'
@@ -27,6 +26,8 @@ export class ReportController {
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Get all reports'})
+  @ApiBearerAuth()
   findAll(@Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto ) {
     return this.reportService.findAll(+paginationDto.page, +paginationDto.limit);
   }
@@ -34,6 +35,8 @@ export class ReportController {
   @Get('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Get report via id'})
+  @ApiBearerAuth()
   findOneById(@Param(ValidationPipe) { id }: MongoIdDto) {
     return this.reportService.findOneById(id);
   }
@@ -42,6 +45,8 @@ export class ReportController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @HttpCode(204)
+  @ApiOperation({ summary: 'Delete report via id'})
+  @ApiBearerAuth()
   remove(@Param(ValidationPipe) { id }: MongoIdDto, @Query('type') type: DeleteType, @Request() req) {
     return this.reportService.remove(id, type, req.user);
   }
