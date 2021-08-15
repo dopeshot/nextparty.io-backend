@@ -29,7 +29,6 @@ export class SetService {
 
   async alterTasks(id: ObjectId, mode: string, Tasks: UpdateSetTasksDto) {
     let set = await this.setSchema.findById(id)
-
     if (!set) { throw new NotFoundException() }
 
     for (let task of Tasks.tasks) {
@@ -37,15 +36,20 @@ export class SetService {
         //Check if element is not already in array
         if (set.taskList.indexOf(task) == -1) {
           set.taskList.push(task)
+          if(await (await this.taskSchema.findById(task)).type == "truth"){set.truthCount++}
+             else {set.daresCount++}
         }
       } else {
         //Check if element exists and therefore can be deleted
         const index = set.taskList.indexOf(task)
         if (index != -1) {
           set.taskList.splice(index, 1)
+          if(await (await this.taskSchema.findById(task)).type == "truth"){set.truthCount--}
+            else {set.daresCount--}
         }
       }
     }
+
     const result = await set.save()
 
     return result;
