@@ -5,7 +5,7 @@ import { JwtUserDto } from 'src/auth/dto/jwt.dto'
 import { CreateReportDto } from './dto/create-report.dto'
 import { Report, ReportDocument } from './entities/report.entity'
 import { DeleteType } from './enums/delete-type';
-import { ReportStatus } from './enums/status.enum'
+import { ReportStatus } from './enums/status.enum';
 
 @Injectable()
 export class ReportService {

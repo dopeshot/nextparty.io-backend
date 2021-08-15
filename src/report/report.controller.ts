@@ -6,8 +6,8 @@ import { Role } from '../user/enums/role.enum'
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard'
 import { CreateReportDto } from './dto/create-report.dto'
 import { ReportService } from './report.service'
-import { DeleteType } from './enums/delete-type'
 import { ApiTags } from '@nestjs/swagger';
+import { DeleteType } from './enums/delete-type'
 
 @ApiTags('report')
 @Controller('report')

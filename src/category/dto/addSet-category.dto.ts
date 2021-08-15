@@ -1,7 +1,6 @@
 import { PartialType } from "@nestjs/mapped-types";
 import { IsMongoId } from "class-validator";
 import { ObjectId } from "mongoose";
-import { IdTaskDto } from "../../task/dto/id-task.dto";
 import { MongoIdDto } from "src/shared/dto/mongoId.dto";
 
 

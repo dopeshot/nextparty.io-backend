@@ -6,7 +6,6 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
 import * as bcyrpt from 'bcrypt'
 import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
-import { Role } from './enums/role.enum';
 import { Status } from './enums/status.enum';
 import { MailService } from '../mail/mail.service';
 import { VerifyDocument } from './entities/verify.entity';

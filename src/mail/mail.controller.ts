@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { MailService } from './mail.service';
 
 @Controller('mail')
