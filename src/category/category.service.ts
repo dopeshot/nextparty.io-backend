@@ -148,8 +148,7 @@ export class CategoryService {
 	}
 
 	async findOne(id: ObjectId): Promise<Category> {
-		// TODO: Add populate here
-		const category = await this.categorySchema.findById(id)
+		const category = await this.categorySchema.findById(id).populate('set')
 		if (!category)
 			throw new NotFoundException()
 
