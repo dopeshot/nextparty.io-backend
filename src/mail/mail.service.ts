@@ -42,4 +42,15 @@ export class MailService {
 		});
 		this.sendMail(recipient, "test3", message)
 	}
+
+	/**
+	 * Generate the verification Mail
+	 * @param name - username 
+	 * @param mail - user mail
+	 * @param code - verification code
+	 */
+	async generateVerifyMail(name: string, mail: string, code: string){
+		const message = '<b>Hey, '+name+'<br>Your code is:'+code+'</b>'
+		this.sendMail(mail, "Verifiy your Email", message)
+	}
 }

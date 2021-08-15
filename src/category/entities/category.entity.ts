@@ -1,7 +1,6 @@
 import { SchemaFactory, Schema, Prop } from "@nestjs/mongoose";
 import { ObjectId, SchemaTypes } from "mongoose"
-import { Language } from "src/task/enums/language.enum";
-import { Set } from "../../set/entities/set.entity";
+import { Language } from "../../task/enums/language.enum";
 
 @Schema({ timestamps: true })
 export class Category {

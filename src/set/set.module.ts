@@ -3,8 +3,8 @@ import { SetService } from './set.service';
 import { SetController } from './set.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SetSchema } from './entities/set.entity'
-import { TaskSchema } from 'src/task/entities/task.entity';
-import { TaskModule } from 'src/task/task.module';
+import { TaskSchema } from '../task/entities/task.entity';
+import { TaskModule } from '../task/task.module';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'Set', schema: SetSchema }]), 

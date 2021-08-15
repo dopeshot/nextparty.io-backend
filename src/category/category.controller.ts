@@ -1,6 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode } from '@nestjs/common';
-import { ObjectId } from 'mongoose';
-import { IdTaskDto } from 'src/task/dto/id-task.dto';
+import { IdTaskDto } from '../task/dto/id-task.dto';
 import { CategoryService } from './category.service';
 import { addSetIdCategoryDto } from './dto/addSet-category.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';

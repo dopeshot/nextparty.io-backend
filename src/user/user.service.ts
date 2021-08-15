@@ -6,10 +6,18 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
 import * as bcyrpt from 'bcrypt'
 import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
+import { Status } from './enums/status.enum';
+import { MailService } from '../mail/mail.service';
+import { VerifyDocument } from './entities/verify.entity';
+import * as crypto from 'crypto'
+
+
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('User') private userSchema: Model<UserDocument>) { }
+  constructor(@InjectModel('User') private userSchema: Model<UserDocument>,
+  @InjectModel('Verify') private verifySchema: Model<VerifyDocument>,
+  private readonly mailService: MailService) { }
 
   /**
    * Create new user with credentials
@@ -21,9 +29,12 @@ export class UserService {
       const hash = await bcyrpt.hash(credentials.password, 12)
       const user = new this.userSchema({
         ...credentials,
+        status: Status.Unverified,
         password: hash
       })
       const result = await user.save()
+
+      this.createVerification(result)
 
       return result
     } catch (error) {
@@ -32,7 +43,19 @@ export class UserService {
       else if (error.code === 11000 && error.keyPattern.email)
         throw new ConflictException('Email is already taken.')
       throw new InternalServerErrorException("User Create failed")
+
     }
+  }
+
+  async createVerification(user: UserDocument){
+    const verifyCode = crypto.randomBytes(64).toString('hex');
+    const verifyObject = new this.verifySchema({
+			userId: user._id,
+			verificationCode: verifyCode
+		})
+		const result = await verifyObject.save()
+
+    this.mailService.generateVerifyMail(user.username, user.email, verifyCode)
   }
 
   /**
@@ -137,5 +160,28 @@ export class UserService {
       throw new NotFoundException()
 
     return user
+  }
+
+  async veryfiyUser(code: string){
+
+    const verifyObject = await this.verifySchema.findOne({"validationCode": {$eq: code}})
+
+    if (!verifyObject){
+      console.log("no object found")
+      throw new NotFoundException()
+    }
+
+    const user = await this.userSchema.findById(verifyObject.userId)
+
+    if (!user){
+      console.log("no user found")
+      throw new NotFoundException()
+    }
+
+    user.status = Status.Active
+
+    const result = await user.save()
+
+    return result
   }
 }
