@@ -2,10 +2,10 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Quer
 import { TaskService } from './task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { IdTaskDto } from './dto/id-task.dto';
+import { MongoIdDto } from '../shared/dto/mongoId.dto';
 import { TaskVoteDto } from './dto/task-vote-dto';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PaginationDto } from './dto/paginationDto.dto';
+import { PaginationDto } from '../shared/dto/pagination.dto';
 
 @ApiTags('task')
 @Controller('task')
@@ -31,7 +31,7 @@ export class TaskController {
   
   @Get(':id')
   @ApiOperation({ summary: 'Find one task by id'})
-  findOne(@Param(ValidationPipe) { id }: IdTaskDto) {
+  findOne(@Param(ValidationPipe) { id }: MongoIdDto) {
     return this.taskService.findOne(id);
   }
 
@@ -43,14 +43,14 @@ export class TaskController {
 
   @Patch(':id')
   @ApiOperation({ summary: 'Update one task by id'})
-  update(@Param(ValidationPipe) { id }: IdTaskDto, @Body(new ValidationPipe({whitelist: true})) updateTaskDto: UpdateTaskDto) {
+  update(@Param(ValidationPipe) { id }: MongoIdDto, @Body(new ValidationPipe({whitelist: true})) updateTaskDto: UpdateTaskDto) {
     return this.taskService.update(id, updateTaskDto);
   }
 
   @Delete(':id')
   @HttpCode(204)
   @ApiOperation({ summary: 'Delete one task by id'})
-  remove(@Param(ValidationPipe) { id }: IdTaskDto, @Query('type') type: string) {
+  remove(@Param(ValidationPipe) { id }: MongoIdDto, @Query('type') type: string) {
     this.taskService.remove(id, type);
   }
 }
