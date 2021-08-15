@@ -14,8 +14,7 @@ Content-Type: application/json
 GET http://localhost:3000/api/set
 
 ### Get one set
-
-GET http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf
+GET http://localhost:3000/api/set/6117926bd45adc1f50dea882
 
 ### Update set task list
 POST http://localhost:3000/api/set/6117926bd45adc1f50dea882/add
@@ -48,6 +47,12 @@ Content-Type: application/json
     "name": "better name",
     "description": "gang gang"
 }
+
+### Upvote set via id
+PATCH  http://localhost:3000/api/set/6117926bd45adc1f50dea882/upvote
+
+### Downvote set via id
+PATCH  http://localhost:3000/api/set/6117926bd45adc1f50dea882/downvote
 
 ### Soft Delete Set by Id
 DELETE http://localhost:3000/api/set/611520190a92523f38489c02

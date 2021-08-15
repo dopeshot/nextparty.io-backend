@@ -43,7 +43,7 @@ Content-Type: application/json
 GET http://localhost:3000/api/category
 
 ### Get one Category
-GET http://localhost:3000/api/category/6116b7142de49944c4becb88
+GET http://localhost:3000/api/category/6116c92520c4bf5834f0fef2
 
 ### Get top 10 Sets in this Category
 GET http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/toptensets

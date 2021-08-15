@@ -80,6 +80,24 @@ export class SetService {
     return result;
   }
 
+  // Up- Downvotes a Task
+  async vote(id: ObjectId, vote: string): Promise<SetDocument> {
+    // Find Object
+    let set = await this.setSchema.findById(id)
+    if (!set) { throw new NotFoundException() }
+
+    // Query check
+    const isUpvote = vote && vote === 'upvote'
+    const isDownvote = vote && vote === 'downvote'
+
+    // Handle vote
+    if (isUpvote) set.likes += 1
+
+    if (isDownvote) set.dislikes += 1
+
+    return await set.save()
+  }
+
   async remove(id: ObjectId, type: string): Promise<void> {
     // Check query
     const isHardDelete = type ? type.includes('hard') : false
@@ -143,7 +161,7 @@ export class SetService {
 
   async getTasks2(id: ObjectId, page: number, limit: number): Promise<TaskDocument[]> {
     const skip = page * limit
-    limit+= skip
+    limit += skip
     const idd = id.toString()
 
     const startTime = Date.now();
