@@ -50,7 +50,11 @@ export class MailService {
 	 * @param code - verification code
 	 */
 	async generateVerifyMail(name: string, mail: string, code: string){
-		const message = '<b>Hey, '+name+'<br> Click here to verify your email adress: <br> <a href="http://localhost:3000/api/user/verify/'+code+'">Verify</a></b>'
+		const tmpl = await readFile(__dirname + '/templates/MailVerify.ejs', 'utf-8')
+		const message = render(tmpl, {
+			verifyLink: 'http://localhost:3000/api/user/verify/'+code,
+			username: name,
+		});
 		this.sendMail(mail, "Verifiy your Email", message)
 	}
 }
