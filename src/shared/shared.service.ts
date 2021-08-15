@@ -4,8 +4,6 @@ import { PaginationPayload } from './interfaces/paginationPayload.interface'
 
 @Injectable()
 export class SharedService {
-
-
     createPayloadWithPagination(
         documentCount: number,
         page: number,

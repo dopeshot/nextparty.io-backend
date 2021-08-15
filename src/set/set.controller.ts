@@ -36,11 +36,11 @@ export class SetController {
     return this.setService.findOne(id);
   }
 
-  @HttpCode(204)
   @Delete(':id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   // TODO: Protected Route, can be done if user created this set or admins
+  @HttpCode(204)
   @ApiOperation({ summary: 'Delete Set via id'})
   remove(@Param('id') id: ObjectId, @Query('type') type: string) {
     this.setService.remove(id, type);
@@ -97,7 +97,7 @@ export class SetController {
   @Post(':id/remove')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  // TODO: Protected Route, can be done if user created this set or admins
+  // TODO: Protected Route, can be done if user created this set or admins (Except hard delete. this should only be possible for admins)
   @ApiOperation({ summary: 'Remove one Set via id and Json'})
   removeTask(@Param('id') id:  ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto) {
     return this.setService.alterTasks(id, "remove", updateSetTasksDto);
