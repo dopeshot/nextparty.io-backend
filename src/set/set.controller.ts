@@ -7,10 +7,10 @@ import { SetService } from './set.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '../shared/dto/pagination.dto';
 import { TaskVoteDto } from '../task/dto/task-vote-dto';
-import { JwtAuthGuard } from 'src/auth/strategies/jwt/jwt-auth.guard';
-import { RolesGuard } from 'src/auth/roles/roles.guard';
-import { Role } from 'src/user/enums/role.enum';
-import { Roles } from 'src/auth/roles/roles.decorator';
+import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
+import { RolesGuard } from '../auth/roles/roles.guard';
+import { Role } from '../user/enums/role.enum';
+import { Roles } from '../auth/roles/roles.decorator';
 
 @ApiTags('set')
 @Controller('set')
