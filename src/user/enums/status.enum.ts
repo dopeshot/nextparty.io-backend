@@ -1,5 +1,6 @@
 export enum Status {
     Active = "active",
     Reported = "reported",
-    Banned = "banned"
+    Banned = "banned",
+    Unverified = "unverfified"
 }

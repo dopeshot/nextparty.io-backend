@@ -3,9 +3,10 @@ import { ReportService } from './report.service'
 import { ReportController } from './report.controller'
 import { MongooseModule } from '@nestjs/mongoose'
 import { ReportSchema } from './entities/report.entity'
+import { SharedModule } from '../shared/shared.module'
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'Report', schema: ReportSchema }])],
+  imports: [SharedModule, MongooseModule.forFeature([{ name: 'Report', schema: ReportSchema }])],
   controllers: [ReportController],
   providers: [ReportService]
 })

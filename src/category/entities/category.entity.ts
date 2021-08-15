@@ -1,7 +1,8 @@
-import { SchemaFactory, Schema, Prop } from "@nestjs/mongoose";
+import { SchemaFactory, Schema, Prop } from "@nestjs/mongoose"
 import { ObjectId, SchemaTypes } from "mongoose"
-import { Language } from "src/task/enums/language.enum";
+import { Language } from "../../task/enums/language.enum";
 import { User } from "../../user/entities/user.entity";
+import { CategoryStatus } from "../enums/categoryStatus.enum";
 
 @Schema({ timestamps: true })
 export class Category {
@@ -16,6 +17,9 @@ export class Category {
 
     @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
     author: User
+
+    @Prop({ default: CategoryStatus.ACTIVE })
+    status: CategoryStatus
 }
 
 export type CategoryDocument = Category & Document

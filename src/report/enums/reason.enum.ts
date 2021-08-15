@@ -1,7 +1,8 @@
 export enum Reason {
-    Spam = 'spam',
-    HatredAndBullying = 'hatred and bullying',
-    Harmful = 'harmful',
-    IllegalActivity = 'illegal activity',
-    Other = 'other'
+    SPAM = 'spam',
+    HATESPEECH = 'hate speech',
+    OFFENSIVENAME = 'offensive name',
+    HARMFUL = 'harmful',
+    ILLEGALACTIVITY = 'illegal activity',
+    OTHER = 'other'
 }

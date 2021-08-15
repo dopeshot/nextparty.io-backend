@@ -6,10 +6,16 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
 import * as bcyrpt from 'bcrypt'
 import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
+import { Status } from './enums/status.enum';
+import { MailService } from '../mail/mail.service';
+import { VerifyDocument } from './entities/verify.entity';
+import * as crypto from 'crypto'
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('User') private userSchema: Model<UserDocument>) { }
+  constructor(@InjectModel('User') private userSchema: Model<UserDocument>,
+  @InjectModel('Verify') private verifySchema: Model<VerifyDocument>,
+  private readonly mailService: MailService) { }
 
   /**
    * Create new user with credentials
@@ -21,9 +27,12 @@ export class UserService {
       const hash = await bcyrpt.hash(credentials.password, 12)
       const user = new this.userSchema({
         ...credentials,
+        status: Status.Unverified,
         password: hash
       })
       const result = await user.save()
+
+      this.createVerification(result)
 
       return result
     } catch (error) {
@@ -32,7 +41,29 @@ export class UserService {
       else if (error.code === 11000 && error.keyPattern.email)
         throw new ConflictException('Email is already taken.')
       throw new InternalServerErrorException("User Create failed")
+
     }
+  }
+
+  async parseJWTtOUsable(JWTuser): Promise<UserDocument>{
+    let user = await this.userSchema.findById(JWTuser.userId)
+
+    if (!user){
+      throw new NotFoundException()
+    }
+
+    return user
+  }
+
+  async createVerification(user: UserDocument){
+    const verifyCode = crypto.randomBytes(64).toString('hex');
+    const verifyObject = new this.verifySchema({
+			userId: user._id,
+			verificationCode: verifyCode
+		})
+		const result = await verifyObject.save()
+
+    this.mailService.generateVerifyMail(user.username, user.email, verifyCode)
   }
 
   /**
@@ -102,6 +133,26 @@ export class UserService {
   }
 
   /**
+   * FOR TESTING update role
+   * @param id object id
+   * @param role 
+   * @returns User
+   */
+  async patchRole(id: ObjectId, role: any): Promise<User> {
+    try {
+      const updatedUser: User = await this.userSchema.findByIdAndUpdate(id, {
+        role: role.role
+      }, {
+        new: true
+      })
+
+      return updatedUser
+    } catch (error) {
+        throw new InternalServerErrorException("Update Role failed")
+    }
+  }
+
+  /**
    * Update the user
    * @param id ObjectId
    * @param updateUserDto Dto for updates 
@@ -137,5 +188,33 @@ export class UserService {
       throw new NotFoundException()
 
     return user
+  }
+
+  async veryfiyUser(code: string){
+
+    const verifyObject = await this.verifySchema.findOne({
+      'verificationCode': code
+    }).lean() 
+
+    if (!verifyObject){
+      throw new NotFoundException()
+    }
+
+    if ( Date.now() - verifyObject._id.getTimestamp() > +process.env.VERIFY_TTL){
+      return {"error":"Expired"}
+    }
+
+    const user = await this.userSchema.findById(verifyObject.userId)
+
+    if (!user){
+      throw new NotFoundException()
+    }
+
+    user.status = Status.Active
+
+    const result = await user.save()
+
+
+    return result
   }
 }
