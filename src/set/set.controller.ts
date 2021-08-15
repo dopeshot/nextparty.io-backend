@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
 import { CreateSetDto } from './dto/create-set.dto';
 import { ObjectId } from 'mongoose'
 import { UpdateSetDto } from './dto/update-set-metadata.dto';
@@ -7,6 +7,10 @@ import { SetService } from './set.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '../shared/dto/pagination.dto';
 import { TaskVoteDto } from '../task/dto/task-vote-dto';
+import { JwtAuthGuard } from 'src/auth/strategies/jwt/jwt-auth.guard';
+import { RolesGuard } from 'src/auth/roles/roles.guard';
+import { Role } from 'src/user/enums/role.enum';
+import { Roles } from 'src/auth/roles/roles.decorator';
 
 @ApiTags('set')
 @Controller('set')
@@ -14,6 +18,7 @@ export class SetController {
   constructor(private readonly setService: SetService) {}
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create new Set via Json'})
   create(@Body() createSetDto: CreateSetDto) {
     return this.setService.create(createSetDto);
@@ -33,6 +38,9 @@ export class SetController {
 
   @HttpCode(204)
   @Delete(':id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  // TODO: Protected Route, can be done if user created this set or admins
   @ApiOperation({ summary: 'Delete Set via id'})
   remove(@Param('id') id: ObjectId, @Query('type') type: string) {
     this.setService.remove(id, type);
@@ -63,6 +71,9 @@ export class SetController {
   }
 
   @Patch(':id/meta')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  // TODO: Protected Route, can be done if user created this set or admins
   @ApiOperation({ summary: 'Update Set metadata'})
   updateMeta(@Param('id') id: ObjectId, @Body() updateSetDto: UpdateSetDto) {
     return this.setService.updateMetadata(id, updateSetDto);
@@ -75,15 +86,20 @@ export class SetController {
   }
 
   @Post(':id/add')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  // TODO: Protected Route, can be done if user created this set or admins
   @ApiOperation({ summary: 'Add Task to Set via id and Json'})
   addTask(@Param('id') id: ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto) {
     return this.setService.alterTasks(id, "add", updateSetTasksDto);
   }
   
   @Post(':id/remove')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  // TODO: Protected Route, can be done if user created this set or admins
   @ApiOperation({ summary: 'Remove one Set via id and Json'})
   removeTask(@Param('id') id:  ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto) {
     return this.setService.alterTasks(id, "remove", updateSetTasksDto);
   }
-
 }
