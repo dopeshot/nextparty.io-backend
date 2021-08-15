@@ -22,10 +22,10 @@ Content-Type: application/json
 }
 
 ### Add Set to Category
-PATCH http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/61179270d45adc1f50dea884?option=addset
+PATCH http://localhost:3000/api/category/61193ad639f43fa06428c886/add/61193ad639f43fa06428c886
 
-### Remove Set from Categorya
-PATCH http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/6116846b13b64460047a8413?option=removeset
+### Remove Set from Category
+PATCH http://localhost:3000/api/category/61193ad639f43fa06428c886/remove/61193ad639f43fa06428c886
 
 ### Update Category Metadata ---- set author and xx are supposed to be ignored!
 PATCH http://localhost:3000/api/category/6116c92520c4bf5834f0fef2
@@ -40,19 +40,19 @@ Content-Type: application/json
 }
 
 ### Get all Categories
-GET http://localhost:3000/api/category
+GET http://localhost:3000/api/category?page=0
 
 ### Get one Category
-GET http://localhost:3000/api/category/6116c92520c4bf5834f0fef2
+GET http://localhost:3000/api/category/611928abefb0f27a182977ce
 
 ### Get top 10 Sets in this Category
 GET http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/toptensets
 
 ### Get all Sets in this Category
-GET http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/allsets
+GET http://localhost:3000/api/category/611928abefb0f27a182977ce/sets
 
 ### Soft Delete Category by Id
-#DELETE http://localhost:3000/api/category
+DELETE http://localhost:3000/api/category/6119382bcd1c889aa0aa7c2c
 
 ### Hard Delete Category by Id (require admin role)
-DELETE http://localhost:3000/api/category/61178b822b1bb82310784141
+DELETE http://localhost:3000/api/category/6119382bcd1c889aa0aa7c2c?type=hard
