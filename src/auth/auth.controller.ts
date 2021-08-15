@@ -6,7 +6,9 @@ import { User } from 'src/user/entities/user.entity';
 import { GoogleAuthGuard } from './strategies/google/google-auth.guard';
 import { FacebookAuthGuard } from './strategies/facebook/facebook-auth.guard';
 import { DiscordAuthGuard } from './strategies/discord/discord-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
