@@ -1,15 +1,11 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { ObjectId } from 'mongoose';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, ValidationPipe } from '@nestjs/common';
 import { CreateSetDto } from './dto/create-set.dto';
+import { ObjectId } from 'mongoose'
 import { UpdateSetDto } from './dto/update-set-metadata.dto';
 import { UpdateSetTasksDto } from './dto/update-set-tasks.dto';
 import { SetService } from './set.service';
-import { pdateSetDto } from './dto/update-set-metadata.dto'
-import { IdTaskDto } from 'src/task/dto/id-task.dto';
-import { ObjectId } from 'mongoose';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PaginationDto } from 'src/task/dto/paginationDto.dto';
+import { PaginationDto } from '../shared/dto/pagination.dto';
 import { TaskVoteDto } from 'src/task/dto/task-vote-dto';
 
 @ApiTags('set')
