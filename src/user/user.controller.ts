@@ -21,10 +21,22 @@ export class UserController {
     return await this.userService.findAll();
   }
 
+  @Get("/verify/:code")
+  async verifyMail(@Param('code') code: string): Promise<any> {
+    return await this.userService.veryfiyUser(code);
+  }
+
   @Get('/profile')
   @UseGuards(JwtAuthGuard)
   getProfile(@Request() req): Promise<any> {
     return req.user
+  }
+
+  @Get('/getVerify')
+  @UseGuards(JwtAuthGuard)
+  async regenerateVerify(@Request() req): Promise<any> {
+    return this.userService.createVerification(await this.userService.parseJWTtOUsable(req.user))
+
   }
 
   @Patch('/:id')
