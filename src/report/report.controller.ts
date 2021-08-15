@@ -6,6 +6,7 @@ import { Role } from '../user/enums/role.enum'
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard'
 import { CreateReportDto } from './dto/create-report.dto'
 import { ReportService } from './report.service'
+import { DeleteType } from './enums/delete-type'
 
 @Controller('report')
 export class ReportController {
@@ -35,7 +36,7 @@ export class ReportController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @HttpCode(204)
-  remove(@Param('id') id: ObjectId, @Query('type') type: string, @Request() req) {
+  remove(@Param('id') id: ObjectId, @Query('type') type: DeleteType, @Request() req) {
     return this.reportService.remove(id, type, req.user);
   }
 }

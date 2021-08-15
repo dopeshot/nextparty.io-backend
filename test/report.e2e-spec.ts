@@ -40,6 +40,7 @@ describe('ReportController (e2e)', () => {
         .get('/api/user/profile')
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
+
       userId = (await res).body.userId
       return res
     })

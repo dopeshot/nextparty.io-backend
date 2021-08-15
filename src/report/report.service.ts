@@ -4,6 +4,7 @@ import { Model, ObjectId } from 'mongoose'
 import { JwtUserDto } from 'src/auth/dto/jwt.dto'
 import { CreateReportDto } from './dto/create-report.dto'
 import { Report, ReportDocument } from './entities/report.entity'
+import { DeleteType } from './enums/delete-type';
 import { ReportStatus } from './enums/status.enum'
 
 @Injectable()
@@ -56,7 +57,7 @@ export class ReportService {
      * @param id of the report
      * @param type soft or hard delete
      */
-    async remove(id: ObjectId, type: string, user: JwtUserDto): Promise<void> {
+    async remove(id: ObjectId, type: DeleteType, user: JwtUserDto): Promise<void> {
         // Check query
         const isHardDelete = type ? type.includes('hard') : false
 
