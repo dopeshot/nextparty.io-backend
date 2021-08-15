@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { SearchService } from './search.service';
 import { SearchController } from './search.controller';
 import { MongooseModule } from '@nestjs/mongoose';
-import { TaskSchema } from 'src/task/entities/task.entity';
-import { TaskModule } from 'src/task/task.module';
-import { SetSchema } from 'src/set/entities/set.entity';
-import { UserSchema } from 'src/user/entities/user.entity';
-import { UserModule } from 'src/user/user.module';
+import { TaskSchema } from '../task/entities/task.entity';
+import { TaskModule } from '../task/task.module';
+import { SetSchema } from '../set/entities/set.entity';
+import { UserSchema } from '../user/entities/user.entity';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'Set', schema: SetSchema }]),
