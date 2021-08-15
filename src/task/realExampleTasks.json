@@ -1,0 +1,26 @@
+[
+    {
+        "language": "de",
+        "type": "dare",
+        "content": {
+            "currentPlayerGender": "@ca",
+            "message": "zeige allen Spielern deinen Google Suchverlauf."
+        }
+    },
+    {
+        "language": "de",
+        "type": "dare",
+        "content": {
+            "currentPlayerGender": "@ca",
+            "message": "gib dein Handy @a. @a darf nun etwas in deine Insta Sotry posten."
+        }
+    },
+    {
+        "language": "de",
+        "type": "dare",
+        "content": {
+            "currentPlayerGender": "@ca",
+            "message": "lass dich von @ca für 30 Sekunden kitzeln!"
+        }
+    }
+]

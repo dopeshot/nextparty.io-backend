@@ -1,8 +1,8 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
-import { IdTaskDto } from 'src/task/dto/id-task.dto';
-import { PaginationDto } from 'src/task/dto/paginationDto.dto';
+import { MongoIdDto } from 'src/shared/dto/mongoId.dto';
+import { PaginationDto } from '../shared/dto/pagination.dto';
 import { CategoryService } from './category.service';
 import { addSetIdCategoryDto } from './dto/addSet-category.dto';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -24,16 +24,16 @@ export class CategoryController {
   }
 
   @Get(':id/toptensets')
-  findTopTenSets(@Param(ValidationPipe) { id }: IdTaskDto) {
+  findTopTenSets(@Param(ValidationPipe) { id }: MongoIdDto) {
     return this.categoryService.findTopTenSets(id);
   }
   @Get(':id/allsets')
-  findAllSets(@Param('id') id:  ObjectId,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
+  findAllSets(@Param(ValidationPipe) { id }: MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
     return this.categoryService.findAllSets(id, +paginationDto.page,+paginationDto.limit);
   }
 
   @Get(':id')
-  findOne(@Param(ValidationPipe) { id }: IdTaskDto) {
+  findOne(@Param(ValidationPipe) { id }: MongoIdDto) {
     return this.categoryService.findOne(id);
   }
 
@@ -43,13 +43,13 @@ export class CategoryController {
   }
 
   @Patch(':id')
-  update(@Param(ValidationPipe) { id }: IdTaskDto, @Body(new ValidationPipe({ whitelist: true })) updateCategoryDto: UpdateCategoryDto) {
+  update(@Param(ValidationPipe) { id }: MongoIdDto, @Body(new ValidationPipe({ whitelist: true })) updateCategoryDto: UpdateCategoryDto) {
     return this.categoryService.updateMetadata(id, updateCategoryDto);
   }
 
   @HttpCode(204)
   @Delete(':id')
-  remove(@Param(ValidationPipe) { id }: IdTaskDto) {
+  remove(@Param(ValidationPipe) { id }: MongoIdDto) {
     return this.categoryService.remove(id);
   }
 }

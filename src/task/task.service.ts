@@ -7,6 +7,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, ObjectId } from 'mongoose'
 import { CreateTaskDto } from './dto/create-task.dto'
+import { VoteType } from './dto/task-vote-dto'
 import { UpdateTaskDto } from './dto/update-task.dto'
 import { Task, TaskDocument } from './entities/task.entity'
 import { TaskStatus } from './enums/taskstatus.enum'
@@ -60,7 +61,7 @@ export class TaskService {
     // Returns the Task with matching id
     async findOne(id: ObjectId): Promise<Task> {
         let task: TaskDocument = await this.taskSchema.findById(id)
-        if (!task) throw new NotFoundException()
+        if (!task) throw new NotFoundException(`There is no task with the id ${id}`)
 
         return task
     }
@@ -90,7 +91,7 @@ export class TaskService {
     async update(
         id: ObjectId,
         updateTaskDto: UpdateTaskDto,
-    ): Promise<TaskDocument> {
+    ): Promise<Task> {
         // Find Object
         let task = await this.taskSchema.findById(id)
         //console.log(task)
@@ -123,7 +124,7 @@ export class TaskService {
     }
 
     // Up- Downvotes a Task
-    async vote(id: ObjectId, vote: string): Promise<TaskDocument> {
+    async vote(id: ObjectId, vote: VoteType): Promise<Task> {
         // Find Object
         let task = await this.taskSchema.findById(id)
 
