@@ -20,7 +20,6 @@ export class CategoryService {
       return result
 
     } catch (error) {
-      console.log(error)
       throw new InternalServerErrorException()
     }
   }

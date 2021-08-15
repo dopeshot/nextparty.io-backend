@@ -22,7 +22,6 @@ export class SetService {
 
       return result
     } catch (error) {
-      console.log(error)
       throw new InternalServerErrorException()
     }
   }

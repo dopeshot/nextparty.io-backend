@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode } from '@nestjs/common';
+import { IdTaskDto } from '../task/dto/id-task.dto';
 import { ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { MongoIdDto } from 'src/shared/dto/mongoId.dto';

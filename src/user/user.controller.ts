@@ -32,11 +32,19 @@ export class UserController {
     return req.user
   }
 
+  /**
+   * FOR TESTING
+   * @param id Object Id
+   * @param role body
+   */
+  @Patch('/testing/:id')
+  async updateRole(@Param('id') id: ObjectId, @Body() role: Role) {
+    return await this.userService.patchRole(id, role)
+
   @Get('/getVerify')
   @UseGuards(JwtAuthGuard)
   async regenerateVerify(@Request() req): Promise<any> {
     return this.userService.createVerification(await this.userService.parseJWTtOUsable(req.user))
-
   }
 
   @Patch('/:id')

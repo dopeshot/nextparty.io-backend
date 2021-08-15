@@ -1,24 +1,39 @@
 import { Prop, Schema, SchemaFactory} from "@nestjs/mongoose"
 import { Document, ObjectId, SchemaTypes } from "mongoose"
+import { ContentType } from "../enums/content-type.enum"
 import { Reason } from "../enums/reason.enum"
-import { Severity } from "../enums/severity.enum"
+import { ReportStatus } from "../enums/status.enum"
 
 @Schema({ timestamps: true })
 export class Report {
-
     _id: ObjectId
 
-    @Prop({ type: SchemaTypes.ObjectId, ref: 'Task', required: true })
-    taskID: string
+    @Prop({ required: true })
+    contentType: ContentType
 
-    @Prop({ required: true, default: Reason.Other })
+    @Prop({ required: true, type: SchemaTypes.ObjectId, ref: () => {
+        // @ts-ignore this.contentType could be undefined, needs to be ignored, because field is set to required so it will never be undefined
+        switch(this.contentType) {
+            case ContentType.SET:
+                return 'Set'
+            case ContentType.TASK:
+                return 'Task'
+            case ContentType.USER:
+                return 'User'
+        }}})
+    content: ObjectId
+
+    @Prop({ default: Reason.Other })
     reason: Reason
 
-    @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
-    userID: ObjectId
+    @Prop({ default: ReportStatus.PENDING})
+    status: ReportStatus
 
-    @Prop()
-    severity: Severity
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
+    reportedBy: ObjectId
+
+    @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
+    closedBy: ObjectId
 }
 
 export type ReportDocument = Report & Document
