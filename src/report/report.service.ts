@@ -26,7 +26,7 @@ export class ReportService {
 
             return result
         } catch (error) {
-            throw new InternalServerErrorException("Create new report failed", error)
+            throw new InternalServerErrorException("Create new report failed")
         }
     }
 
@@ -34,7 +34,8 @@ export class ReportService {
      * Get all reports
      * @returns Array of Reports
      */
-    async findAll(): Promise<Report[]> {
+    async findAll(page: number, limit: number): Promise<Report[]> {
+        // TODO: Implement pagination
         return await this.reportSchema.find()
     }
 
@@ -44,7 +45,7 @@ export class ReportService {
      * @returns Report
      */
     async findOneById(id: ObjectId): Promise<Report> {
-        let report = await this.reportSchema.findById(id).lean()
+        let report = await this.reportSchema.findById(id)
 
         if (!report)
             throw new NotFoundException()

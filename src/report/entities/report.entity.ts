@@ -6,7 +6,6 @@ import { ReportStatus } from "../enums/status.enum"
 
 @Schema({ timestamps: true })
 export class Report {
-    _id: ObjectId
 
     @Prop({ required: true })
     contentType: ContentType
@@ -23,7 +22,7 @@ export class Report {
         }}})
     content: ObjectId
 
-    @Prop({ default: Reason.Other })
+    @Prop({ default: Reason.OTHER })
     reason: Reason
 
     @Prop({ default: ReportStatus.PENDING})

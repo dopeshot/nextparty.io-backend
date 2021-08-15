@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query, Request, UseGuards } from '@nestjs/common'
+import { Body, Controller, Delete, Get, HttpCode, Param, Post, Query, Request, UseGuards, ValidationPipe } from '@nestjs/common'
 import { ObjectId } from 'mongoose'
 import { Roles } from '../auth/roles/roles.decorator'
 import { RolesGuard } from '../auth/roles/roles.guard'
@@ -6,8 +6,10 @@ import { Role } from '../user/enums/role.enum'
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard'
 import { CreateReportDto } from './dto/create-report.dto'
 import { ReportService } from './report.service'
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { DeleteType } from './enums/delete-type'
+import { PaginationDto } from '../shared/dto/pagination.dto'
+import { MongoIdDto } from '../shared/dto/mongoId.dto'
 
 @ApiTags('report')
 @Controller('report')
@@ -16,21 +18,23 @@ export class ReportController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  create(@Body() createReportDto: CreateReportDto, @Request() req) {
+  @ApiOperation({ summary: 'Create a report'})
+  @ApiBearerAuth()
+  create(@Body(new ValidationPipe({ whitelist: true })) createReportDto: CreateReportDto, @Request() req) {
     return this.reportService.create(createReportDto, req.user);
   }
 
   @Get()
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  findAll() {
-    return this.reportService.findAll();
+  findAll(@Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto ) {
+    return this.reportService.findAll(+paginationDto.page, +paginationDto.limit);
   }
 
   @Get('/:id')
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
-  findOneById(@Param('id') id: ObjectId) {
+  findOneById(@Param(ValidationPipe) { id }: MongoIdDto) {
     return this.reportService.findOneById(id);
   }
 
@@ -38,7 +42,7 @@ export class ReportController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @HttpCode(204)
-  remove(@Param('id') id: ObjectId, @Query('type') type: DeleteType, @Request() req) {
+  remove(@Param(ValidationPipe) { id }: MongoIdDto, @Query('type') type: DeleteType, @Request() req) {
     return this.reportService.remove(id, type, req.user);
   }
 }
