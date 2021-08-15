@@ -1,7 +1,6 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { ObjectId } from 'mongoose';
-import { MongoIdDto } from 'src/shared/dto/mongoId.dto';
+import { MongoIdDto } from '../shared/dto/mongoId.dto';
 import { PaginationDto } from '../shared/dto/pagination.dto';
 import { CategoryService } from './category.service';
 import { addSetIdCategoryDto } from './dto/addSet-category.dto';

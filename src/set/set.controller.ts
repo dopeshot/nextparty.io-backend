@@ -6,7 +6,7 @@ import { UpdateSetTasksDto } from './dto/update-set-tasks.dto';
 import { SetService } from './set.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '../shared/dto/pagination.dto';
-import { TaskVoteDto } from 'src/task/dto/task-vote-dto';
+import { TaskVoteDto } from '../task/dto/task-vote-dto';
 
 @ApiTags('set')
 @Controller('set')
