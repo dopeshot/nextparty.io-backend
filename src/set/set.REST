@@ -14,22 +14,27 @@ Content-Type: application/json
 GET http://localhost:3000/api/set
 
 ### Get one set
-
-GET http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf
+GET http://localhost:3000/api/set/6117926bd45adc1f50dea882
 
 ### Update set task list
-POST http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf/add
+POST http://localhost:3000/api/set/6117926bd45adc1f50dea882/add
 Content-Type: application/json
 
 {
-    "tasks": ["6116ac812a8b143164f7f007", "6116ac822a8b143164f7f009","6116b31c96042b074c0d9b11", "6116b31c96042b074c0d9b13","6113cee6f951fe3e4059c5da"]
+"tasks": ["6117dc89c83e643f842efa19"]
 }
 
 ### Get Tasks in Set
-GET http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf/tasks
+GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tasks1
+
+### Get Tasks in Set2
+GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tasks
+
+### Get top 10 Tasks in Set2
+GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tentasks
 
 ### Get Tasks in Set paginated
-GET http://localhost:3000/api/set/6116b3fe0d7efd42446e76bf/tasks?page=0
+GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tasks?page=0&limit=99999
 
 ### Get Set metadata
 GET http://localhost:3000/api/set/6116ac912a8b143164f7f00b/meta
@@ -42,6 +47,12 @@ Content-Type: application/json
     "name": "better name",
     "description": "gang gang"
 }
+
+### Upvote set via id
+PATCH  http://localhost:3000/api/set/6117926bd45adc1f50dea882/upvote
+
+### Downvote set via id
+PATCH  http://localhost:3000/api/set/6117926bd45adc1f50dea882/downvote
 
 ### Soft Delete Set by Id
 DELETE http://localhost:3000/api/set/611520190a92523f38489c02

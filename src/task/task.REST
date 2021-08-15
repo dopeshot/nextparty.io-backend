@@ -44,7 +44,7 @@ Content-Type: application/json
 ### Update Task with upvote
 PATCH http://localhost:3000/api/task/6117d43c51e15a81fc269715/upvote
 
-### Update Task with upvote
+### Update Task with downpvote
 PATCH http://localhost:3000/api/task/6117d43c51e15a81fc269715/downvote
 
 ### Get all Tasks
