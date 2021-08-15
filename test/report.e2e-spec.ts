@@ -7,6 +7,7 @@ describe('ReportController (e2e)', () => {
   let app: INestApplication
   let token
   let userId
+  let reportId
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -54,7 +55,39 @@ describe('ReportController (e2e)', () => {
           reason: "offensive name"
         })
         .expect(201)
-        return res
+        reportId = res.body._id
+      return res
+    })
+
+    it('/user/testing (PATCH) Change to Admin', async () => {
+      const res = request(app.getHttpServer())
+        .patch(`/api/user/testing/${userId}`)
+        .send({
+          role: "admin"
+        })
+        .expect(200)
+      return res
+    })
+
+    it('/auth/login (POST)', async () => {
+      const res = request(app.getHttpServer())
+      .post('/api/auth/login')
+      .send({
+        email: "haha@gmail.com",
+        password: "12345678"
+      })
+      .expect(201)
+
+      token = (await res).body.access_token
+      return res
+    })
+
+    it('/report (GET) Protected Route: Admin Role', async () => {
+      const res = await request(app.getHttpServer())
+        .get('/api/report')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200)
+      return res
     })
   })
 
@@ -62,6 +95,13 @@ describe('ReportController (e2e)', () => {
     it('/user/:id (DELETE)', async () => {
       const res = request(app.getHttpServer())
         .delete(`/api/user/${userId}`)
+        .expect(200)
+      return res
+    })
+
+    it('/report/:id (DELETE)', () => {
+      const res = request(app.getHttpServer())
+        .delete(`/api/report/${reportId}`)
         .expect(200)
       return res
     })

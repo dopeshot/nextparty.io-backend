@@ -105,7 +105,6 @@ describe('AppController (e2e)', () => {
       .expect(201)
 
       token = (await res).body.access_token
-
       return res
     })
 
