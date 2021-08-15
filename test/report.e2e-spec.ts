@@ -98,19 +98,28 @@ describe('ReportController (e2e)', () => {
         .expect(200)
       return res
     })
+
+    it('/report/:id (DELETE) type=soft', () => {
+      const res = request(app.getHttpServer())
+        .delete(`/api/report/${reportId}?type=soft`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(204)
+      return res
+    })
   })
 
   describe('Cleanup', () => {
-    it('/user/:id (DELETE)', async () => {
+    it('/report/:id (DELETE) type=hard', () => {
       const res = request(app.getHttpServer())
-        .delete(`/api/user/${userId}`)
-        .expect(200)
+        .delete(`/api/report/${reportId}?type=hard`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(204)
       return res
     })
 
-    it('/report/:id (DELETE)', () => {
+    it('/user/:id (DELETE)', async () => {
       const res = request(app.getHttpServer())
-        .delete(`/api/report/${reportId}`)
+        .delete(`/api/user/${userId}`)
         .expect(200)
       return res
     })

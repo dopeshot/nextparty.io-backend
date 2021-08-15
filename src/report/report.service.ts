@@ -1,10 +1,10 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId } from 'mongoose';
-import { JwtUserDto } from 'src/auth/dto/jwt.dto';
-import { User } from 'src/user/entities/user.entity';
-import { CreateReportDto } from './dto/create-report.dto';
-import { Report, ReportDocument } from './entities/report.entity';
+import { Model, ObjectId } from 'mongoose'
+import { JwtUserDto } from 'src/auth/dto/jwt.dto'
+import { CreateReportDto } from './dto/create-report.dto'
+import { Report, ReportDocument } from './entities/report.entity'
+import { ReportStatus } from './enums/status.enum'
 
 @Injectable()
 export class ReportService {
@@ -44,7 +44,7 @@ export class ReportService {
      */
     async findOneById(id: ObjectId): Promise<Report> {
         let report = await this.reportSchema.findById(id).lean()
-        
+
         if (!report)
             throw new NotFoundException()
 
@@ -52,18 +52,32 @@ export class ReportService {
     }
 
     /**
-     * Hard Delete report
+     * Delete report: If type is hard ==> hard delete, If type is soft => soft delete
      * @param id of the report
-     * @returns Removed Report
+     * @param type soft or hard delete
      */
-    async remove(id: ObjectId): Promise<Report> {
-        // Check if there is a report with this id and remove it
-        const report = await this.reportSchema.findByIdAndDelete(id)
-        
+    async remove(id: ObjectId, type: string, user: JwtUserDto): Promise<void> {
+        // Check query
+        const isHardDelete = type ? type.includes('hard') : false
+
+        // true is for admin check later
+        if (true && isHardDelete) {
+            // Check if there is a task with this id and remove it
+            const report = await this.reportSchema.findByIdAndDelete(id)
+            if (!report)
+                throw new NotFoundException()
+
+            return
+        }
+
+        // Soft delete
+        const report = await this.reportSchema.findByIdAndUpdate(id, {
+            status: ReportStatus.DELETED,
+            closedBy: user.userId
+        }, {
+            new: true
+        })
         if (!report)
             throw new NotFoundException()
-
-        // We have to return here to exit process
-        return report
     }
 }
