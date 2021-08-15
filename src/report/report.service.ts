@@ -2,6 +2,8 @@ import { Injectable, InternalServerErrorException, NotFoundException } from '@ne
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose'
 import { JwtUserDto } from 'src/auth/dto/jwt.dto'
+import { PaginationPayload } from '../shared/interfaces/paginationPayload.interface';
+import { SharedService } from '../shared/shared.service';
 import { CreateReportDto } from './dto/create-report.dto'
 import { Report, ReportDocument } from './entities/report.entity'
 import { DeleteType } from './enums/delete-type';
@@ -9,7 +11,8 @@ import { ReportStatus } from './enums/status.enum';
 
 @Injectable()
 export class ReportService {
-    constructor(@InjectModel('Report') private reportSchema: Model<ReportDocument>) { }
+    constructor(@InjectModel('Report') private reportSchema: Model<ReportDocument>,
+    private readonly sharedService: SharedService) { }
 
     /**
      * Create new Report
@@ -34,9 +37,11 @@ export class ReportService {
      * Get all reports
      * @returns Array of Reports
      */
-    async findAll(page: number, limit: number): Promise<Report[]> {
+    async findAll(page: number, limit: number): Promise<PaginationPayload<Report>> {
+        const documentCount = await this.reportSchema.estimatedDocumentCount()
+        const reports: Report[] = await this.reportSchema.find().limit(limit).skip(limit * page)
         // TODO: Implement pagination
-        return await this.reportSchema.find()
+        return await this.sharedService.createPayloadWithPagination(documentCount, page, limit, reports)
     }
 
     /**
