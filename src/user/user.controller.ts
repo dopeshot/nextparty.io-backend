@@ -7,7 +7,9 @@ import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { Roles } from '../auth/roles/roles.decorator';
 import { Role } from './enums/role.enum';
 import { RolesGuard } from '../auth/roles/roles.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('user')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -17,6 +19,11 @@ export class UserController {
   @Roles(Role.Admin)
   async findAll(): Promise<any> {
     return await this.userService.findAll();
+  }
+
+  @Get("/verify/:code")
+  async verifyMail(@Param('code') code: string): Promise<any> {
+    return await this.userService.veryfiyUser(code);
   }
 
   @Get('/profile')
@@ -33,6 +40,11 @@ export class UserController {
   @Patch('/testing/:id')
   async updateRole(@Param('id') id: ObjectId, @Body() role: Role) {
     return await this.userService.patchRole(id, role)
+
+  @Get('/getVerify')
+  @UseGuards(JwtAuthGuard)
+  async regenerateVerify(@Request() req): Promise<any> {
+    return this.userService.createVerification(await this.userService.parseJWTtOUsable(req.user))
   }
 
   @Patch('/:id')

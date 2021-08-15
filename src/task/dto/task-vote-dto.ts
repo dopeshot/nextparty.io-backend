@@ -1,13 +1,13 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { IsEnum } from 'class-validator';
-import { IdTaskDto } from './id-task.dto';
+import { MongoIdDto } from '../../shared/dto/mongoId.dto';
 
-enum VoteType {
+export enum VoteType {
     UPVOTE = "upvote",
     DOWNVOTE = "downvote"
 }
 
-export class TaskVoteDto extends PartialType(IdTaskDto) {
+export class TaskVoteDto extends PartialType(MongoIdDto) {
     @IsEnum(VoteType)
     vote: VoteType
 }

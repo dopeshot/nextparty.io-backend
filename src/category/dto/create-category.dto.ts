@@ -1,5 +1,5 @@
-import { IsEnum, IsMongoId, IsNotEmpty, IsString, Length } from "class-validator"
-import { ObjectId } from "mongoose"
+import { IsEnum, IsMongoId, IsNotEmpty, IsObject, IsString, Length } from "class-validator";
+import { ObjectId } from "mongoose";
 import { Language } from "../../task/enums/language.enum";
 
 export class CreateCategoryDto {

@@ -7,7 +7,9 @@ import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard'
 import { CreateReportDto } from './dto/create-report.dto'
 import { ReportService } from './report.service'
 import { DeleteType } from './enums/delete-type'
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('report')
 @Controller('report')
 export class ReportController {
   constructor(private readonly reportService: ReportService) {}

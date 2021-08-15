@@ -26,3 +26,11 @@ Content-Type: application/json
 
 ### Delete User
 DELETE http://localhost:3000/api/user/61152d6fb3dac55cbcd081f2
+
+### 
+GET http://localhost:3000/api/user/verify/98e97d273c8345eac435edeeb15a143c248f529cb07df581730512da1f77b8662c50265967f66f7592ec905213f5ffbab37dbd7aa1c9c13fedde8372fd62106a
+
+### Rerequest verify
+
+GET http://localhost:3000/api/user/getVerify
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNzYXNhYWEyZGFzZCIsInN1YiI6IjYxMTkwZTViZDZiMTlkNDI2Y2JhZWYyNiIsImlhdCI6MTYyOTAzMjk1NiwiZXhwIjoxNjI5MDY4OTU2fQ.kvnJ5_jhilxFzg0fHl9z7zb3dtF0cE6Cd5LLZwLkIsk

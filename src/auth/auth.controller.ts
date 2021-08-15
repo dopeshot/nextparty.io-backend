@@ -6,7 +6,9 @@ import { User } from 'src/user/entities/user.entity';
 import { GoogleAuthGuard } from './strategies/google/google-auth.guard';
 import { FacebookAuthGuard } from './strategies/facebook/facebook-auth.guard';
 import { DiscordAuthGuard } from './strategies/discord/discord-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService) {}
@@ -25,7 +27,7 @@ export class AuthController {
     @Get('/google')
     @UseGuards(GoogleAuthGuard)
     async googleLogin(@Request() req): Promise<any> {
-      // initiates the Google OAuth2 login flow
+      // initiates the Google OAuth2 login flow (see guard)
     }
 
     @Get('/google/redirect')
@@ -38,7 +40,7 @@ export class AuthController {
     @UseGuards(FacebookAuthGuard)
     @HttpCode(200)
     async facebookLogin(@Request() req): Promise<any> {
-      // initiates the Facebook OAuth2 login flow
+      // initiates the Facebook OAuth2 login flow (see guard)
     }
 
     @Get('/facebook/redirect')
