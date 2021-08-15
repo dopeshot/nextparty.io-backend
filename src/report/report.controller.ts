@@ -25,7 +25,9 @@ export class ReportController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: ObjectId) {
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  findOneById(@Param('id') id: ObjectId) {
     return this.reportService.findOneById(id);
   }
 

@@ -2,12 +2,13 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import * as request from 'supertest'
 import { AppModule } from './../src/app.module'
+import { ObjectId } from 'mongoose';
 
 describe('ReportController (e2e)', () => {
   let app: INestApplication
-  let token
-  let userId
-  let reportId
+  let token: string
+  let userId: ObjectId
+  let reportId: ObjectId
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -85,6 +86,14 @@ describe('ReportController (e2e)', () => {
     it('/report (GET) Protected Route: Admin Role', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/report')
+        .set('Authorization', `Bearer ${token}`)
+        .expect(200)
+      return res
+    })
+
+    it('/report/:id (GET) Protected Route: Admin Role', async () => {
+      const res = await request(app.getHttpServer())
+        .get(`/api/report/${reportId}`)
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
       return res
