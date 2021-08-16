@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request, Req } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { ObjectId } from 'mongoose';
+import { ObjectId, Query } from 'mongoose';
 import { User } from './entities/user.entity';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { Roles } from '../auth/roles/roles.decorator';
@@ -59,5 +59,15 @@ export class UserController {
   @Delete('/:id')
   async remove(@Param('id') id: ObjectId): Promise<any> {
     return await this.userService.remove(id);
+  }
+
+  @Get('/pw-reset')
+  async resetPassword(@Body() userData: {userMail: string}){
+    return await this.userService.requestResetPassword(userData.userMail)
+  }
+
+  @Post('/reset/:code')
+  async validateReset(@Param('code') code: string, @Body() userData: {password: string}){
+    return await this.userService.validatePasswordReset(code, userData.password)
   }
 }
