@@ -4,8 +4,8 @@ Content-Type: application/json
 
 {
     "username": "ssassssssssa2adasd",
-    "email": "test@test.de",
-    "password": "a forgotten password"
+    "email": "xxssx@test.de",
+    "password": "a xxx password"
 }
 
 ### Login User

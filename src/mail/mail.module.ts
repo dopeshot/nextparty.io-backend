@@ -24,7 +24,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       },
       preview: true,
       template: {
-        dir: process.cwd() + '/template/',
+        dir: process.cwd() + '/templates/',
         adapter: new EjsAdapter(), 
         options: {
           strict: true,

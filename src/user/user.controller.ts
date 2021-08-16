@@ -61,13 +61,13 @@ export class UserController {
     return await this.userService.remove(id);
   }
 
-  @Get('/pw-reset')
+  @Get('/password-reset')
   async resetPassword(@Body() userData: {userMail: string}){
     return await this.userService.requestResetPassword(userData.userMail)
   }
 
-  @Post('/reset/:code')
-  async validateReset(@Param('code') code: string, @Body() userData: {password: string}){
-    return await this.userService.validatePasswordReset(code, userData.password)
+  @Post('/password-reset/:code')
+  async validateReset(@Param('code') code: string, @Body(new ValidationPipe({ whitelist: true })) { password }: { password: string }){
+    return await this.userService.validatePasswordReset(code, password)
   }
 }

@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, Provider } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, Provider } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -250,16 +250,16 @@ export class UserService {
    * @returns 
    */
   async validatePasswordReset(code: string, password: string) {
-    const resetObject = await this.resetSchema.findOne({
+    const resetObject = await this.resetSchema.findOneAndDelete({
       'verificationCode': code
-    }).lean()
+    })
 
     if (!resetObject) {
       throw new NotFoundException()
     }
 
     if (Date.now() - resetObject._id.getTimestamp() > +process.env.RESET_TTL) {
-      return { "error": "Expired" }
+      throw new BadRequestException('Token expired.')
     }
 
     const hash = await bcyrpt.hash(password, 12)
