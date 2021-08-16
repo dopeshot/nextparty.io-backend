@@ -23,7 +23,7 @@ export class TaskContent {
     anyoneCount: number
 
     @Factory(faker => faker.lorem.sentence(10))
-    @Prop({ required: true, index: true})
+    @Prop({ required: true, index: true })
     message: string
 }
 
@@ -55,6 +55,9 @@ export class Task {
 
     @Prop({ default: 0 })
     dislikes: number | 0
+
+    @Prop({ default: 0 })
+    difference: number | 0
 
     @Factory('active')
     @Prop({ default: TaskStatus.ACTIVE })
