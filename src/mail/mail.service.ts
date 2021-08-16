@@ -3,6 +3,7 @@ import { MailerService } from '@nestjs-modules/mailer';
 import { render } from 'ejs'
 import { readFile as _readFile } from 'fs';
 import { promisify } from 'util';
+import { join } from 'path';
 
 const readFile = promisify(_readFile);
 
@@ -16,7 +17,7 @@ export class MailService {
 	 * @param subject - subject of email
 	 * @param message - message body of the email
 	 */
-	public async sendMail(recipient: string, subject: string, message: string): Promise<void> {
+	private async sendMail(recipient: string, subject: string, message: string): Promise<void> {
 		try {
 			await this.mailerService.sendMail({
 				to: recipient,
@@ -25,7 +26,7 @@ export class MailService {
 				html: message,
 			})
 		} catch(error) {
-			throw new InternalServerErrorException({ message: `Error sending email with subject: ${subject}`})
+			throw new InternalServerErrorException(`Error sending email with subject: ${subject}`)
 		}
 	}
 
@@ -34,12 +35,12 @@ export class MailService {
 	 * @param recipient - receiver for the email to be send
 	 */
 	async mailTest(recipient: string) {
-		const tmpl = await readFile(__dirname + '/templates/test.ejs', 'utf-8')
-		const message = render(tmpl, {
+		const template = await readFile(join(__dirname, 'templates', 'test.ejs'), 'utf-8')
+		const message = render(template, {
 			// Data to be sent to template engine.
 			code: 'cf1a3f828287',
 			username: 'john doe',
-		});
+		})
 		this.sendMail(recipient, "test3", message)
 	}
 
@@ -50,12 +51,12 @@ export class MailService {
 	 * @param code - verification code
 	 */
 	async generateVerifyMail(name: string, mail: string, code: string){
-		const tmpl = await readFile(__dirname + '/templates/MailVerify.ejs', 'utf-8')
-		const message = render(tmpl, {
-			verifyLink: 'http://localhost:3000/api/user/verify/'+code,
+		const template = await readFile(join(__dirname, 'templates', 'MailVerify.ejs'), 'utf-8')
+		const message = render(template, {
+			verifyLink: `${process.env.HOST}/api/user/verify/${code}`,
 			username: name,
 		});
-		this.sendMail(mail, "Verifiy your Email", message)
+		this.sendMail(mail, "Please verify your email address", message)
 	}
 
 	/**
@@ -72,7 +73,7 @@ export class MailService {
 			username: name,
 		});
 		*/
-		let message = '<b>'+resetCode+'<b>'
+		let message = `<b>${resetCode}</b>`
 		this.sendMail(mail, "Reset your pw", message)
 	}
 }
