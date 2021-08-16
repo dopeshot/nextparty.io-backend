@@ -43,10 +43,21 @@ export class TaskService {
 
 		const previous = page - 1 >= 0 ? page - 1: null
 		const next = page + 1 < pageCount ? page + 1: null
+        
+        //console.time()
+		//const tasks = await this.taskSchema.find().limit(limit + limit*page).skip(limit * page)
+        
+        const tasks = await this.taskSchema.aggregate([
+            {
+                $limit: limit + limit*page
+            },{
+                $skip: limit*page
+            }
 
-		const tasks = await this.taskSchema.find().limit(limit).skip(limit * page)
-
-		return {
+        ])
+        //console.timeEnd()
+		
+        return {
 			paging: {
 				documentCount,
 				pageCount,
