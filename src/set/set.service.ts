@@ -26,6 +26,16 @@ export class SetService {
     }
   }
 
+  async quickFix(){
+    await this.setSchema.updateMany([
+        {
+          '$set': {
+            'difference': 0
+          }
+        }
+      ])
+    return
+}
   async alterTasks(id: ObjectId, mode: string, Tasks: UpdateSetTasksDto) {
     let set = await this.setSchema.findById(id)
     if (!set) { throw new NotFoundException() }
@@ -129,7 +139,7 @@ export class SetService {
   async getTasks(id: ObjectId, page: number) {
 
     const isPaged = page ? true : false
-    const startTime = Date.now();
+    //console.time()
     const set = await this.setSchema.findById(id)
 
     if (!set) {
@@ -158,7 +168,7 @@ export class SetService {
       }
 
     }
-    console.log("Runtime in ms: ", Date.now() - startTime)
+    //console.timeEnd()
     return taskList
   }
 
@@ -167,7 +177,7 @@ export class SetService {
     limit += skip
     const idd = id.toString()
 
-    const startTime = Date.now();
+    //console.time()
     const result = await this.setSchema.aggregate([
       { '$match': { '_id': Types.ObjectId(idd) } },
       {
@@ -177,14 +187,6 @@ export class SetService {
           'foreignField': '_id',
           'pipeline': [
             {
-              '$addFields': {
-                'difference': {
-                  '$subtract': [
-                    '$likes', '$dislikes'
-                  ]
-                }
-              }
-            }, {
               '$sort': {
                 'difference': -1, '_id': 1
               }
@@ -202,7 +204,7 @@ export class SetService {
         }
       }
     ])
-    console.log("Runtime in ms: ", Date.now() - startTime)
+    //console.timeEnd()
     if (result.length == 0) { throw new NotFoundException }
     return result
   }
@@ -218,14 +220,6 @@ export class SetService {
           'foreignField': '_id',
           'pipeline': [
             {
-              '$addFields': {
-                'difference': {
-                  '$subtract': [
-                    '$likes', '$dislikes'
-                  ]
-                }
-              }
-            }, {
               '$sort': {
                 'difference': -1, '_id': 1
               }

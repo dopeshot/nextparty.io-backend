@@ -17,6 +17,11 @@ import { Roles } from '../auth/roles/roles.decorator';
 export class SetController {
   constructor(private readonly setService: SetService) {}
 
+  @Get()
+  quickfix(){
+    return this.setService.quickFix()
+  }
+
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create new Set via Json'})
