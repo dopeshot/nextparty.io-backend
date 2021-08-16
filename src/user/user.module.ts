@@ -8,7 +8,8 @@ import { VerifySchema } from './entities/verify.entity';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
-  MongooseModule.forFeature([{ name: 'Verify', schema: VerifySchema }])],
+  MongooseModule.forFeature([{ name: 'Verify', schema: VerifySchema }]),
+  MongooseModule.forFeature([{ name: 'Reset', schema: VerifySchema }])],
   controllers: [UserController],
   providers: [UserService, MailService],
   exports: [UserService] 

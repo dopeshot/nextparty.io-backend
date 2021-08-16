@@ -50,7 +50,29 @@ export class MailService {
 	 * @param code - verification code
 	 */
 	async generateVerifyMail(name: string, mail: string, code: string){
-		const message = '<b>Hey, '+name+'<br> Click here to verify your email adress: <br> <a href="http://localhost:3000/api/user/verify/'+code+'">Verify</a></b>'
+		const tmpl = await readFile(__dirname + '/templates/MailVerify.ejs', 'utf-8')
+		const message = render(tmpl, {
+			verifyLink: 'http://localhost:3000/api/user/verify/'+code,
+			username: name,
+		});
 		this.sendMail(mail, "Verifiy your Email", message)
+	}
+
+	/**
+	 * Sends a mail containing a password reset link/code
+	 * @param name - username
+	 * @param mail - user email
+	 * @param resetCode - the code required to reset/change the pw
+	 */
+	async sendPasswordReset(name: string, mail, resetCode){
+		/* Reenable this once a template exists
+		const tmpl = await readFile(__dirname + '/templates/PwReset.ejs', 'utf-8')	
+		const message = render(tmpl, {
+			verifyLink: 'http://localhost:3000/api/user/reset/'+resetCode+'/?password=testing123',
+			username: name,
+		});
+		*/
+		let message = '<b>'+resetCode+'<b>'
+		this.sendMail(mail, "Reset your pw", message)
 	}
 }
