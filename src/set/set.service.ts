@@ -35,16 +35,16 @@ export class SetService {
         //Check if element is not already in array
         if (set.taskList.indexOf(task) == -1) {
           set.taskList.push(task)
-          if(await (await this.taskSchema.findById(task)).type == "truth"){set.truthCount++}
-             else {set.daresCount++}
+          if (await (await this.taskSchema.findById(task)).type == "truth") { set.truthCount++ }
+          else { set.daresCount++ }
         }
       } else {
         //Check if element exists and therefore can be deleted
         const index = set.taskList.indexOf(task)
         if (index != -1) {
           set.taskList.splice(index, 1)
-          if(await (await this.taskSchema.findById(task)).type == "truth"){set.truthCount--}
-            else {set.daresCount--}
+          if (await (await this.taskSchema.findById(task)).type == "truth") { set.truthCount-- }
+          else { set.daresCount-- }
         }
       }
     }
@@ -94,9 +94,15 @@ export class SetService {
     const isDownvote = vote && vote === 'downvote'
 
     // Handle vote
-    if (isUpvote) set.likes += 1
+    if (isUpvote) {
+      set.likes += 1;
+      set.difference++
+    }
 
-    if (isDownvote) set.dislikes += 1
+    if (isDownvote) {
+      set.dislikes += 1;
+      set.difference--
+    }
 
     return await set.save()
   }
@@ -129,7 +135,7 @@ export class SetService {
   async getTasks(id: ObjectId, page: number) {
 
     const isPaged = page ? true : false
-    const startTime = Date.now();
+    //console.time()
     const set = await this.setSchema.findById(id)
 
     if (!set) {
@@ -158,7 +164,7 @@ export class SetService {
       }
 
     }
-    console.log("Runtime in ms: ", Date.now() - startTime)
+    //console.timeEnd()
     return taskList
   }
 
@@ -167,7 +173,7 @@ export class SetService {
     limit += skip
     const idd = id.toString()
 
-    const startTime = Date.now();
+    //console.time()
     const result = await this.setSchema.aggregate([
       { '$match': { '_id': Types.ObjectId(idd) } },
       {
@@ -177,14 +183,6 @@ export class SetService {
           'foreignField': '_id',
           'pipeline': [
             {
-              '$addFields': {
-                'difference': {
-                  '$subtract': [
-                    '$likes', '$dislikes'
-                  ]
-                }
-              }
-            }, {
               '$sort': {
                 'difference': -1, '_id': 1
               }
@@ -202,7 +200,7 @@ export class SetService {
         }
       }
     ])
-    console.log("Runtime in ms: ", Date.now() - startTime)
+    //console.timeEnd()
     if (result.length == 0) { throw new NotFoundException }
     return result
   }
@@ -218,14 +216,6 @@ export class SetService {
           'foreignField': '_id',
           'pipeline': [
             {
-              '$addFields': {
-                'difference': {
-                  '$subtract': [
-                    '$likes', '$dislikes'
-                  ]
-                }
-              }
-            }, {
               '$sort': {
                 'difference': -1, '_id': 1
               }

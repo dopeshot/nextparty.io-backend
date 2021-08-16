@@ -75,14 +75,6 @@ export class CategoryService {
 					'foreignField': '_id',
 					'pipeline': [
 						{
-							'$addFields': {
-								'difference': {
-									'$subtract': [
-										'$likes', '$dislikes'
-									]
-								}
-							}
-						}, {
 							'$sort': {
 								'difference': -1, '_id': 1
 							}
@@ -118,14 +110,6 @@ export class CategoryService {
 					'foreignField': '_id',
 					'pipeline': [
 						{
-							'$addFields': {
-								'difference': {
-									'$subtract': [
-										'$likes', '$dislikes'
-									]
-								}
-							}
-						}, {
 							'$sort': {
 								'difference': -1, '_id': 1
 							}

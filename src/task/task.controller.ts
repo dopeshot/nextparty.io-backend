@@ -29,10 +29,10 @@ export class TaskController {
     return this.taskService.findAll(+paginationDto.page, +paginationDto.limit);
   }
 
-  // @Get('topten')
-  // findTop10Tasks() {
-  //   return this.taskService.findTop10Tasks();
-  // }
+  @Get('topten')
+  findTop10Tasks() {
+    return this.taskService.findTop10Tasks();
+  }
 
   @Get(':id')
   @ApiOperation({ summary: 'Find one task by id' })

@@ -54,7 +54,7 @@ GET http://localhost:3000/api/category/611928abefb0f27a182977ce
 GET http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/toptensets
 
 ### Get all Sets in this Category
-GET http://localhost:3000/api/category/611928abefb0f27a182977ce/sets
+GET http://localhost:3000/api/category/6116c92520c4bf5834f0fef2/sets
 
 ### Soft Delete Category by Id
 DELETE http://localhost:3000/api/category/6119382bcd1c889aa0aa7c2c

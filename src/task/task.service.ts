@@ -15,7 +15,7 @@ import { TaskStatus } from './enums/taskstatus.enum'
 @Injectable()
 export class TaskService {
     // Constructor
-    constructor(@InjectModel('Task') private taskSchema: Model<TaskDocument>) {}
+    constructor(@InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
 
     // Creates a new Task and checks if the message content accounts for extra user interaction
     async create(createTaskDto: CreateTaskDto): Promise<Task> {
@@ -35,38 +35,38 @@ export class TaskService {
 
     // Returns all Tasks
     async findAll(page: number, limit: number): Promise<any> {
-		const documentCount = await this.taskSchema.estimatedDocumentCount()
-		const pageCount = Math.floor(documentCount / limit)
+        const documentCount = await this.taskSchema.estimatedDocumentCount()
+        const pageCount = Math.floor(documentCount / limit)
 
-		if(page > pageCount)
-			throw new NotFoundException()
+        if (page > pageCount)
+            throw new NotFoundException()
 
-		const previous = page - 1 >= 0 ? page - 1: null
-		const next = page + 1 < pageCount ? page + 1: null
-        
+        const previous = page - 1 >= 0 ? page - 1 : null
+        const next = page + 1 < pageCount ? page + 1 : null
+
         //console.time()
-		//const tasks = await this.taskSchema.find().limit(limit + limit*page).skip(limit * page)
-        
+        //const tasks = await this.taskSchema.find().limit(limit + limit*page).skip(limit * page)
+
         const tasks = await this.taskSchema.aggregate([
             {
-                $limit: limit + limit*page
-            },{
-                $skip: limit*page
+                $limit: limit + limit * page
+            }, {
+                $skip: limit * page
             }
 
         ])
         //console.timeEnd()
-		
+
         return {
-			paging: {
-				documentCount,
-				pageCount,
-				...previous !== null && { previousPage: previous },
-				currentPage: page,
-				...next && { nextPage: next }
-			},
-			tasks
-		}
+            paging: {
+                documentCount,
+                pageCount,
+                ...previous !== null && { previousPage: previous },
+                currentPage: page,
+                ...next && { nextPage: next }
+            },
+            tasks
+        }
     }
 
     // Returns the Task with matching id
@@ -80,20 +80,13 @@ export class TaskService {
     async findTop10Tasks(): Promise<TaskDocument[]> {
         const topTasks = await this.taskSchema.aggregate([
             {
-                $addFields: {
-                    difference: {
-                        $subtract: ['$likes', '$dislikes'],
-                    },
-                },
-            },
-            {
                 $sort: {
                     difference: -1, '_id': 1
                 },
             },
             {
                 $limit: 10,
-            },
+            }
         ])
         return topTasks
     }
@@ -146,9 +139,15 @@ export class TaskService {
         const isDownvote = vote && vote === 'downvote'
 
         // Handle vote
-        if (isUpvote) task.likes += 1
+        if (isUpvote) { 
+            task.likes += 1; 
+            task.difference++ 
+        }
 
-        if (isDownvote) task.dislikes += 1
+        if (isDownvote) { 
+            task.dislikes += 1; 
+            task.difference-- 
+        }
 
         return await task.save()
     }
@@ -180,7 +179,11 @@ export class TaskService {
         if (!task) throw new NotFoundException()
     }
 
-	private countPersons(task: Task): void {
+    /*-------------------------------------------------------|
+    |                     Logic Helpers                      |
+    | -------------------------------------------------------*/
+    
+    private countPersons(task: Task): void {
         const maleCountSymbol = "@m"
         const femaleCountSymbol = "@f"
         const anyoneCountSymbol = "@a"
