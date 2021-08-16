@@ -20,7 +20,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json --verbose --watch",
     "seed": "node dist/seeder",
-    "seed:refresh": "node dist/seeder --refresh"
+    "seed:refresh": "cross-env NODE_OPTIONS=--max-old-space-size=8192 node dist/seeder --refresh"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.6.0",

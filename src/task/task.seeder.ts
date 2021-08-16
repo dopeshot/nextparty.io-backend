@@ -9,7 +9,7 @@ export class TaskSeeder implements Seeder {
     constructor(@InjectModel('Task') private readonly task: Model<TaskDocument>) {}
 
     async seed(): Promise<any> {
-        const tasks = DataFactory.createForClass(Task).generate(100000)
+        const tasks = DataFactory.createForClass(Task).generate(1000000)
 
         return this.task.insertMany(tasks)
     }
