@@ -51,7 +51,7 @@ PATCH http://localhost:3000/api/task/6117d43c51e15a81fc269715/upvote
 PATCH http://localhost:3000/api/task/6117d43c51e15a81fc269715/downvote
 
 ### Get all Tasks
-GET http://localhost:3000/api/task?page=2
+GET http://localhost:3000/api/task
 
 ### Get one Task
 GET http://localhost:3000/api/task/6114edf7b4bd8303888ec67d
