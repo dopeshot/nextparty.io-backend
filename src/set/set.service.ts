@@ -26,16 +26,6 @@ export class SetService {
     }
   }
 
-  async quickFix(){
-    await this.setSchema.updateMany([
-        {
-          '$set': {
-            'difference': 0
-          }
-        }
-      ])
-    return
-}
   async alterTasks(id: ObjectId, mode: string, Tasks: UpdateSetTasksDto) {
     let set = await this.setSchema.findById(id)
     if (!set) { throw new NotFoundException() }
@@ -45,16 +35,16 @@ export class SetService {
         //Check if element is not already in array
         if (set.taskList.indexOf(task) == -1) {
           set.taskList.push(task)
-          if(await (await this.taskSchema.findById(task)).type == "truth"){set.truthCount++}
-             else {set.daresCount++}
+          if (await (await this.taskSchema.findById(task)).type == "truth") { set.truthCount++ }
+          else { set.daresCount++ }
         }
       } else {
         //Check if element exists and therefore can be deleted
         const index = set.taskList.indexOf(task)
         if (index != -1) {
           set.taskList.splice(index, 1)
-          if(await (await this.taskSchema.findById(task)).type == "truth"){set.truthCount--}
-            else {set.daresCount--}
+          if (await (await this.taskSchema.findById(task)).type == "truth") { set.truthCount-- }
+          else { set.daresCount-- }
         }
       }
     }
@@ -104,9 +94,15 @@ export class SetService {
     const isDownvote = vote && vote === 'downvote'
 
     // Handle vote
-    if (isUpvote) set.likes += 1
+    if (isUpvote) {
+      set.likes += 1;
+      set.difference++
+    }
 
-    if (isDownvote) set.dislikes += 1
+    if (isDownvote) {
+      set.dislikes += 1;
+      set.difference--
+    }
 
     return await set.save()
   }
