@@ -15,7 +15,10 @@ jobs:
         
       # setup env
       - name: create env
-        run: echo "${{ secrets.PIPELINE_ENV }}" | base64 -d > .env
+        run: 'echo "$ENV_VALUES" > .env'
+        shell: bash
+        env:
+          ENV_VALUES: ${{secrets.PIPELINE_ENV}}
         
     # install/cache npm dependencies
       - name: cache packages
