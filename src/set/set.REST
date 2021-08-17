@@ -30,7 +30,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc
 GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tasks1
 
 ### Get Tasks in Set2
-GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tasks
+GET http://localhost:3000/api/set/6116bbed831a4e1c10285a38/tasks
 
 ### Get top 10 Tasks in Set2
 GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tentasks

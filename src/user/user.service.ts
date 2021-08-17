@@ -56,7 +56,7 @@ export class UserService {
     return user
   }
 
-  async createVerification(user: UserDocument) {
+  async createVerification(user: User) {
     const verifyCode = crypto.randomBytes(64).toString('hex');
     const verifyObject = new this.verifySchema({
       userId: user._id,

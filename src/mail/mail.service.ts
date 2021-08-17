@@ -1,6 +1,6 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import { render } from 'ejs'
+import { render, renderFile } from 'ejs'
 import { readFile as _readFile } from 'fs';
 import { promisify } from 'util';
 import { join } from 'path';
@@ -9,7 +9,9 @@ const readFile = promisify(_readFile);
 
 @Injectable()
 export class MailService {
-	constructor(private readonly mailerService: MailerService) { }
+	constructor(private readonly mailerService: MailerService) {
+		mailerService
+	 }
 
 	/**
 	 * Method that communicates with mailserver to send mail
@@ -36,7 +38,7 @@ export class MailService {
 	 */
 	async mailTest(recipient: string) {
 		const template = await readFile(join(__dirname, 'templates', 'test.ejs'), 'utf-8')
-		const message = render(template, {
+		const message = await renderFile('test.ejs', {
 			// Data to be sent to template engine.
 			code: 'cf1a3f828287',
 			username: 'john doe',
@@ -66,14 +68,11 @@ export class MailService {
 	 * @param resetCode - the code required to reset/change the pw
 	 */
 	async sendPasswordReset(name: string, mail, resetCode){
-		/* Reenable this once a template exists
-		const tmpl = await readFile(__dirname + '/templates/PwReset.ejs', 'utf-8')	
+		const tmpl = await readFile(__dirname + '/templates/PasswordReset.ejs', 'utf-8')	
 		const message = render(tmpl, {
-			verifyLink: 'http://localhost:3000/api/user/reset/'+resetCode+'/?password=testing123',
+			resetLink: `http://localhost:3000/api/user/reset-form/${resetCode}`,
 			username: name,
 		});
-		*/
-		let message = `<b>${resetCode}</b>`
 		this.sendMail(mail, "Reset your pw", message)
 	}
 }
