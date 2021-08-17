@@ -6,6 +6,9 @@ export class CreateSetDto  {
     name: string
 
     @IsString()
-    @Length(0, 124)
+    @Length(0, 555555)
     description: string
+
+    @IsString()
+    language: string
 }

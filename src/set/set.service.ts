@@ -13,15 +13,17 @@ export class SetService {
   constructor(@InjectModel('Set') private setSchema: Model<SetDocument>,
     @InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
 
-  async create(metaData: CreateSetDto): Promise<SetDocument> {
+  async create(metaData: CreateSetDto, user: any): Promise<SetDocument> {
     try {
       const set = new this.setSchema({
-        ...metaData
+        ...metaData,
+        creator: user.userId
       })
       const result = await set.save()
 
       return result
     } catch (error) {
+      console.log(error)
       throw new InternalServerErrorException()
     }
   }

@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Request, UseGuards, ValidationPipe } from '@nestjs/common';
 import { CreateSetDto } from './dto/create-set.dto';
 import { ObjectId } from 'mongoose'
 import { UpdateSetDto } from './dto/update-set-metadata.dto';
@@ -21,9 +21,8 @@ export class SetController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create new set'})
-  create(@Body(new ValidationPipe({ whitelist: true })) createSetDto: CreateSetDto) {
-    return createSetDto
-    return this.setService.create(createSetDto);
+  create(@Body(new ValidationPipe({ whitelist: true })) createSetDto: CreateSetDto, @Request() req) {
+    return this.setService.create(createSetDto, req.user);
   }
 
   @Get()
@@ -34,7 +33,7 @@ export class SetController {
 
   @Get(':id')
   @ApiOperation({ summary: 'Get Set via id'})
-  findOne(@Param('id', new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
+  findOne(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
     return this.setService.findOne(id);
   }
 
@@ -44,31 +43,31 @@ export class SetController {
   // TODO: Protected Route, can be done if user created this set or admins
   @HttpCode(204)
   @ApiOperation({ summary: 'Delete Set via id'})
-  remove(@Param('id', new ValidationPipe({ whitelist: true })) { id }: MongoIdDto, @Query('type') type: string) {
+  remove(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto, @Query('type') type: string) {
     this.setService.remove(id, type);
   }
 
   @Get(':id/tasks')
   @ApiOperation({ summary: 'Get all tasks in set with paging Maxi-Version'})
-  getSetTasks(@Param('id', new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
+  getSetTasks(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
     return this.setService.getTasks2(id, +paginationDto.page,+paginationDto.limit);
   }
 
   @Get(':id/tasks1')
   @ApiOperation({ summary: 'Get all tasks in set with paging Max-Version'})
-  getSetTasks1(@Param('id', new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto,  @Query('page') page: number) {
+  getSetTasks1(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto,  @Query('page') page: number) {
     return this.setService.getTasks(id, page);
   }
 
   @Get(':id/tentasks')
   @ApiOperation({ summary: 'Get top 10 tasks in set sorted by difference'})
-  getSetTopTenTasks(@Param('id', new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto) {
+  getSetTopTenTasks(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto) {
     return this.setService.findTopTenTasks(id);
   }
 
   @Get(':id/meta')
   @ApiOperation({ summary: 'Get set metadata'})
-  getMeta(@Param('id', new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto, @Body() updateSetDto: UpdateSetDto) {
+  getMeta(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto, @Body() updateSetDto: UpdateSetDto) {
     return this.setService.getMetadata(id);
   }
 
@@ -77,7 +76,7 @@ export class SetController {
   @Roles(Role.Admin)
   // TODO: Protected Route, can be done if user created this set or admins
   @ApiOperation({ summary: 'Update Set metadata'})
-  updateMeta(@Param('id', new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto, @Body() updateSetDto: UpdateSetDto) {
+  updateMeta(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto, @Body() updateSetDto: UpdateSetDto) {
     return this.setService.updateMetadata(id, updateSetDto);
   }
 
@@ -89,10 +88,10 @@ export class SetController {
 
   @Post(':id/add')
   @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
+  //@Roles(Role.Admin)
   // TODO: Protected Route, can be done if user created this set or admins
   @ApiOperation({ summary: 'Add Task to Set via id and Json'})
-  addTask(@Param('id', new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto, @Body() updateSetTasksDto: UpdateSetTasksDto) {
+  addTask(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto, @Body() updateSetTasksDto: UpdateSetTasksDto) {
     return this.setService.alterTasks(id, "add", updateSetTasksDto);
   }
   
@@ -101,7 +100,7 @@ export class SetController {
   @Roles(Role.Admin)
   // TODO: Protected Route, can be done if user created this set or admins (Except hard delete. this should only be possible for admins)
   @ApiOperation({ summary: 'Remove one Set via id and Json'})
-  removeTask(@Param('id', new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto, @Body() updateSetTasksDto: UpdateSetTasksDto) {
+  removeTask(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto, @Body() updateSetTasksDto: UpdateSetTasksDto) {
     return this.setService.alterTasks(id, "remove", updateSetTasksDto);
   }
 }
