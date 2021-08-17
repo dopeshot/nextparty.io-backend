@@ -170,13 +170,13 @@ export class SetService {
     return taskList
   }
 
-  async getTasks2(id: ObjectId, page: number, limit: number): Promise<TaskDocument[]> {
+  async getTasks2(id: ObjectId, page: number, limit: number): Promise<Set> {
     const skip = page * limit
     limit += skip
     const idd = id.toString()
-
+    const set: Set = await this.setSchema.findById(id).populate('taskList')
     //console.time()
-    const result = await this.setSchema.aggregate([
+    /*const result = await this.setSchema.aggregate([
       { '$match': { '_id': Types.ObjectId(idd) } },
       {
         '$lookup': {
@@ -201,10 +201,11 @@ export class SetService {
           'objects': 1
         }
       }
-    ])
+    ])*/
+
     //console.timeEnd()
-    if (result.length == 0) { throw new NotFoundException }
-    return result
+    //if (result.length == 0) { throw new NotFoundException }
+    return set
   }
 
   async findTopTenTasks(id: ObjectId): Promise<TaskDocument[]> {
