@@ -15,14 +15,20 @@ jobs:
         
     # install/cache npm dependencies
       - name: cache packages
-        run: npm i
+        run: |
+          npm i
+          echo "%{.env}"
         
      #  Start MongoDB 
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.6.0
         with:
           mongodb-version: '5.0'
-        
+          
+    # setup env
+      - name: create env
+        run: echo $secrets.PIPELINE_ENV | base64 --decode > .env
+            
     # run unit tests    
       - name: unit tests
         run: npm run test:e2e
