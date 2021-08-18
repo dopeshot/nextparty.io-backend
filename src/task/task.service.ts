@@ -5,7 +5,7 @@ import {
     UnprocessableEntityException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model, ObjectId } from 'mongoose'
+import { Model, ObjectId, Types } from 'mongoose'
 import { CreateTaskDto } from './dto/create-task.dto'
 import { VoteType } from './dto/task-vote-dto'
 import { UpdateTaskDto } from './dto/update-task.dto'
@@ -139,14 +139,14 @@ export class TaskService {
         const isDownvote = vote && vote === 'downvote'
 
         // Handle vote
-        if (isUpvote) { 
-            task.likes += 1; 
-            task.difference++ 
+        if (isUpvote) {
+            task.likes += 1;
+            task.difference++
         }
 
-        if (isDownvote) { 
-            task.dislikes += 1; 
-            task.difference-- 
+        if (isDownvote) {
+            task.dislikes += 1;
+            task.difference--
         }
 
         return await task.save()
@@ -155,13 +155,17 @@ export class TaskService {
     async remove(id: ObjectId, type: string): Promise<void> {
         // Check query
         const isHardDelete = type ? type.includes('hard') : false
-
         // true is for admin check later
         if (true && isHardDelete) {
             // Check if there is a task with this id and remove it
-            const task = await this.taskSchema.findByIdAndDelete(id)
-            if (!task) throw new NotFoundException()
+            try {
+                const task = await this.taskSchema.findByIdAndDelete(id)
 
+                if (!task) throw new NotFoundException()
+            }
+            catch (error) {
+                 console.log(error) 
+            }
             // We have to return here to exit process
             return
         }
@@ -182,7 +186,7 @@ export class TaskService {
     /*-------------------------------------------------------|
     |                     Logic Helpers                      |
     | -------------------------------------------------------*/
-    
+
     private countPersons(task: Task): void {
         const maleCountSymbol = "@m"
         const femaleCountSymbol = "@f"
