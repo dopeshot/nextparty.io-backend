@@ -14,10 +14,9 @@ export class SearchService {
         @InjectModel('User') private userSchema: Model<UserDocument>) { }
 
     async search(searchString: string, page: number, limit: number, type = 'all') {
-        if (searchString.length < 3) { throw new UnprocessableEntityException }
+        if (searchString.length < 3) { return "Search too short";throw new Error('Search too short') }
         const subStrings = searchString.toLowerCase().split(" ")
 
-        console.log(type)
         // all the variables setup
         const skip = page * limit
         limit += skip
