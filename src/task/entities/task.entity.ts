@@ -66,3 +66,11 @@ export class Task {
 
 export type TaskDocument = Task & Document
 export const TaskSchema = SchemaFactory.createForClass(Task)
+// doesn't work in nestjs/mongoose currently
+// TaskSchema.pre('deleteOne', async function(next) {
+//     console.log('middleware is called')
+//     const task = this
+//     await task.model('SetDocument').findById(Types.ObjectId("611adde031fc65699861a11e"))
+//     return next()
+// })
+//$pullAll: { 'taskList': Types.ObjectId(task.id.toString()) }
