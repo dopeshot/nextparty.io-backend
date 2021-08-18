@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request, Req } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, UseGuards, Request, Req, Render, Res , Response} from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { ObjectId, Query } from 'mongoose';
@@ -21,9 +21,13 @@ export class UserController {
     return await this.userService.findAll();
   }
 
+
   @Get("/verify/:code")
-  async verifyMail(@Param('code') code: string): Promise<any> {
-    return await this.userService.veryfiyUser(code);
+  @Render("MailVerify")
+  async verifyMail(@Param('code') code: string, @Res() res: Response): Promise<any> {
+    let result = await this.userService.veryfiyUser(code)
+    return 
+    
   }
 
   @Get('/profile')
@@ -66,8 +70,14 @@ export class UserController {
     return await this.userService.requestResetPassword(userData.userMail)
   }
 
-  @Post('/password-reset/:code')
-  async validateReset(@Param('code') code: string, @Body(new ValidationPipe({ whitelist: true })) { password }: { password: string }){
-    return await this.userService.validatePasswordReset(code, password)
+  @Get('/reset-form/:code')
+  @Render('reset')
+  async getResetForm(@Param('code') Usercode: string){
+    return { code: Usercode , submitURL: `${process.env.HOST}/api/user/submitReset`}
+  }
+  
+  @Post('/submitReset')
+  async validateReset(@Body() values: { password: string, code: string }){
+    return await this.userService.validatePasswordReset(values.code, values.password)
   }
 }

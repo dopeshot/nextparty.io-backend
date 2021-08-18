@@ -3,9 +3,9 @@ POST http://localhost:3000/api/auth/register
 Content-Type: application/json
 
 {
-    "username": "ssassssssssa2adasd",
-    "email": "xxssx@test.de",
-    "password": "a xxx password"
+    "username": "dasdas",
+    "email": "tsst@test.de",
+    "password": "this is a password"
 }
 
 ### Login User
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
     "email": "test@test.de",
-    "password": "this password was updated"
+    "password": "new pw"
 }
 
 ### Google Auth
