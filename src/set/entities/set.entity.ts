@@ -5,7 +5,6 @@ import { Language } from "../enums/language.enum";
 
 @Schema({ timestamps: true })
 export class Set {
-
     @Prop({ required: true })
     name: string
 
@@ -19,7 +18,7 @@ export class Set {
     description: string
 
     @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
-    creator: ObjectId
+    createdBy: ObjectId
 
     @Prop({ default: 0 })
     likes: number | 0
