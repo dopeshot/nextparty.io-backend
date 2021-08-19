@@ -3,7 +3,6 @@ import {
     Injectable,
     InternalServerErrorException,
     NotFoundException,
-    UnauthorizedException,
     UnprocessableEntityException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
@@ -121,7 +120,7 @@ export class TaskService {
 
         // Check if User is Creator of Task or Admin
         if (!(user.userId == task.author || user.role == "admin"))
-            throw new UnauthorizedException()
+            throw new ForbiddenException()
 
         try {
             if (updateTaskDto.content.hasOwnProperty('message')) {

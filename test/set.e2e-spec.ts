@@ -124,6 +124,16 @@ describe('SetController (e2e)', () => {
     })
     */
 
+    /*Test cancel because error gets thrown in console
+    it('/set/:id (DELETE) type=hard user', () => {
+      const res = request(app.getHttpServer())
+        .delete(`/api/set/${setId1}?type=hard`)
+        .set('Authorization', `Bearer ${token}`)
+        .expect(403)
+      return res
+    })
+    */
+
     it('/user/testing (PATCH) Change to Admin', async () => {
       const res = request(app.getHttpServer())
         .patch(`/api/user/testing/${userId}`)
