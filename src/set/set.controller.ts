@@ -30,6 +30,13 @@ export class SetController {
     return this.setService.findAll();
   }
 
+  @Get('healthcheck')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({summary: 'HealthCheck for sets'})
+  healthCheck(@Request() req){
+    return this.setService.healthCheck(req.user);
+  }
+
   @Get('user/:id')
   @ApiOperation({ summary: 'Get sets from user'})
   userSets(@Param(new ValidationPipe({whitelist:true})){id}: MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto){
