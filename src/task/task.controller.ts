@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode, UseGuards, Req } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode, UseGuards, Req, Request } from '@nestjs/common'
 import { TaskService } from './task.service'
 import { CreateTaskDto } from './dto/create-task.dto'
 import { UpdateTaskDto } from './dto/update-task.dto'
@@ -53,21 +53,17 @@ export class TaskController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
-  // TODO: Protected Route, can be done if user created this set or admins
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update one task by id' })
-  update(@Param(ValidationPipe) { id }: MongoIdDto, @Body(new ValidationPipe({ whitelist: true })) updateTaskDto: UpdateTaskDto) {
-    return this.taskService.update(id, updateTaskDto);
+  update(@Param(ValidationPipe) { id }: MongoIdDto, @Body(new ValidationPipe({ whitelist: true })) updateTaskDto: UpdateTaskDto, @Request() req) {
+    return this.taskService.update(id, updateTaskDto, req.user);
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
-  // TODO: Protected Route, can be done if user created this set or admins (Except hard delete. this should only be possible for admins)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @ApiOperation({ summary: 'Delete one task by id' })
-  remove(@Param(ValidationPipe) { id }: MongoIdDto, @Query('type') type: string) {
-    this.taskService.remove(id, type);
+  remove(@Param(ValidationPipe) { id }: MongoIdDto, @Query('type') type: string, @Request() req) {
+    this.taskService.remove(id, type, req.user);
   }
 }
