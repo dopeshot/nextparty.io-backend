@@ -1,5 +1,7 @@
 import {
     ForbiddenException,
+    forwardRef,
+    Inject,
     Injectable,
     InternalServerErrorException,
     NotFoundException,
@@ -7,6 +9,9 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, ObjectId, Types } from 'mongoose'
+import { UpdateSetDto } from 'src/set/dto/update-set-metadata.dto'
+import { UpdateSetTasksDto } from 'src/set/dto/update-set-tasks.dto'
+import { SetService } from 'src/set/set.service'
 import { JwtUserDto } from '../auth/dto/jwt.dto'
 import { CreateTaskDto } from './dto/create-task.dto'
 import { VoteType } from './dto/task-vote-dto'
@@ -17,19 +22,35 @@ import { TaskStatus } from './enums/taskstatus.enum'
 @Injectable()
 export class TaskService {
     // Constructor
-    constructor(@InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
+    constructor(@InjectModel('Task') private taskSchema: Model<TaskDocument>,
+    @Inject(forwardRef(() => SetService)) private setService: SetService) { }
 
     // Creates a new Task and checks if the message content accounts for extra user interaction
-    async create(createTaskDto: CreateTaskDto, creator: JwtUserDto): Promise<Task> {
+    async create(createTaskDto: CreateTaskDto, creator: JwtUserDto, set: ObjectId): Promise<any> {
         try {
             const task: TaskDocument = new this.taskSchema({
                 ...createTaskDto,
                 author: creator.userId
             })
             this.countPersons(task)
-            const result: Task = await task.save()
 
-            return result
+            //This is ugly but the only way to prevent typescript from displaying all the mongoDB metadata to the client
+            let result:any = await task.save()
+
+            //If the creator set a set within the request the card will automatically be added 
+            if (set){
+                    try {
+                        await this.setService.alterTasks(set, "add", {tasks: [result._id]}, creator)
+                    }
+                    catch{
+                        // If anything fails here no Errorcode is passed to the client. Yet the client has to be informed
+                        return {
+                            ...(<any>result)._doc,
+                            optionalError: "Set not found"
+                        }
+                    }
+            }
+            return <Task>result
         } catch (error) {
             console.log(error)
             throw new InternalServerErrorException()

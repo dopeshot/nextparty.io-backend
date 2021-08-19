@@ -6,6 +6,12 @@ import { Language } from "../enums/language.enum";
 import { TaskStatus } from "../enums/taskstatus.enum";
 import { TaskType } from "../enums/tasktype.enum";
 
+/*
+DISCLAIMER!
+When altering this please also update the interface used as the return type for task creation.
+Ignoring this would lead to incomplete data being returned to the client.
+*/
+
 // Check
 @Schema({ _id: false })
 export class TaskContent {

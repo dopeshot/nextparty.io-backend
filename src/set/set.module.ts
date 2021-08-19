@@ -8,8 +8,9 @@ import { TaskModule } from '../task/task.module';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'Set', schema: SetSchema }]), 
-  MongooseModule.forFeature([{ name: 'Task', schema: TaskSchema }]), TaskModule],
+  MongooseModule.forFeature([{ name: 'Task', schema: TaskSchema }])],
   controllers: [SetController],
-  providers: [SetService]
+  providers: [SetService],
+  exports: [SetService]
 })
 export class SetModule {}
