@@ -31,6 +31,12 @@ export class SetController {
     return this.setService.findAll();
   }
 
+  @Get('user/:id')
+  @ApiOperation({ summary: 'Get sets from user'})
+  userSets(@Param(new ValidationPipe({whitelist:true})){id}: MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto){
+    return this.setService.userSets(id, +paginationDto.page,+paginationDto.limit);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get Set via id'})
   findOne(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {

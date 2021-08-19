@@ -61,10 +61,24 @@ export class SetService {
   }
 
   async findOne(id: ObjectId) {
-    let task = await this.setSchema.findById(id).lean()
-    if (!task)
+    let set = await this.setSchema.findById(id).lean()
+    if (!set)
       throw new NotFoundException()
-    return task;
+    return set;
+  }
+  async userSets(id: ObjectId, page: number, limit: number){
+    let userSets = await this.setSchema.aggregate([
+      {
+        '$match': {
+          'creator': Types.ObjectId(id.toString())
+        }
+      },{
+        $skip: page*limit
+      },{
+        $limit: limit
+      }
+    ])
+    return userSets
   }
 
   async updateMetadata(id: ObjectId, updateSetDto: UpdateSetDto) {
@@ -189,9 +203,9 @@ export class SetService {
                 'difference': -1, '_id': 1
               }
             }, {
-              '$limit': limit
-            }, {
               '$skip': skip
+            }, {
+              '$limit': limit
             }
           ],
           'as': 'objects'
