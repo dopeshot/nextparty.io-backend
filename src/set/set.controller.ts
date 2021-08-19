@@ -44,13 +44,11 @@ export class SetController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
-  // TODO: Protected Route, can be done if user created this set or admins
+  @UseGuards(JwtAuthGuard)
   @HttpCode(204)
   @ApiOperation({ summary: 'Delete Set via id'})
-  remove(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto, @Query('type') type: string) {
-    this.setService.remove(id, type);
+  remove(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto, @Query('type') type: string, @Request() req) {
+    this.setService.remove(id, type, req.user)
   }
 
   @Get(':id/tasks')
@@ -78,12 +76,10 @@ export class SetController {
   }
 
   @Patch(':id/meta')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
-  // TODO: Protected Route, can be done if user created this set or admins
-  @ApiOperation({ summary: 'Update Set metadata'})
-  updateMeta(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto, @Body() updateSetDto: UpdateSetDto) {
-    return this.setService.updateMetadata(id, updateSetDto);
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Update Set metadata'}) 
+  updateMeta(@Param('id') id: ObjectId, @Body() updateSetDto: UpdateSetDto, @Request() req) {
+    return this.setService.updateMetadata(id, updateSetDto, req.user);
   }
 
   @Patch(':id/:vote')
@@ -93,20 +89,15 @@ export class SetController {
   }
 
   @Post(':id/add')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  //@Roles(Role.Admin)
-  // TODO: Protected Route, can be done if user created this set or admins
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Add Task to Set via id and Json'})
-  addTask(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto, @Body() updateSetTasksDto: UpdateSetTasksDto) {
-    return this.setService.alterTasks(id, "add", updateSetTasksDto);
+  addTask(@Param('id') id: ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto, @Request() req) {
+    return this.setService.alterTasks(id, "add", updateSetTasksDto, req.user);
   }
   
   @Post(':id/remove')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
-  // TODO: Protected Route, can be done if user created this set or admins (Except hard delete. this should only be possible for admins)
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Remove one Set via id and Json'})
-  removeTask(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto, @Body() updateSetTasksDto: UpdateSetTasksDto) {
-    return this.setService.alterTasks(id, "remove", updateSetTasksDto);
-  }
+  removeTask(@Param('id') id:  ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto, @Request() req) {
+    return this.setService.alterTasks(id, "remove", updateSetTasksDto, req.user);
 }
