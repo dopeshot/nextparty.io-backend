@@ -1,12 +1,12 @@
 ###Create Task
 POST http://localhost:3000/api/task
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRvcGVzaG90Iiwic3ViIjoiNjExOTYxYTgxZmEyOTkwMDE2MjM2YWFhIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkyMzE4NTQsImV4cCI6MTYyOTI2Nzg1NH0.Bh_4A-rAWCxcTbOH7N3eUfvs-AtutlM3o50Jguy8xw8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRhc2RhcyIsInN1YiI6IjYxMWU0NWViYjZkYjFjM2JmNDhlYjczMiIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjI5MzczOTMxLCJleHAiOjE2Mjk0MDk5MzF9.56r1M6atYd2_Hy6nxQO4MRyDNc58fDdtDTTMNpCXltY
 
 {
     "language": "de",
     "type": "dare",
-    "author": "611961a81fa2990016236aaa",
+    "author": "611a396881010164f43b1079",
     "content": {
         "currentPlayerGender": "@ca",
         "message": "füttere die @a mit etwas Leckerem."
@@ -57,6 +57,9 @@ GET http://localhost:3000/api/task/6114edf7b4bd8303888ec67d
 
 ### Get top 10 Task
 GET http://localhost:3000/api/task/topten
+
+### Get Tasks from specific user
+GET http://localhost:3000/api/task/user/611a396881010164f43b1079?limit=4&page=0
 
 ### Soft Delete Task by Id
 DELETE http://localhost:3000/api/task/6114edf7b4bd8303888ec67d
