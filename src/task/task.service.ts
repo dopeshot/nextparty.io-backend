@@ -91,6 +91,21 @@ export class TaskService {
         return topTasks
     }
 
+    async userTasks(id: ObjectId, page: number, limit: number){
+        let userSets = await this.taskSchema.aggregate([
+          {
+            '$match': {
+              'author': Types.ObjectId(id.toString())
+            }
+          },{
+            $skip: page*limit
+          },{
+            $limit: limit
+          }
+        ])
+        return userSets
+      }
+
     // Updates the content language and type of a Task
     async update(
         id: ObjectId,
