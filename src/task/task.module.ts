@@ -3,7 +3,7 @@ import { TaskService } from './task.service'
 import { TaskController } from './task.controller'
 import { MongooseModule } from '@nestjs/mongoose'
 import { TaskSchema } from './entities/task.entity'
-import { SetModule } from 'src/set/set.module'
+import { SetModule } from '../set/set.module'
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'Task', schema: TaskSchema }]), forwardRef(()=> SetModule)],
