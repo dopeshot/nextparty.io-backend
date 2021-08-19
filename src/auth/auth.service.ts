@@ -1,13 +1,11 @@
 import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User, UserDocument } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { UserService } from '../user/user.service'
-import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto'
 import * as bcrypt from 'bcrypt'
-import { AccessTokenDto, JwtPayloadDto } from './dto/jwt.dto'
-import { DiscordUser } from './strategies/discord/discord-user.interface';
-import { userDataFromProvider } from 'src/user/interfaces/userDataFromProvider.interface';
+import { AccessTokenDto } from './dto/jwt.dto'
+import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
 
 @Injectable()
 export class AuthService {

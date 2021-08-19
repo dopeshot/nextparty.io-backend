@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { CreateSetDto } from './dto/create-set.dto';
 import { UpdateSetTasksDto } from './dto/update-set-tasks.dto';
@@ -6,19 +6,19 @@ import { Set, SetDocument } from './entities/set.entity';
 import { Model, ObjectId, Types } from 'mongoose';
 import { SetStatus } from './enums/setstatus.enum';
 import { UpdateSetDto } from './dto/update-set-metadata.dto';
-import { Task, TaskContent, TaskDocument, TaskSchema, TaskContentSchema } from '../task/entities/task.entity';
-import { TaskService } from 'src/task/task.service';
+import { TaskDocument } from '../task/entities/task.entity';
+import { JwtUserDto } from '../auth/dto/jwt.dto';
 
 @Injectable()
 export class SetService {
   constructor(@InjectModel('Set') private setSchema: Model<SetDocument>,
     @InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
 
-  async create(metaData: CreateSetDto, user: any): Promise<SetDocument> {
+  async create(metaData: CreateSetDto, user: JwtUserDto): Promise<SetDocument> {
     try {
       const set = new this.setSchema({
-        ...metaData,
-        creator: user.userId
+        createdBy: user.userId,
+        ...metaData
       })
       const result = await set.save()
 
@@ -29,25 +29,34 @@ export class SetService {
     }
   }
 
-  async alterTasks(id: ObjectId, mode: string, Tasks: UpdateSetTasksDto) {
+  async alterTasks(id: ObjectId, mode: string, Tasks: UpdateSetTasksDto, user: JwtUserDto) {
     let set = await this.setSchema.findById(id)
-    if (!set) { throw new NotFoundException() }
+    if (!set)
+      throw new NotFoundException()
+
+    // Check if user is Creator of set or Admin
+    if (!(user.userId == set.createdBy || user.role == "admin"))
+      throw new ForbiddenException()
 
     for (let task of Tasks.tasks) {
       if (mode === "add") {
         //Check if element is not already in array
         if (set.taskList.indexOf(task) == -1) {
           set.taskList.push(task)
-          if (await (await this.taskSchema.findById(task)).type == "truth") { set.truthCount++ }
-          else { set.daresCount++ }
+          if (await (await this.taskSchema.findById(task)).type == "truth")
+            set.truthCount++
+          else
+            set.daresCount++
         }
       } else {
         //Check if element exists and therefore can be deleted
         const index = set.taskList.indexOf(task)
         if (index != -1) {
           set.taskList.splice(index, 1)
-          if (await (await this.taskSchema.findById(task)).type == "truth") { set.truthCount-- }
-          else { set.daresCount-- }
+          if (await (await this.taskSchema.findById(task)).type == "truth")
+            set.truthCount--
+          else
+            set.daresCount--
         }
       }
     }
@@ -82,19 +91,25 @@ export class SetService {
     return userSets
   }
 
-  async updateMetadata(id: ObjectId, updateSetDto: UpdateSetDto) {
-
+  async updateMetadata(id: ObjectId, updateSetDto: UpdateSetDto, user: JwtUserDto) {
     // Find Object
     let set = await this.setSchema.findById(id)
 
-    if (!set) { throw new NotFoundException() }
+    if (!set)
+      throw new NotFoundException()
 
+    // Check if user is Creator of set or Admin
+    if (!(user.userId == set.createdBy || user.role == "admin"))
+      throw new ForbiddenException()
 
     try {
-      if (updateSetDto.hasOwnProperty("description")) { set.description = updateSetDto.description }
-      if (updateSetDto.hasOwnProperty("name")) { set.name = updateSetDto.name }
-
-    } catch (error) { throw new UnprocessableEntityException }
+      if (updateSetDto.hasOwnProperty("description"))
+        set.description = updateSetDto.description
+      if (updateSetDto.hasOwnProperty("name"))
+        set.name = updateSetDto.name
+    } catch (error) {
+      throw new UnprocessableEntityException()
+    }
     const result = await set.save()
 
     return result;
@@ -124,29 +139,45 @@ export class SetService {
     return await set.save()
   }
 
-  async remove(id: ObjectId, type: string): Promise<void> {
+  /**
+    * Delete set: If type is hard ==> hard delete, If type is soft or anything else => soft delete
+    * @param id of the set
+    * @param type soft/anything else or hard delete
+  */
+  async remove(id: ObjectId, type: string, user: JwtUserDto): Promise<void> {
+    let set = await this.setSchema.findById(id)
+
+    if (!set)
+      throw new NotFoundException()
+
     // Check query
     const isHardDelete = type ? type.includes('hard') : false
 
-    // true is for admin check later
-    if (true && isHardDelete) {
-      // Check if there is a set with this id and remove it
-      const set = await this.setSchema.findByIdAndDelete(id)
-      if (!set)
-        throw new NotFoundException()
+    if (isHardDelete) {
+      if (user.role != 'admin')
+        throw new ForbiddenException()
 
-      // We have to return here to exit process
-      return
+      try {
+        // Check if there is a set with this id and remove it
+        const set = await this.setSchema.findByIdAndDelete(id)
+
+        // We have to return here to exit process
+        return
+      } catch (error) {
+        throw new InternalServerErrorException()
+      }
     }
 
     // Soft delete
-    const set = await this.setSchema.findByIdAndUpdate(id, {
+    // Check if user is Creator of set or Admin
+    if (!(user.userId == set.createdBy || user.role == "admin"))
+      throw new ForbiddenException()
+
+    set = await this.setSchema.findByIdAndUpdate(id, {
       status: SetStatus.DELETED
     }, {
       new: true
     })
-    if (!set)
-      throw new NotFoundException()
   }
 
   async getTasks(id: ObjectId, page: number) {

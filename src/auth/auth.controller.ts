@@ -2,7 +2,7 @@ import { Post, Controller, Body, ValidationPipe, Request, UseGuards, Get, HttpCo
 import { RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service'
 import { LocalAuthGuard } from './strategies/local/local-auth.guard';
-import { User } from 'src/user/entities/user.entity';
+import { User } from '../user/entities/user.entity';
 import { GoogleAuthGuard } from './strategies/google/google-auth.guard';
 import { FacebookAuthGuard } from './strategies/facebook/facebook-auth.guard';
 import { DiscordAuthGuard } from './strategies/discord/discord-auth.guard';
