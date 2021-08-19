@@ -1,4 +1,5 @@
 import {
+    ForbiddenException,
     Injectable,
     InternalServerErrorException,
     NotFoundException,
@@ -6,8 +7,7 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, ObjectId, Types } from 'mongoose'
-import { AnyARecord } from 'node:dns'
-import { JwtUserDto } from 'src/auth/dto/jwt.dto'
+import { JwtUserDto } from '../auth/dto/jwt.dto'
 import { CreateTaskDto } from './dto/create-task.dto'
 import { VoteType } from './dto/task-vote-dto'
 import { UpdateTaskDto } from './dto/update-task.dto'
@@ -94,42 +94,40 @@ export class TaskService {
         return topTasks
     }
 
-    async userTasks(id: ObjectId, page: number, limit: number){
+    async userTasks(id: ObjectId, page: number, limit: number) {
         let userSets = await this.taskSchema.aggregate([
-          {
-            '$match': {
-              'author': Types.ObjectId(id.toString())
+            {
+                '$match': {
+                    'author': Types.ObjectId(id.toString())
+                }
+            }, {
+                $skip: page * limit
+            }, {
+                $limit: limit
             }
-          },{
-            $skip: page*limit
-          },{
-            $limit: limit
-          }
         ])
         return userSets
-      }
+    }
 
     // Updates the content language and type of a Task
-    async update(
-        id: ObjectId,
-        updateTaskDto: UpdateTaskDto,
-    ): Promise<Task> {
+    async update(id: ObjectId, updateTaskDto: UpdateTaskDto, user: JwtUserDto): Promise<Task> {
         // Find Object
         let task = await this.taskSchema.findById(id)
-        //console.log(task)
-        if (!task) {
-            throw new NotFoundException()
-        }
 
-        //console.log(updateTaskDto)
+        if (!task)
+            throw new NotFoundException()
+
+        // Check if User is Creator of Task or Admin
+        if (!(user.userId == task.author || user.role == "admin"))
+            throw new ForbiddenException()
+
         try {
             if (updateTaskDto.content.hasOwnProperty('message')) {
                 task.content.message = updateTaskDto.content.message
                 this.countPersons(task)
             }
             if (updateTaskDto.content.hasOwnProperty('currentPlayerGender')) {
-                task.content.currentPlayerGender =
-                    updateTaskDto.content.currentPlayerGender
+                task.content.currentPlayerGender = updateTaskDto.content.currentPlayerGender
             }
             if (updateTaskDto.hasOwnProperty('language')) {
                 task.language = updateTaskDto.language
@@ -170,35 +168,36 @@ export class TaskService {
         return await task.save()
     }
 
-    async remove(id: ObjectId, type: string): Promise<void> {
+    async remove(id: ObjectId, type: string, user: JwtUserDto): Promise<void> {
+        let task = await this.taskSchema.findById(id)
+        
+        if (!task)
+            throw new NotFoundException()
+
         // Check query
         const isHardDelete = type ? type.includes('hard') : false
-        // true is for admin check later
-        if (true && isHardDelete) {
+
+        if (isHardDelete) {
+            if (user.role != "admin")
+                throw new ForbiddenException()
+
             // Check if there is a task with this id and remove it
             try {
                 const task = await this.taskSchema.findByIdAndDelete(id)
-
-                if (!task) throw new NotFoundException()
             }
             catch (error) {
-                 console.log(error) 
+                throw new InternalServerErrorException()
             }
             // We have to return here to exit process
             return
         }
 
         // Soft delete
-        const task = await this.taskSchema.findByIdAndUpdate(
-            id,
-            {
-                status: TaskStatus.DELETED,
-            },
-            {
-                new: true,
-            },
-        )
-        if (!task) throw new NotFoundException()
+        // Check if User is Creator of Task or Admin
+        if (!(user.userId == task.author || user.role == "admin"))
+            throw new ForbiddenException()
+
+        task = await this.taskSchema.findByIdAndUpdate(id, { status: TaskStatus.DELETED }, { new: true })
     }
 
     /*-------------------------------------------------------|

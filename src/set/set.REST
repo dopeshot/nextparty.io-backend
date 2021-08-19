@@ -1,7 +1,7 @@
 ###Create Set
 POST http://localhost:3000/api/set
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzODE3NzIsImV4cCI6MTYyOTQxNzc3Mn0.HlPRET4yfafmnqNJCZNDnMyXMkwlqtqvHBmr_aBB2Oo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzODYyNTEsImV4cCI6MTYyOTQyMjI1MX0.XBBL0vPzV4gR8KE-rmVcP8wDZztCBA4bhMEiGL9KQLs
 
 {
     "description": "Jeder hat schon mal Wahrheit oder Pflicht mit Freunden oder auf Partys gespielt. Hier kommt aber eine Sonderedition an Wahrheit-Fragen und Pflicht-Aufgaben für dich und deinen Crush, dein Girl- oder Boyfriend. Have Fun!",
@@ -73,9 +73,9 @@ PATCH  http://localhost:3000/api/set/6117926bd45adc1f50dea882/upvote
 PATCH  http://localhost:3000/api/set/6117926bd45adc1f50dea882/downvote
 
 ### Soft Delete Set by Id
-DELETE http://localhost:3000/api/set/611e53ad00c46627acbb5341
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzNzU2MTMsImV4cCI6MTYyOTQxMTYxM30.wsu_0AINoQMy1XNFPKY5qN4novKao7ThmmcA-p8KcaM
+DELETE http://localhost:3000/api/set/611e76203245bc06943d3cb5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzODYyNTEsImV4cCI6MTYyOTQyMjI1MX0.XBBL0vPzV4gR8KE-rmVcP8wDZztCBA4bhMEiGL9KQLs
 
 ### Hard Delete Set by Id (require admin role)
-DELETE http://localhost:3000/api/set/611e61328c72703e002f8f61?type=hard
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJzdWIiOiI2MTE3ZDVhMTcwNDU1ODRmZjhkM2M2ODkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2MjkzNzc0OTgsImV4cCI6MTYyOTQxMzQ5OH0.LSjhHDDMFTIY_iLEaj-2FuJn2Ze2KmvpIcHAKoujFFA
+DELETE http://localhost:3000/api/set/611e7707d1023241a0842c76?type=hard
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzODYyNTEsImV4cCI6MTYyOTQyMjI1MX0.XBBL0vPzV4gR8KE-rmVcP8wDZztCBA4bhMEiGL9KQLs

@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose'
-import { JwtUserDto } from 'src/auth/dto/jwt.dto'
+import { JwtUserDto } from '../auth/dto/jwt.dto'
 import { PaginationPayload } from '../shared/interfaces/paginationPayload.interface';
 import { SharedService } from '../shared/shared.service';
 import { CreateReportDto } from './dto/create-report.dto'

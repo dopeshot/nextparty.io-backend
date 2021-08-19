@@ -54,12 +54,10 @@ export class TaskController {
   }
 
   @Patch(':id')
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.Admin)
-  // TODO: Protected Route, can be done if user created this set or admins
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update one task by id' })
-  update(@Param(ValidationPipe) { id }: MongoIdDto, @Body(new ValidationPipe({ whitelist: true })) updateTaskDto: UpdateTaskDto) {
-    return this.taskService.update(id, updateTaskDto);
+  update(@Param(ValidationPipe) { id }: MongoIdDto, @Body(new ValidationPipe({ whitelist: true })) updateTaskDto: UpdateTaskDto, @Request() req) {
+    return this.taskService.update(id, updateTaskDto, req.user);
   }
 
   @Delete(':id')
@@ -67,8 +65,8 @@ export class TaskController {
   @Roles(Role.Admin)
   // TODO: Protected Route, can be done if user created this set or admins (Except hard delete. this should only be possible for admins)
   @ApiOperation({ summary: 'Delete one task by id' })
-  remove(@Param(new ValidationPipe) { id }: MongoIdDto, @Query('type') type: string, @Res() res: Response) {
-    this.taskService.remove(id, type)
+  remove(@Param(new ValidationPipe) { id }: MongoIdDto, @Query('type') type: string, @Request() req, @Res() res: Response) {
+    return this.taskService.remove(id, type, req.user)
     .catch((e) => {
       console.log("error is "+e)
       if (e instanceof NotFoundException){
@@ -81,6 +79,5 @@ export class TaskController {
       res.status(HttpStatus.NO_CONTENT).json([])
       return
     }) 
-  }
-  
+  } 
 }

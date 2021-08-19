@@ -1,8 +1,8 @@
 import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
-import { SetDocument } from 'src/set/entities/set.entity';
-import { UserDocument } from 'src/user/entities/user.entity';
+import { SetDocument } from '../set/entities/set.entity';
+import { UserDocument } from '../user/entities/user.entity';
 import { Task, TaskContent, TaskDocument, TaskSchema, TaskContentSchema } from '../task/entities/task.entity';
 import { SearchDto } from './dto/search.dto';
 
