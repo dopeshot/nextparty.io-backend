@@ -75,14 +75,6 @@ export class CategoryService {
 					'foreignField': '_id',
 					'pipeline': [
 						{
-							'$addFields': {
-								'difference': {
-									'$subtract': [
-										'$likes', '$dislikes'
-									]
-								}
-							}
-						}, {
 							'$sort': {
 								'difference': -1, '_id': 1
 							}
@@ -118,14 +110,6 @@ export class CategoryService {
 					'foreignField': '_id',
 					'pipeline': [
 						{
-							'$addFields': {
-								'difference': {
-									'$subtract': [
-										'$likes', '$dislikes'
-									]
-								}
-							}
-						}, {
 							'$sort': {
 								'difference': -1, '_id': 1
 							}
@@ -148,8 +132,7 @@ export class CategoryService {
 	}
 
 	async findOne(id: ObjectId): Promise<Category> {
-		// TODO: Add populate here
-		const category = await this.categorySchema.findById(id)
+		const category = await this.categorySchema.findById(id).populate('set')
 		if (!category)
 			throw new NotFoundException()
 

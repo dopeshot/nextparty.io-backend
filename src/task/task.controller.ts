@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode, UseGuards } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode, UseGuards, Req } from '@nestjs/common'
 import { TaskService } from './task.service'
 import { CreateTaskDto } from './dto/create-task.dto'
 import { UpdateTaskDto } from './dto/update-task.dto'
@@ -19,8 +19,8 @@ export class TaskController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new task' })
-  create(@Body(new ValidationPipe({ whitelist: true, transform: true })) createTaskDto: CreateTaskDto) {
-    return this.taskService.create(createTaskDto);
+  create(@Body(new ValidationPipe({ whitelist: true, transform: true })) createTaskDto: CreateTaskDto, @Req() req) {
+    return this.taskService.create(createTaskDto, req.user);
   }
 
   @Get()
@@ -29,10 +29,16 @@ export class TaskController {
     return this.taskService.findAll(+paginationDto.page, +paginationDto.limit);
   }
 
-  // @Get('topten')
-  // findTop10Tasks() {
-  //   return this.taskService.findTop10Tasks();
-  // }
+  @Get('topten')
+  findTop10Tasks() {
+    return this.taskService.findTop10Tasks();
+  }
+
+  @Get('user/:id')
+  @ApiOperation({ summary: 'Get tasks from user'})
+  userTasks(@Param(new ValidationPipe({whitelist:true})){id}: MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto){
+    return this.taskService.userTasks(id, +paginationDto.page,+paginationDto.limit);
+  }
 
   @Get(':id')
   @ApiOperation({ summary: 'Find one task by id' })

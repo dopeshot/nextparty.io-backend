@@ -5,7 +5,9 @@ import {
     UnprocessableEntityException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
-import { Model, ObjectId } from 'mongoose'
+import { Model, ObjectId, Types } from 'mongoose'
+import { AnyARecord } from 'node:dns'
+import { JwtUserDto } from 'src/auth/dto/jwt.dto'
 import { CreateTaskDto } from './dto/create-task.dto'
 import { VoteType } from './dto/task-vote-dto'
 import { UpdateTaskDto } from './dto/update-task.dto'
@@ -15,13 +17,14 @@ import { TaskStatus } from './enums/taskstatus.enum'
 @Injectable()
 export class TaskService {
     // Constructor
-    constructor(@InjectModel('Task') private taskSchema: Model<TaskDocument>) {}
+    constructor(@InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
 
     // Creates a new Task and checks if the message content accounts for extra user interaction
-    async create(createTaskDto: CreateTaskDto): Promise<Task> {
+    async create(createTaskDto: CreateTaskDto, creator: JwtUserDto): Promise<Task> {
         try {
             const task: TaskDocument = new this.taskSchema({
                 ...createTaskDto,
+                author: creator.userId
             })
             this.countPersons(task)
             const result: Task = await task.save()
@@ -35,27 +38,38 @@ export class TaskService {
 
     // Returns all Tasks
     async findAll(page: number, limit: number): Promise<any> {
-		const documentCount = await this.taskSchema.estimatedDocumentCount()
-		const pageCount = Math.floor(documentCount / limit)
+        const documentCount = await this.taskSchema.estimatedDocumentCount()
+        const pageCount = Math.floor(documentCount / limit)
 
-		if(page > pageCount)
-			throw new NotFoundException()
+        if (page > pageCount)
+            throw new NotFoundException()
 
-		const previous = page - 1 >= 0 ? page - 1: null
-		const next = page + 1 < pageCount ? page + 1: null
+        const previous = page - 1 >= 0 ? page - 1 : null
+        const next = page + 1 < pageCount ? page + 1 : null
 
-		const tasks = await this.taskSchema.find().limit(limit).skip(limit * page)
+        //console.time()
+        //const tasks = await this.taskSchema.find().limit(limit + limit*page).skip(limit * page)
 
-		return {
-			paging: {
-				documentCount,
-				pageCount,
-				...previous !== null && { previousPage: previous },
-				currentPage: page,
-				...next && { nextPage: next }
-			},
-			tasks
-		}
+        const tasks = await this.taskSchema.aggregate([
+            {
+                $limit: limit + limit * page
+            }, {
+                $skip: limit * page
+            }
+
+        ])
+        //console.timeEnd()
+
+        return {
+            paging: {
+                documentCount,
+                pageCount,
+                ...previous !== null && { previousPage: previous },
+                currentPage: page,
+                ...next && { nextPage: next }
+            },
+            tasks
+        }
     }
 
     // Returns the Task with matching id
@@ -69,23 +83,31 @@ export class TaskService {
     async findTop10Tasks(): Promise<TaskDocument[]> {
         const topTasks = await this.taskSchema.aggregate([
             {
-                $addFields: {
-                    difference: {
-                        $subtract: ['$likes', '$dislikes'],
-                    },
-                },
-            },
-            {
                 $sort: {
                     difference: -1, '_id': 1
                 },
             },
             {
                 $limit: 10,
-            },
+            }
         ])
         return topTasks
     }
+
+    async userTasks(id: ObjectId, page: number, limit: number){
+        let userSets = await this.taskSchema.aggregate([
+          {
+            '$match': {
+              'author': Types.ObjectId(id.toString())
+            }
+          },{
+            $skip: page*limit
+          },{
+            $limit: limit
+          }
+        ])
+        return userSets
+      }
 
     // Updates the content language and type of a Task
     async update(
@@ -135,9 +157,15 @@ export class TaskService {
         const isDownvote = vote && vote === 'downvote'
 
         // Handle vote
-        if (isUpvote) task.likes += 1
+        if (isUpvote) {
+            task.likes += 1;
+            task.difference++
+        }
 
-        if (isDownvote) task.dislikes += 1
+        if (isDownvote) {
+            task.dislikes += 1;
+            task.difference--
+        }
 
         return await task.save()
     }
@@ -145,13 +173,17 @@ export class TaskService {
     async remove(id: ObjectId, type: string): Promise<void> {
         // Check query
         const isHardDelete = type ? type.includes('hard') : false
-
         // true is for admin check later
         if (true && isHardDelete) {
             // Check if there is a task with this id and remove it
-            const task = await this.taskSchema.findByIdAndDelete(id)
-            if (!task) throw new NotFoundException()
+            try {
+                const task = await this.taskSchema.findByIdAndDelete(id)
 
+                if (!task) throw new NotFoundException()
+            }
+            catch (error) {
+                 console.log(error) 
+            }
             // We have to return here to exit process
             return
         }
@@ -169,7 +201,11 @@ export class TaskService {
         if (!task) throw new NotFoundException()
     }
 
-	private countPersons(task: Task): void {
+    /*-------------------------------------------------------|
+    |                     Logic Helpers                      |
+    | -------------------------------------------------------*/
+
+    private countPersons(task: Task): void {
         const maleCountSymbol = "@m"
         const femaleCountSymbol = "@f"
         const anyoneCountSymbol = "@a"

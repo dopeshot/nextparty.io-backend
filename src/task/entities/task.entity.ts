@@ -1,14 +1,15 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
-import { User } from "src/user/entities/user.entity"
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document, ObjectId, SchemaTypes, Types } from "mongoose";
+import { Factory } from "nestjs-seeder";
+import { CurrentPlayerGender } from "../enums/currentplayergender.enum";
+import { Language } from "../enums/language.enum";
+import { TaskStatus } from "../enums/taskstatus.enum";
+import { TaskType } from "../enums/tasktype.enum";
 
-import { Language } from "../enums/language.enum"
-import { TaskType } from "../enums/tasktype.enum"
-import { TaskStatus } from "../enums/taskstatus.enum"
-import { Document, ObjectId, SchemaTypes } from "mongoose"
-import { CurrentPlayerGender } from "../enums/currentplayergender.enum"
-
+// Check
 @Schema({ _id: false })
 export class TaskContent {
+    @Factory('@ca')
     @Prop({ default: CurrentPlayerGender.ANYONE })
     currentPlayerGender: CurrentPlayerGender
 
@@ -18,10 +19,11 @@ export class TaskContent {
     @Prop({ default: 0 })
     femaleCount: number
 
-    @Prop({ required: true, default: 0 })
+    @Prop({ default: 0 })
     anyoneCount: number
 
-    @Prop({ required: true })
+    @Factory(faker => faker.lorem.sentence(10))
+    @Prop({ required: true, index: true })
     message: string
 }
 
@@ -29,15 +31,22 @@ export const TaskContentSchema = SchemaFactory.createForClass(TaskContent)
 
 @Schema({ timestamps: true })
 export class Task {
+    @Factory('en')
     @Prop({ required: true })
     language: Language
 
+    @Factory('en')
     @Prop({ required: true })
     type: TaskType
 
+    @Factory((faker) => ({
+        currentPlayerGender: '@ca',
+        message: faker.lorem.sentence(10)
+    }))
     @Prop({ type: TaskContentSchema, required: true })
     content: TaskContent
 
+    @Factory(() => Types.ObjectId())
     @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
     author: ObjectId
 
@@ -47,9 +56,21 @@ export class Task {
     @Prop({ default: 0 })
     dislikes: number | 0
 
+    @Prop({ default: 0 })
+    difference: number | 0
+
+    @Factory('active')
     @Prop({ default: TaskStatus.ACTIVE })
     status: TaskStatus | TaskStatus.ACTIVE
 }
 
 export type TaskDocument = Task & Document
 export const TaskSchema = SchemaFactory.createForClass(Task)
+// doesn't work in nestjs/mongoose currently
+// TaskSchema.pre('deleteOne', async function(next) {
+//     console.log('middleware is called')
+//     const task = this
+//     await task.model('SetDocument').findById(Types.ObjectId("611adde031fc65699861a11e"))
+//     return next()
+// })
+//$pullAll: { 'taskList': Types.ObjectId(task.id.toString()) }

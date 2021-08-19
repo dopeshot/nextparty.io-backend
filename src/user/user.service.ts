@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, Provider } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, Provider } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,8 +14,9 @@ import * as crypto from 'crypto'
 @Injectable()
 export class UserService {
   constructor(@InjectModel('User') private userSchema: Model<UserDocument>,
-  @InjectModel('Verify') private verifySchema: Model<VerifyDocument>,
-  private readonly mailService: MailService) { }
+    @InjectModel('Verify') private verifySchema: Model<VerifyDocument>,
+    @InjectModel('Reset') private resetSchema: Model<VerifyDocument>,
+    private readonly mailService: MailService) { }
 
   /**
    * Create new user with credentials
@@ -45,23 +46,23 @@ export class UserService {
     }
   }
 
-  async parseJWTtOUsable(JWTuser): Promise<UserDocument>{
+  async parseJWTtOUsable(JWTuser): Promise<UserDocument> {
     let user = await this.userSchema.findById(JWTuser.userId)
 
-    if (!user){
+    if (!user) {
       throw new NotFoundException()
     }
 
     return user
   }
 
-  async createVerification(user: UserDocument){
+  async createVerification(user: User) {
     const verifyCode = crypto.randomBytes(64).toString('hex');
     const verifyObject = new this.verifySchema({
-			userId: user._id,
-			verificationCode: verifyCode
-		})
-		const result = await verifyObject.save()
+      userId: user._id,
+      verificationCode: verifyCode
+    })
+    const result = await verifyObject.save()
 
     this.mailService.generateVerifyMail(user.username, user.email, verifyCode)
   }
@@ -85,7 +86,7 @@ export class UserService {
   /**
    * Find all user
    * @returns Array aus allen User 
-   */ 
+   */
   async findAll(): Promise<User[]> {
     return await this.userSchema.find()
   }
@@ -123,7 +124,7 @@ export class UserService {
    * @param email of the user
    * @returns User
    */
-  async findOneByEmail(email: string): Promise<User | null > {
+  async findOneByEmail(email: string): Promise<User | null> {
     let user = await this.userSchema.findOne({ email }).lean()
 
     if (!user)
@@ -148,7 +149,7 @@ export class UserService {
 
       return updatedUser
     } catch (error) {
-        throw new InternalServerErrorException("Update Role failed")
+      throw new InternalServerErrorException("Update Role failed")
     }
   }
 
@@ -190,23 +191,23 @@ export class UserService {
     return user
   }
 
-  async veryfiyUser(code: string){
+  async veryfiyUser(code: string) {
 
     const verifyObject = await this.verifySchema.findOne({
       'verificationCode': code
-    }).lean() 
+    }).lean()
 
-    if (!verifyObject){
+    if (!verifyObject) {
       throw new NotFoundException()
     }
 
-    if ( Date.now() - verifyObject._id.getTimestamp() > +process.env.VERIFY_TTL){
-      return {"error":"Expired"}
+    if (Date.now() - verifyObject._id.getTimestamp() > +process.env.VERIFY_TTL) {
+      return { "error": "Expired" }
     }
 
     const user = await this.userSchema.findById(verifyObject.userId)
 
-    if (!user){
+    if (!user) {
       throw new NotFoundException()
     }
 
@@ -216,5 +217,63 @@ export class UserService {
 
 
     return result
+  }
+
+  /**
+   * Sends the code for a password reset to the mail adress
+   * @param mail - usermail
+   */
+  async requestResetPassword(mail: string) {
+    const user = await this.userSchema.findOne({
+      'email': mail
+    }).lean()
+
+    if (!user) {
+      throw new NotFoundException()
+    }
+
+    const resetCode = crypto.randomBytes(64).toString('hex');
+    const resetObject = new this.resetSchema({
+      userId: user._id,
+      verificationCode: resetCode
+    })
+    const result = await resetObject.save()
+
+    this.mailService.sendPasswordReset(user.username, user.email, resetCode)
+
+  }
+
+  /**
+   * Overwrites the password with the new one
+   * @param code - resetcode as passed in url
+   * @param password new password
+   * @returns 
+   */
+  async validatePasswordReset(code: string, password: string) {
+    const resetObject = await this.resetSchema.findOneAndDelete({
+      'verificationCode': code
+    })
+
+    if (!resetObject) {
+      throw new NotFoundException()
+    }
+
+    if (Date.now() - resetObject._id.getTimestamp() > +process.env.RESET_TTL) {
+      throw new BadRequestException('Token expired.')
+    }
+
+    const hash = await bcyrpt.hash(password, 12)
+
+    const updatedUser: User = await this.userSchema.findByIdAndUpdate(resetObject.userId, {
+        password: hash
+      }, {
+        new: true
+    })
+
+    if (!updatedUser) {
+      throw new NotFoundException()
+    }
+
+    return updatedUser
   }
 }

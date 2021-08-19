@@ -20,8 +20,8 @@ export class SetController {
 
   @Post()
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Create new Set via Json'})
-  create(@Body() createSetDto: CreateSetDto, @Request() req) {
+  @ApiOperation({ summary: 'Create new set'})
+  create(@Body(new ValidationPipe({ whitelist: true })) createSetDto: CreateSetDto, @Request() req) {
     return this.setService.create(createSetDto, req.user);
   }
 
@@ -31,9 +31,15 @@ export class SetController {
     return this.setService.findAll();
   }
 
+  @Get('user/:id')
+  @ApiOperation({ summary: 'Get sets from user'})
+  userSets(@Param(new ValidationPipe({whitelist:true})){id}: MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto){
+    return this.setService.userSets(id, +paginationDto.page,+paginationDto.limit);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get Set via id'})
-  findOne(@Param('id') id: ObjectId) {
+  findOne(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
     return this.setService.findOne(id);
   }
 
@@ -47,31 +53,31 @@ export class SetController {
 
   @Get(':id/tasks')
   @ApiOperation({ summary: 'Get all tasks in set with paging Maxi-Version'})
-  getSetTasks(@Param('id') id:  ObjectId,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
+  getSetTasks(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
     return this.setService.getTasks2(id, +paginationDto.page,+paginationDto.limit);
   }
 
   @Get(':id/tasks1')
   @ApiOperation({ summary: 'Get all tasks in set with paging Max-Version'})
-  getSetTasks1(@Param('id') id:  ObjectId,  @Query('page') page: number) {
+  getSetTasks1(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto,  @Query('page') page: number) {
     return this.setService.getTasks(id, page);
   }
 
   @Get(':id/tentasks')
   @ApiOperation({ summary: 'Get top 10 tasks in set sorted by difference'})
-  getSetTopTenTasks(@Param('id') id:  ObjectId) {
+  getSetTopTenTasks(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto) {
     return this.setService.findTopTenTasks(id);
   }
 
   @Get(':id/meta')
   @ApiOperation({ summary: 'Get set metadata'})
-  getMeta(@Param('id') id: ObjectId, @Body() updateSetDto: UpdateSetDto) {
+  getMeta(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto, @Body() updateSetDto: UpdateSetDto) {
     return this.setService.getMetadata(id);
   }
 
   @Patch(':id/meta')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Update Set metadata'})
+  @ApiOperation({ summary: 'Update Set metadata'}) 
   updateMeta(@Param('id') id: ObjectId, @Body() updateSetDto: UpdateSetDto, @Request() req) {
     return this.setService.updateMetadata(id, updateSetDto, req.user);
   }
@@ -94,5 +100,4 @@ export class SetController {
   @ApiOperation({ summary: 'Remove one Set via id and Json'})
   removeTask(@Param('id') id:  ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto, @Request() req) {
     return this.setService.alterTasks(id, "remove", updateSetTasksDto, req.user);
-  }
 }

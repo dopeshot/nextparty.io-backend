@@ -5,7 +5,7 @@ import { Language } from "../enums/language.enum";
 
 @Schema({ timestamps: true })
 export class Set {
-    @Prop({ required: true })
+    @Prop({ required: true, index: true })
     name: string
 
     @Prop({ required: true, type: [{ type: SchemaTypes.ObjectId, ref: 'Task' }] })
@@ -14,7 +14,7 @@ export class Set {
     @Prop({ default: SetStatus.ACTIVE })
     status: SetStatus | SetStatus.ACTIVE
 
-    @Prop({ default: "" })
+    @Prop({ default: "", index: true })
     description: string
 
     @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
@@ -25,6 +25,9 @@ export class Set {
 
     @Prop({ default: 0 })
     dislikes: number | 0
+
+    @Prop({ default: 0 })
+    difference: number | 0
 
     @Prop({ required: true })
     language: Language

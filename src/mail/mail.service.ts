@@ -1,14 +1,17 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
-import { render } from 'ejs'
+import { render, renderFile } from 'ejs'
 import { readFile as _readFile } from 'fs';
 import { promisify } from 'util';
+import { join } from 'path';
 
 const readFile = promisify(_readFile);
 
 @Injectable()
 export class MailService {
-	constructor(private readonly mailerService: MailerService) { }
+	constructor(private readonly mailerService: MailerService) {
+		mailerService
+	 }
 
 	/**
 	 * Method that communicates with mailserver to send mail
@@ -16,7 +19,7 @@ export class MailService {
 	 * @param subject - subject of email
 	 * @param message - message body of the email
 	 */
-	public async sendMail(recipient: string, subject: string, message: string): Promise<void> {
+	private async sendMail(recipient: string, subject: string, message: string): Promise<void> {
 		try {
 			await this.mailerService.sendMail({
 				to: recipient,
@@ -25,7 +28,7 @@ export class MailService {
 				html: message,
 			})
 		} catch(error) {
-			throw new InternalServerErrorException({ message: `Error sending email with subject: ${subject}`})
+			throw new InternalServerErrorException(`Error sending email with subject: ${subject}`)
 		}
 	}
 
@@ -34,12 +37,12 @@ export class MailService {
 	 * @param recipient - receiver for the email to be send
 	 */
 	async mailTest(recipient: string) {
-		const tmpl = await readFile(__dirname + '/templates/test.ejs', 'utf-8')
-		const message = render(tmpl, {
+		const template = await readFile(join(__dirname, 'templates', 'test.ejs'), 'utf-8')
+		const message = await renderFile('test.ejs', {
 			// Data to be sent to template engine.
 			code: 'cf1a3f828287',
 			username: 'john doe',
-		});
+		})
 		this.sendMail(recipient, "test3", message)
 	}
 
@@ -50,7 +53,26 @@ export class MailService {
 	 * @param code - verification code
 	 */
 	async generateVerifyMail(name: string, mail: string, code: string){
-		const message = '<b>Hey, '+name+'<br> Click here to verify your email adress: <br> <a href="http://localhost:3000/api/user/verify/'+code+'">Verify</a></b>'
-		this.sendMail(mail, "Verifiy your Email", message)
+		const template = await readFile(join(__dirname, 'templates', 'MailVerify.ejs'), 'utf-8')
+		const message = render(template, {
+			verifyLink: `${process.env.HOST}/api/user/verify/${code}`,
+			username: name,
+		});
+		this.sendMail(mail, "Please verify your email address", message)
+	}
+
+	/**
+	 * Sends a mail containing a password reset link/code
+	 * @param name - username
+	 * @param mail - user email
+	 * @param resetCode - the code required to reset/change the pw
+	 */
+	async sendPasswordReset(name: string, mail, resetCode){
+		const tmpl = await readFile(__dirname + '/templates/PasswordReset.ejs', 'utf-8')	
+		const message = render(tmpl, {
+			resetLink: `http://localhost:3000/api/user/reset-form/${resetCode}`,
+			username: name,
+		});
+		this.sendMail(mail, "Reset your pw", message)
 	}
 }
