@@ -16,8 +16,4 @@ export class CreateTaskDto {
     @Type(()=> ContentTaskDto)
     @IsNotEmpty()
     content: ContentTaskDto
-
-    @IsMongoId()
-    @IsNotEmpty()
-    author: ObjectId
 }

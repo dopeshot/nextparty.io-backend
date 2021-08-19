@@ -6,6 +6,8 @@ import {
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model, ObjectId, Types } from 'mongoose'
+import { AnyARecord } from 'node:dns'
+import { JwtUserDto } from 'src/auth/dto/jwt.dto'
 import { CreateTaskDto } from './dto/create-task.dto'
 import { VoteType } from './dto/task-vote-dto'
 import { UpdateTaskDto } from './dto/update-task.dto'
@@ -18,10 +20,11 @@ export class TaskService {
     constructor(@InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
 
     // Creates a new Task and checks if the message content accounts for extra user interaction
-    async create(createTaskDto: CreateTaskDto): Promise<Task> {
+    async create(createTaskDto: CreateTaskDto, creator: JwtUserDto): Promise<Task> {
         try {
             const task: TaskDocument = new this.taskSchema({
                 ...createTaskDto,
+                author: creator.userId
             })
             this.countPersons(task)
             const result: Task = await task.save()
