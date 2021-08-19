@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { doesNotMatch } from "assert";
 import { Strategy } from 'passport-discord'
-import { userDataFromProvider } from "src/user/interfaces/userDataFromProvider.interface";
+import { userDataFromProvider } from "../../../user/interfaces/userDataFromProvider.interface";
 import { UserService } from "../../../user/user.service";
 import { DiscordUser } from "./discord-user.interface";
 @Injectable()

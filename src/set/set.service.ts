@@ -7,8 +7,7 @@ import { Model, ObjectId, Types } from 'mongoose';
 import { SetStatus } from './enums/setstatus.enum';
 import { UpdateSetDto } from './dto/update-set-metadata.dto';
 import { Task, TaskContent, TaskDocument, TaskSchema, TaskContentSchema } from '../task/entities/task.entity';
-import { JwtUserDto } from 'src/auth/dto/jwt.dto';
-import { Role } from 'src/user/enums/role.enum';
+import { JwtUserDto } from '../auth/dto/jwt.dto';
 
 @Injectable()
 export class SetService {

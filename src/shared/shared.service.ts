@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
-import { Category } from 'src/category/entities/category.entity'
 import { PaginationPayload } from './interfaces/paginationPayload.interface'
 
 @Injectable()
