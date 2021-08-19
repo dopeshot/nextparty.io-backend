@@ -71,3 +71,6 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc
 ### Hard Delete Set by Id (require admin role)
 DELETE http://localhost:3000/api/set/611659725b415a2d2072bc92?type=hard
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJzdWIiOiI2MTE3ZDVhMTcwNDU1ODRmZjhkM2M2ODkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2MjkwNDg1NjQsImV4cCI6MTYyOTA4NDU2NH0.isQ63KUWVd_3-w1nqEM0ItcXWhjaTznz-g4VErlkkcI
+
+###
+GET http://localhost:3000/api/set/healthcheck

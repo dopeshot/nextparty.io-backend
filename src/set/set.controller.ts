@@ -31,6 +31,12 @@ export class SetController {
     return this.setService.findAll();
   }
 
+  @Get('healthcheck')
+  @ApiOperation({summary: 'HealthCheck for sets'})
+  healthCheck(){
+    return this.setService.healthCheck();
+  }
+
   @Get('user/:id')
   @ApiOperation({ summary: 'Get sets from user'})
   userSets(@Param(new ValidationPipe({whitelist:true})){id}: MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto){
