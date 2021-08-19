@@ -296,7 +296,9 @@ export class SetService {
     }
   }
 
-  async healthCheck() {
+  async healthCheck(user: JwtUserDto) {
+    if (user.role != 'admin')
+    throw new ForbiddenException()
   if(true){  
     let taskIdsInSets = []
     // Get all referenced task ids

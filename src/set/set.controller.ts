@@ -31,9 +31,10 @@ export class SetController {
   }
 
   @Get('healthcheck')
+  @UseGuards(JwtAuthGuard)
   @ApiOperation({summary: 'HealthCheck for sets'})
-  healthCheck(){
-    return this.setService.healthCheck();
+  healthCheck(@Request() req){
+    return this.setService.healthCheck(req.user);
   }
 
   @Get('user/:id')
