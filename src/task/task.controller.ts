@@ -34,6 +34,12 @@ export class TaskController {
     return this.taskService.findTop10Tasks();
   }
 
+  @Get('user/:id')
+  @ApiOperation({ summary: 'Get tasks from user'})
+  userTasks(@Param(new ValidationPipe({whitelist:true})){id}: MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto){
+    return this.taskService.userTasks(id, +paginationDto.page,+paginationDto.limit);
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Find one task by id' })
   findOne(@Param(ValidationPipe) { id }: MongoIdDto) {
