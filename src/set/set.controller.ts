@@ -100,4 +100,5 @@ export class SetController {
   @ApiOperation({ summary: 'Remove one Set via id and Json'})
   removeTask(@Param('id') id:  ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto, @Request() req) {
     return this.setService.alterTasks(id, "remove", updateSetTasksDto, req.user);
+  }
 }
