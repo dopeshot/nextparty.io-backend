@@ -13,13 +13,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
         
+      # setup env
+      - name: create env
+        run: 'echo "$ENV_VALUES" > .env'
+        shell: bash
+        env:
+          ENV_VALUES: ${{secrets.PIPELINE_ENV}}
+        
     # install/cache npm dependencies
       - name: cache packages
-        run: npm i  
+        run: |
+          npm i
         
+     #  Start MongoDB 
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.6.0
+        with:
+          mongodb-version: '5.0'
+                 
     # run unit tests    
-    #  - name: unit tests
-    #    run: npm run test:e2e
+      - name: unit tests
+        run: npm run test:e2e
         
     # build     
       - name: build

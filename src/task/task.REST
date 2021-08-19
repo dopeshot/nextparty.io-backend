@@ -1,16 +1,15 @@
 ###Create Task
 POST http://localhost:3000/api/task
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJzdWIiOiI2MTE3ZDVhMTcwNDU1ODRmZjhkM2M2ODkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2MjkwNDg1NjQsImV4cCI6MTYyOTA4NDU2NH0.isQ63KUWVd_3-w1nqEM0ItcXWhjaTznz-g4VErlkkcI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImRvcGVzaG90Iiwic3ViIjoiNjExOTYxYTgxZmEyOTkwMDE2MjM2YWFhIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkyMzE4NTQsImV4cCI6MTYyOTI2Nzg1NH0.Bh_4A-rAWCxcTbOH7N3eUfvs-AtutlM3o50Jguy8xw8
 
 {
     "language": "de",
     "type": "dare",
-    "author": "6113cee6f951fe3e4059c5da",
-    "content": 
-    {
+    "author": "611961a81fa2990016236aaa",
+    "content": {
         "currentPlayerGender": "@ca",
-        "message": "Grow a f@aullbeard!"
+        "message": "füttere die @a mit etwas Leckerem."
     }
 }
 
@@ -45,10 +44,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc
 }
 
 ### Update Task with upvote
-PATCH http://localhost:3000/api/task/6114ec73541cae5b9074d462/upvote
+PATCH http://localhost:3000/api/task/611c1e3b1c20a66b5cdad7c3/upvote
 
 ### Update Task with downpvote
-PATCH http://localhost:3000/api/task/6114ec73541cae5b9074d462/downvote
+PATCH http://localhost:3000/api/task/611c1e3b1c20a66b5cdad7c3/downvote
 
 ### Get all Tasks
 GET http://localhost:3000/api/task

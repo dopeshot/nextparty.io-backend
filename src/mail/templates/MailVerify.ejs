@@ -1,0 +1,26 @@
+<!doctype html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Email verification</title>
+    <style>
+        /*Somebody needs to fill this.... */
+    </style>
+</head>
+
+<body>
+    <h1>Hey <%=username%>,</h1>
+    <p>
+        We at dopeshot take security very seriously and try to ensure a pleasent expirience for all our users<br>
+        Veryfing email adresses is a very important step in this proccess.<br>
+        To use our services we kindly ask you to verify your email by clicking the Button below.<br>
+    </p>
+    <form>
+        <input style="background-color: rgb(6, 140, 202)" type="button" onclick="window.location.href = '<%=verifyLink%>';" value="verify">
+    </form>
+    <p>
+        <br>Thanks from the dopeshot team!
+    </p>
+</body>
+
+</html>

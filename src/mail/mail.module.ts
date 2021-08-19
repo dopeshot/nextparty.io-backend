@@ -22,9 +22,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       defaults: {
         from: '"No Reply" <no-reply@localhost>',
       },
-      preview: false,
+      preview: true,
       template: {
-        dir: process.cwd() + '/template/',
+        dir: process.cwd() + '/templates/',
         adapter: new EjsAdapter(), 
         options: {
           strict: true,

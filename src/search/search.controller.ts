@@ -1,6 +1,6 @@
 import { Body, Controller, Get, Param, ParseArrayPipe, ValidationPipe, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { PaginationDto } from 'src/shared/dto/pagination.dto';
+import { PaginationDto } from '../shared/dto/pagination.dto';
 import { SearchService } from './search.service';
 
 @ApiTags('search')

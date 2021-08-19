@@ -4,3 +4,7 @@ Content-Type: application/json
 {
     "recipient": "test.test@test.test"
 }
+
+
+###
+GET http://localhost:3000/api/mail

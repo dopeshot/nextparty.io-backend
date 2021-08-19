@@ -34,3 +34,28 @@ GET http://localhost:3000/api/user/verify/98e97d273c8345eac435edeeb15a143c248f52
 
 GET http://localhost:3000/api/user/getVerify
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNzYXNhYWEyZGFzZCIsInN1YiI6IjYxMTkwZTViZDZiMTlkNDI2Y2JhZWYyNiIsImlhdCI6MTYyOTAzMjk1NiwiZXhwIjoxNjI5MDY4OTU2fQ.kvnJ5_jhilxFzg0fHl9z7zb3dtF0cE6Cd5LLZwLkIsk
+
+### ResetPassword
+GET http://localhost:3000/api/user/password-reset
+Content-Type: application/json
+
+{
+    "userMail": "test@test.de"
+}
+
+### Reset password (change code)
+POST http://localhost:3000/api/user/password-reset/284a2a050082eac63e7e0617daf69d606e8200fce1a0dc6e817902f35ea2394e5f803fc66bf5440e5bd74c8c5bf3fed75099c13dc9eae0d2d835193ce801369e
+Content-Type: application/json
+
+{
+    "password": "this password was updated"
+}
+
+###
+POST http://localhost:3000/api/user/submitReset
+Content-Type: application/json
+
+{
+    "password": "funky",
+    "code":"fresh"
+}

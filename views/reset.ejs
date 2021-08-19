@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<head>
+
+    <script>
+        function submitForm(){
+            let pw = document.getElementById("name").value
+            let url = "<%=submitURL%>"
+            let data = {
+                password: pw,
+                code: "<%=code%>"
+            }
+            let param = {
+                method: 'POST', // *GET, POST, PUT, DELETE, etc.
+                mode: 'cors', // no-cors, *cors, same-origin
+                cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+                credentials: 'same-origin', // include, *same-origin, omit
+                headers: {
+                'Content-Type': 'application/json'
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                redirect: 'follow', // manual, *follow, error
+                referrerPolicy: 'no-referrer', // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
+                body: JSON.stringify(data) // body data type must match "Content-Type" header
+            }
+            console.log(data)
+            fetch(url, param)
+            .then(res => console.log(res))
+        }
+    </script>
+</head>
+<body style="background-color: green;">
+    <b style="color: pink; font-size: x-large;">uwu pwease weset youw passwowd :3</b>
+    <br>
+    <input type="text" id="name" name="name" required minlength="4" maxlength="64" size="10">
+    <button onclick="submitForm()">Reset</button>
+</body>
+</html>
