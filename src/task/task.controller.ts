@@ -11,6 +11,7 @@ import { RolesGuard } from '../auth/roles/roles.guard'
 import { Roles } from '../auth/roles/roles.decorator'
 import { Role } from '../user/enums/role.enum'
 import { Response } from 'express'
+import { ObjectId } from 'mongoose'
 
 @ApiTags('task')
 @Controller('task')
@@ -20,8 +21,8 @@ export class TaskController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new task' })
-  create(@Body(new ValidationPipe({ whitelist: true, transform: true })) createTaskDto: CreateTaskDto, @Req() req) {
-    return this.taskService.create(createTaskDto, req.user);
+  create(@Body(new ValidationPipe({ whitelist: true, transform: true })) createTaskDto: CreateTaskDto,@Query('set') set: ObjectId, @Req() req) {
+    return this.taskService.create(createTaskDto, req.user, set);
   }
 
   @Get()
