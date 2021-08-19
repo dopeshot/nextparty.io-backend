@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode, UseGuards, Req } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode, UseGuards, Req, HttpException, HttpStatus, Res, UnauthorizedException, NotFoundException } from '@nestjs/common'
 import { TaskService } from './task.service'
 import { CreateTaskDto } from './dto/create-task.dto'
 import { UpdateTaskDto } from './dto/update-task.dto'
@@ -10,6 +10,7 @@ import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard'
 import { RolesGuard } from '../auth/roles/roles.guard'
 import { Roles } from '../auth/roles/roles.decorator'
 import { Role } from '../user/enums/role.enum'
+import { Response } from 'express'
 
 @ApiTags('task')
 @Controller('task')
@@ -65,9 +66,21 @@ export class TaskController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   // TODO: Protected Route, can be done if user created this set or admins (Except hard delete. this should only be possible for admins)
-  @HttpCode(204)
   @ApiOperation({ summary: 'Delete one task by id' })
-  remove(@Param(ValidationPipe) { id }: MongoIdDto, @Query('type') type: string) {
-    this.taskService.remove(id, type);
+  remove(@Param(new ValidationPipe) { id }: MongoIdDto, @Query('type') type: string, @Res() res: Response) {
+    this.taskService.remove(id, type)
+    .catch((e) => {
+      console.log("error is "+e)
+      if (e instanceof NotFoundException){
+        throw new HttpException('Not found', HttpStatus.NOT_FOUND)
+      }
+      if (e instanceof UnauthorizedException){
+        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED)
+      }
+    }).then(() => {
+      res.status(HttpStatus.NO_CONTENT).json([])
+      return
+    }) 
   }
+  
 }
