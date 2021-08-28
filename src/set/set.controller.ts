@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, NotFoundException, Param, Patch, Post, Query, Request, Res, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpException, HttpStatus, InternalServerErrorException, NotFoundException, Param, Patch, Post, Query, Request, Res, UnauthorizedException, UseGuards, ValidationPipe } from '@nestjs/common';
 import { CreateSetDto } from './dto/create-set.dto';
 import { ObjectId } from 'mongoose'
 import { UpdateSetDto } from './dto/update-set-metadata.dto';
@@ -30,6 +30,17 @@ export class SetController {
     return this.setService.findAll(+paginationDto.page, +paginationDto.limit);
   }
 
+  @Get('test')
+  @HttpCode(201)
+  example(@Query('error') error: string) {
+    try {
+      if(error === 'yes')
+      throw new NotFoundException()
+    } catch(error) {
+      throw new InternalServerErrorException()
+    }
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Get one Set by id'})
   findOne(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
@@ -38,21 +49,11 @@ export class SetController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
+  //TODO: Can not reprocude error
+  @HttpCode(201)
   @ApiOperation({ summary: 'Delete Set via id'})
-  remove(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto, @Query('type') type: string, @Request() req, @Res() res: Response) {
+  remove(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto, @Query('type') type: string, @Request() req) {
     return this.setService.remove(id, type, req.user)
-    .catch((e) => {
-      console.log("error is "+e)
-      if (e instanceof NotFoundException){
-        throw new HttpException('Not found', HttpStatus.NOT_FOUND);
-      }
-      if (e instanceof UnauthorizedException){
-        throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
-      }
-    }).then(() => {
-      res.status(HttpStatus.NO_CONTENT).json([])
-      return
-    }) 
   }
 
   @Get(':id/tasks')
