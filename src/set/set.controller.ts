@@ -26,8 +26,8 @@ export class SetController {
 
   @Get()
   @ApiOperation({ summary: 'Get all Sets'})
-  findAll() {
-    return this.setService.findAll();
+  findAll(@Query(new ValidationPipe({ whitelist: true })) paginationDto: PaginationDto) {
+    return this.setService.findAll(+paginationDto.page, +paginationDto.limit);
   }
 
   @Get('healthcheck')

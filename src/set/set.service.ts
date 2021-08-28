@@ -8,11 +8,16 @@ import { SetStatus } from './enums/setstatus.enum';
 import { UpdateSetDto } from './dto/update-set-metadata.dto';
 import { TaskDocument } from '../task/entities/task.entity';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
+import { PaginationPayload } from '../shared/interfaces/paginationPayload.interface';
+import { SharedService } from '../shared/shared.service';
 
 @Injectable()
 export class SetService {
-  constructor(@InjectModel('Set') private setSchema: Model<SetDocument>,
-    @InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
+  constructor(
+    @InjectModel('Set') private setSchema: Model<SetDocument>,
+    @InjectModel('Task') private taskSchema: Model<TaskDocument>,
+    private readonly sharedService: SharedService
+  ) {}
 
   async create(metaData: CreateSetDto, user: JwtUserDto): Promise<SetDocument> {
     try {
@@ -66,8 +71,11 @@ export class SetService {
     return result;
   }
 
-  async findAll(): Promise<SetDocument[]> {
-    return await this.setSchema.find()
+  async findAll(page: number, limit: number): Promise<PaginationPayload<Set>> {
+    const documentCount = await this.setSchema.estimatedDocumentCount()
+		const sets: Set[] = await this.setSchema.find().limit(limit).skip(limit * page)
+
+		return this.sharedService.createPayloadWithPagination(documentCount, page, limit, sets)
   }
 
   async findOne(id: ObjectId) {
