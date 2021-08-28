@@ -78,8 +78,8 @@ export class SetService {
 		return this.sharedService.createPayloadWithPagination(documentCount, page, limit, sets)
   }
 
-  async findOne(id: ObjectId) {
-    let set = await this.setSchema.findById(id).lean()
+  async findOne(id: ObjectId): Promise<Set> {
+    const set = await this.setSchema.findById(id)
     if (!set)
       throw new NotFoundException()
     return set;
@@ -307,6 +307,7 @@ export class SetService {
   async healthCheck(user: JwtUserDto) {
     if (user.role != 'admin')
     throw new ForbiddenException()
+    // TODO: if(true) shoudln't be in production
   if(true){  
     let taskIdsInSets = []
     // Get all referenced task ids

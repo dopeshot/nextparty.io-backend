@@ -30,21 +30,8 @@ export class SetController {
     return this.setService.findAll(+paginationDto.page, +paginationDto.limit);
   }
 
-  @Get('healthcheck')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({summary: 'HealthCheck for sets'})
-  healthCheck(@Request() req){
-    return this.setService.healthCheck(req.user);
-  }
-
-  @Get('user/:id')
-  @ApiOperation({ summary: 'Get sets from user'})
-  userSets(@Param(new ValidationPipe({whitelist:true})){id}: MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto){
-    return this.setService.userSets(id, +paginationDto.page,+paginationDto.limit);
-  }
-
   @Get(':id')
-  @ApiOperation({ summary: 'Get Set via id'})
+  @ApiOperation({ summary: 'Get one Set by id'})
   findOne(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
     return this.setService.findOne(id);
   }
@@ -117,5 +104,18 @@ export class SetController {
   @ApiOperation({ summary: 'Remove one Set via id and Json'})
   removeTask(@Param('id') id:  ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto, @Request() req) {
     return this.setService.alterTasks(id, "remove", updateSetTasksDto, req.user);
+  }
+
+  @Get('user/:id')
+  @ApiOperation({ summary: 'Get sets from user'})
+  userSets(@Param(new ValidationPipe({whitelist:true})){id}: MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto){
+    return this.setService.userSets(id, +paginationDto.page,+paginationDto.limit);
+  }
+
+  @Get('healthcheck')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({summary: 'HealthCheck for sets'})
+  healthCheck(@Request() req){
+    return this.setService.healthCheck(req.user);
   }
 }
