@@ -1,21 +1,17 @@
-import { IsEnum, IsMongoId, IsNotEmpty, IsObject, IsString, Length } from "class-validator";
+import { Type } from "class-transformer";
+import { IsArray, IsEnum, IsMongoId, IsNotEmpty, IsObject, IsOptional, IsString, Length, ValidateNested } from "class-validator";
 import { ObjectId } from "mongoose";
 import { Language } from "../../task/enums/language.enum";
 
 export class CreateCategoryDto {
     @IsEnum(Language)
-    @IsNotEmpty()
     language: Language
 
     @IsString()
-    @IsNotEmpty()
     @Length(3,124)
     name: string
-    
-    @IsMongoId()
-    @IsNotEmpty()
-    author: ObjectId
 
-    @IsMongoId()
+    @IsMongoId({ each: true })
+    @IsOptional()
     set: ObjectId[]
 }
