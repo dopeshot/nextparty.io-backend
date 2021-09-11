@@ -28,18 +28,7 @@ export class SetController {
   findAll(@Query(new ValidationPipe({ whitelist: true })) paginationDto: PaginationDto) {
     return this.setService.findAll(+paginationDto.page, +paginationDto.limit);
   }
-
-  @Get('test')
-  @HttpCode(201)
-  example(@Query('error') error: string) {
-    try {
-      if(error === 'yes')
-      throw new NotFoundException()
-    } catch(error) {
-      throw new InternalServerErrorException()
-    }
-  }
-
+  
   @Get(':id')
   @ApiOperation({ summary: 'Get one Set by id'})
   findOne(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
