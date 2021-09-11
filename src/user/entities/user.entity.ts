@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
 import { Document, ObjectId } from "mongoose"
 import { Role } from "../enums/role.enum"
-import { Status } from "../enums/status.enum"
+import { UserStatus } from "../enums/status.enum"
 
 @Schema({ timestamps: true })
 export class User {
@@ -21,8 +21,8 @@ export class User {
     @Prop({ default: Role.User })
     role: Role
 
-    @Prop({ default: Status.Active })
-    status: Status
+    @Prop({ default: UserStatus.ACTIVE })
+    status: UserStatus
 
     @Prop()
     provider: string

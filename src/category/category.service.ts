@@ -8,16 +8,19 @@ import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { Category, CategoryDocument } from './entities/category.entity';
 import { CategoryStatus } from './enums/categoryStatus.enum';
+import { JwtUserDto } from '../auth/dto/jwt.dto';
+import { Action } from '../shared/enums/action.enum';
 
 @Injectable()
 export class CategoryService {
 	constructor(@InjectModel('Category') private categorySchema: Model<CategoryDocument>,
 		private readonly sharedService: SharedService) { }
 
-	async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
+	async create(createCategoryDto: CreateCategoryDto, user: JwtUserDto): Promise<Category> {
 		try {
 			const category = new this.categorySchema({
-				...createCategoryDto
+				...createCategoryDto,
+				author: user.userId
 			})
 			const result = await category.save()
 			return result
@@ -32,19 +35,11 @@ export class CategoryService {
 		let result;
 		const filter = { _id: categoryId }
 
-		// Add Set
-		if (action === "add") {
+		if (action === Action.ADD)
 			result = await this.categorySchema.findByIdAndUpdate(filter, { $addToSet: { set: setId } }, { returnOriginal: false })
-		}
-
-		// Remove Set
-		else if (action === "remove") {
+		else if (action === Action.REMOVE) 
 			result = await this.categorySchema.findByIdAndUpdate(filter, { $pull: { set: setId } }, { returnOriginal: false })
-		}
-
-		// Not a correct option
-		else throw new BadRequestException()
-
+		
 		if (!result) throw new NotFoundException()
 
 		return result

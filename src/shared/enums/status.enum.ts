@@ -1,4 +1,4 @@
-export enum TaskStatus {
+export enum Status {
     ACTIVE = "active",
     DELETED = "deleted",
     APPROVED = "approved",

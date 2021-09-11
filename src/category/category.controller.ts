@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode, UseGuards } from '@nestjs/common'
+import { Controller, Get, Post, Body, Patch, Param, Delete, ValidationPipe, Query, HttpCode, UseGuards, Request } from '@nestjs/common'
 import { ApiOperation, ApiTags } from '@nestjs/swagger'
 import { Roles } from '../auth/roles/roles.decorator'
 import { RolesGuard } from '../auth/roles/roles.guard'
@@ -7,9 +7,10 @@ import { Role } from '../user/enums/role.enum'
 import { MongoIdDto } from '../shared/dto/mongoId.dto'
 import { PaginationDto } from '../shared/dto/pagination.dto'
 import { CategoryService } from './category.service'
-import { addSetIdCategoryDto } from './dto/addSet-category.dto'
+import { addSetIdCategoryDto } from './dto/update-category-set.dto'
 import { CreateCategoryDto } from './dto/create-category.dto'
 import { UpdateCategoryDto } from './dto/update-category.dto'
+import { JwtUserDto } from '../auth/dto/jwt.dto'
 
 @ApiTags('category')
 @Controller('category')
@@ -20,8 +21,8 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Create a category'})
-  create(@Body() createCategoryDto: CreateCategoryDto) {
-    return this.categoryService.create(createCategoryDto);
+  create(@Body(new ValidationPipe({ whitelist: true })) createCategoryDto: CreateCategoryDto, @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
+    return this.categoryService.create(createCategoryDto, user);
   }
 
   @Get()
@@ -51,8 +52,8 @@ export class CategoryController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Add or remove set from a category'})
-  updateSets(@Param(ValidationPipe) addSetId: addSetIdCategoryDto, @Param('action') action: string) {
-    return this.categoryService.updateSets(addSetId.id, addSetId.setId, action);
+  updateSets(@Param(ValidationPipe) addSetId: addSetIdCategoryDto) {
+    return this.categoryService.updateSets(addSetId.id, addSetId.setId, addSetId.action);
   }
 
   @Patch(':id')

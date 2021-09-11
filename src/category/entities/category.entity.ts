@@ -1,6 +1,6 @@
 import { SchemaFactory, Schema, Prop } from "@nestjs/mongoose"
 import { ObjectId, SchemaTypes } from "mongoose"
-import { Language } from "../../task/enums/language.enum";
+import { Language } from "../../shared/enums/language.enum";
 import { User } from "../../user/entities/user.entity";
 import { CategoryStatus } from "../enums/categoryStatus.enum";
 
