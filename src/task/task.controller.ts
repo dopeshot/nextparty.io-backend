@@ -21,7 +21,7 @@ export class TaskController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a new task' })
-  create(@Body(new ValidationPipe({ whitelist: true, transform: true })) createTaskDto: CreateTaskDto,@Query('set') set: ObjectId, @Req() req) {
+  create(@Body(new ValidationPipe({ whitelist: true, transform: true })) createTaskDto: CreateTaskDto, @Query('set') set: ObjectId, @Req() req) {
     return this.taskService.create(createTaskDto, req.user, set);
   }
 
