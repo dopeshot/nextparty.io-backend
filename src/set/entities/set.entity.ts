@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
 import { SetStatus } from '../enums/setstatus.enum'
 import { ObjectId, SchemaTypes, Document } from 'mongoose';
-import { Language } from "../enums/language.enum";
+import { Language } from "../../shared/enums/language.enum";
 
 @Schema({ timestamps: true })
 export class Set {

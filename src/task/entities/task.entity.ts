@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, ObjectId, SchemaTypes, Types } from "mongoose";
 import { Factory } from "nestjs-seeder";
 import { CurrentPlayerGender } from "../enums/currentplayergender.enum";
-import { Language } from "../enums/language.enum";
+import { Language } from "../../shared/enums/language.enum";
 import { TaskStatus } from "../enums/taskstatus.enum";
 import { TaskType } from "../enums/tasktype.enum";
 

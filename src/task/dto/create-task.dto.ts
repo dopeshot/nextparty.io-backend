@@ -1,7 +1,7 @@
 import { Type } from "class-transformer";
 import { IsEnum, IsMongoId, IsNotEmpty, IsObject, ValidateNested } from "class-validator";
 import { isValidObjectId, ObjectId } from "mongoose";
-import { Language } from "../enums/language.enum";
+import { Language } from "../../shared/enums/language.enum";
 import { TaskType } from "../enums/tasktype.enum";
 import { ContentTaskDto } from "./content-task.dto";
 
