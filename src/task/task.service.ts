@@ -15,7 +15,7 @@ import { CreateTaskDto } from './dto/create-task.dto'
 import { VoteType } from './dto/task-vote-dto'
 import { UpdateTaskDto } from './dto/update-task.dto'
 import { Task, TaskDocument } from './entities/task.entity'
-import { TaskStatus } from './enums/taskstatus.enum'
+import { Status } from '../shared/enums/status.enum'
 
 @Injectable()
 export class TaskService {
@@ -216,7 +216,7 @@ export class TaskService {
         if (!(user.userId == task.author || user.role == "admin"))
             throw new ForbiddenException()
 
-        task = await this.taskSchema.findByIdAndUpdate(id, { status: TaskStatus.DELETED }, { new: true })
+        task = await this.taskSchema.findByIdAndUpdate(id, { status: Status.DELETED }, { new: true })
     }
 
     /*-------------------------------------------------------|

@@ -4,12 +4,12 @@ import { CreateSetDto } from './dto/create-set.dto';
 import { UpdateSetTasksDto } from './dto/update-set-tasks.dto';
 import { Set, SetDocument } from './entities/set.entity';
 import { Model, ObjectId, Types } from 'mongoose';
-import { SetStatus } from './enums/setstatus.enum';
 import { UpdateSetDto } from './dto/update-set-metadata.dto';
 import { TaskDocument } from '../task/entities/task.entity';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { PaginationPayload } from '../shared/interfaces/paginationPayload.interface';
 import { SharedService } from '../shared/shared.service';
+import { Status } from '../shared/enums/status.enum';
 
 @Injectable()
 export class SetService {
@@ -182,7 +182,7 @@ export class SetService {
       throw new ForbiddenException()
 
     set = await this.setSchema.findByIdAndUpdate(id, {
-      status: SetStatus.DELETED
+      status: Status.DELETED
     }, {
       new: true
     })
