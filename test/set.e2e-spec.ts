@@ -113,8 +113,7 @@ describe('SetController (e2e)', () => {
         .expect(204)
       return res
     })
-
-    /* Test cancel because error gets thrown in console
+    //Test cancel because error gets thrown in console
     it('/set/:id (DELETE) type=soft other User', () => {
       const res = request(app.getHttpServer())
         .delete(`/api/set/${setId2}`)
@@ -122,9 +121,9 @@ describe('SetController (e2e)', () => {
         .expect(403)
       return res
     })
-    */
+    
 
-    /*Test cancel because error gets thrown in console
+    //Test cancel because error gets thrown in console
     it('/set/:id (DELETE) type=hard user', () => {
       const res = request(app.getHttpServer())
         .delete(`/api/set/${setId1}?type=hard`)
@@ -132,7 +131,7 @@ describe('SetController (e2e)', () => {
         .expect(403)
       return res
     })
-    */
+  
 
     it('/user/testing (PATCH) Change to Admin', async () => {
       const res = request(app.getHttpServer())

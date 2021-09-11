@@ -1,20 +1,19 @@
 ###Create Set
 POST http://localhost:3000/api/set
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzODYyNTEsImV4cCI6MTYyOTQyMjI1MX0.XBBL0vPzV4gR8KE-rmVcP8wDZztCBA4bhMEiGL9KQLs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjEyYTkwMmE4YTNhMWZkMGUxZThkY2I2Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjMxMzU5MDA0LCJleHAiOjE2MzEzOTUwMDR9.LgIdglTvitAkwr0O4nKLswRxsO_ccIjh8rrAnSmkPV8
 
 {
-    "description": "Jeder hat schon mal Wahrheit oder Pflicht mit Freunden oder auf Partys gespielt. Hier kommt aber eine Sonderedition an Wahrheit-Fragen und Pflicht-Aufgaben für dich und deinen Crush, dein Girl- oder Boyfriend. Have Fun!",
-    "taskList": [],
+    "description": "DEV DEV DEV!",
     "language": "de",
-    "name": "Verliebte"
+    "name": "Developer Pack"
 }
 
 ### Get all sets
 GET http://localhost:3000/api/set
 
 ### Get one set
-GET http://localhost:3000/api/set/6117926bd45adc1f50dea882
+GET http://localhost:3000/api/set/6134701a7dde0c50ee792364
 
 ### Add/Update set task list
 POST http://localhost:3000/api/set/611e66d7508d106504f645ab/add
@@ -41,14 +40,12 @@ GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tasks1
 
 GET http://localhost:3000/api/set/6116bbed831a4e1c10285a38/tasks
 
-GET http://localhost:3000/api/set/611c1d4c1c20a66b5cdad7bf/tasks
-
 
 ### Get top 10 Tasks in Set2
 GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tentasks
 
 ### Get Tasks in Set paginated
-GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tasks?page=0&limit=99999
+GET http://localhost:3000/api/set/613473594ff6b1519da6b8d7/tasks?page=0&limit=99999
 
 ### Get Set metadata
 GET http://localhost:3000/api/set/6116ac912a8b143164f7f00b/meta
@@ -85,5 +82,9 @@ GET http://localhost:3000/api/set/healthcheck
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzODYyNTEsImV4cCI6MTYyOTQyMjI1MX0.XBBL0vPzV4gR8KE-rmVcP8wDZztCBA4bhMEiGL9KQLs
 
 ###
-DELETE http://localhost:3000/api/set/611e7707d1023241a0842c76?type=hard
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzODYyNTEsImV4cCI6MTYyOTQyMjI1MX0.XBBL0vPzV4gR8KE-rmVcP8wDZztCBA4bhMEiGL9KQLs
+DELETE http://localhost:3000/api/set/612a9afb526da3f00df78bef?type=hard
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjEyYTkwMmE4YTNhMWZkMGUxZThkY2I2Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjMwMTgxMzA5LCJleHAiOjE2MzAyMTczMDl9.j_CwvV6o_0GXIFjx6Lw4PUO1qBmry49eBypC8b7tKpw
+
+
+###
+GET http://localhost:3000/api/set/test?error=yes
