@@ -2,9 +2,9 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { Document, ObjectId, SchemaTypes, Types } from "mongoose";
 import { Factory } from "nestjs-seeder";
 import { CurrentPlayerGender } from "../enums/currentplayergender.enum";
-import { Language } from "../enums/language.enum";
-import { TaskStatus } from "../enums/taskstatus.enum";
+import { Language } from "../../shared/enums/language.enum";
 import { TaskType } from "../enums/tasktype.enum";
+import { Status } from "../../shared/enums/status.enum";
 
 /*
 DISCLAIMER!
@@ -66,8 +66,8 @@ export class Task {
     difference: number | 0
 
     @Factory('active')
-    @Prop({ default: TaskStatus.ACTIVE })
-    status: TaskStatus | TaskStatus.ACTIVE
+    @Prop({ default: Status.ACTIVE })
+    status: Status | Status.ACTIVE
 }
 
 export type TaskDocument = Task & Document

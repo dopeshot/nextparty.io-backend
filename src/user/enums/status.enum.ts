@@ -1,6 +1,6 @@
-export enum Status {
-    Active = "active",
-    Reported = "reported",
-    Banned = "banned",
-    Unverified = "unverfified"
+export enum UserStatus {
+    ACTIVE = "active",
+    REPORTED = "reported",
+    BANNED = "banned",
+    UNVERIFIED = "unverfified"
 }

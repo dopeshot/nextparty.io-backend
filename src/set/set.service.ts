@@ -1,18 +1,23 @@
-import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
+import { JwtUserDto } from '../auth/dto/jwt.dto';
+import { Status } from '../shared/enums/status.enum';
+import { PaginationPayload } from '../shared/interfaces/paginationPayload.interface';
+import { SharedService } from '../shared/shared.service';
+import { TaskDocument } from '../task/entities/task.entity';
 import { CreateSetDto } from './dto/create-set.dto';
+import { UpdateSetDto } from './dto/update-set-metadata.dto';
 import { UpdateSetTasksDto } from './dto/update-set-tasks.dto';
 import { Set, SetDocument } from './entities/set.entity';
-import { Model, ObjectId, Types } from 'mongoose';
-import { SetStatus } from './enums/setstatus.enum';
-import { UpdateSetDto } from './dto/update-set-metadata.dto';
-import { TaskDocument } from '../task/entities/task.entity';
-import { JwtUserDto } from '../auth/dto/jwt.dto';
 
 @Injectable()
 export class SetService {
-  constructor(@InjectModel('Set') private setSchema: Model<SetDocument>,
-    @InjectModel('Task') private taskSchema: Model<TaskDocument>) { }
+  constructor(
+    @InjectModel('Set') private setSchema: Model<SetDocument>,
+    @InjectModel('Task') private taskSchema: Model<TaskDocument>,
+    private readonly sharedService: SharedService
+  ) {}
 
   async create(metaData: CreateSetDto, user: JwtUserDto): Promise<SetDocument> {
     try {
@@ -66,12 +71,15 @@ export class SetService {
     return result;
   }
 
-  async findAll(): Promise<SetDocument[]> {
-    return await this.setSchema.find()
+  async findAll(page: number, limit: number): Promise<PaginationPayload<Set>> {
+    const documentCount = await this.setSchema.estimatedDocumentCount()
+		const sets: Set[] = await this.setSchema.find().limit(limit).skip(limit * page)
+
+		return this.sharedService.createPayloadWithPagination(documentCount, page, limit, sets)
   }
 
-  async findOne(id: ObjectId) {
-    let set = await this.setSchema.findById(id).lean()
+  async findOne(id: ObjectId): Promise<Set> {
+    const set = await this.setSchema.findById(id)
     if (!set)
       throw new NotFoundException()
     return set;
@@ -174,7 +182,7 @@ export class SetService {
       throw new ForbiddenException()
 
     set = await this.setSchema.findByIdAndUpdate(id, {
-      status: SetStatus.DELETED
+      status: Status.DELETED
     }, {
       new: true
     })
@@ -299,6 +307,7 @@ export class SetService {
   async healthCheck(user: JwtUserDto) {
     if (user.role != 'admin')
     throw new ForbiddenException()
+    // TODO: if(true) shoudln't be in production
   if(true){  
     let taskIdsInSets = []
     // Get all referenced task ids

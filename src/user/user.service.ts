@@ -6,7 +6,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
 import * as bcyrpt from 'bcrypt'
 import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
-import { Status } from './enums/status.enum';
+import { UserStatus } from './enums/status.enum';
 import { MailService } from '../mail/mail.service';
 import { VerifyDocument } from './entities/verify.entity';
 import * as crypto from 'crypto'
@@ -28,7 +28,7 @@ export class UserService {
       const hash = await bcyrpt.hash(credentials.password, 12)
       const user = new this.userSchema({
         ...credentials,
-        status: Status.Unverified,
+        status: UserStatus.UNVERIFIED,
         password: hash
       })
       const result = await user.save()
@@ -211,7 +211,7 @@ export class UserService {
       throw new NotFoundException()
     }
 
-    user.status = Status.Active
+    user.status = UserStatus.ACTIVE
 
     const result = await user.save()
 
