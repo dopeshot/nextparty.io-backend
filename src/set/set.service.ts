@@ -79,7 +79,7 @@ export class SetService {
   }
 
   async findOne(id: ObjectId): Promise<Set> {
-    const set = await this.setSchema.findById(id)
+    const set = await this.setSchema.findById(id).populate('createdBy', 'username _id')
     if (!set)
       throw new NotFoundException()
     return set;
