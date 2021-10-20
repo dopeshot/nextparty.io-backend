@@ -5,10 +5,8 @@ import { JwtUserDto } from 'src/auth/dto/jwt.dto';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { MongoIdDto } from '../shared/dto/mongoId.dto';
 import { PaginationDto } from '../shared/dto/pagination.dto';
-import { TaskVoteDto } from '../task/dto/task-vote-dto';
 import { CreateSetDto } from './dto/create-set.dto';
-import { UpdateSetDto } from './dto/update-set-metadata.dto';
-import { UpdateSetTasksDto } from './dto/update-set-tasks.dto';
+import { UpdateSetDto } from './dto/update-set.dto';
 import { SetService } from './set.service';
 
 @ApiTags('set')
@@ -39,72 +37,39 @@ export class SetController {
   @UseGuards(JwtAuthGuard)
   // TODO MC: Can not reprocude error
   @HttpCode(204)
-  @ApiOperation({ summary: 'Delete Set via id'})
+  @ApiOperation({ summary: 'Delete Set by id'})
   remove(@Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto, @Query('type') type: string, @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.remove(id, type, user)
   }
 
-  @Get(':id/tasks')
-  @ApiOperation({ summary: 'Get all tasks in set with paging Maxi-Version'})
-  getSetTasks(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
-    return this.setService.getTasks2(id, +paginationDto.page,+paginationDto.limit);
-  }
-
-  @Get(':id/tasks1')
-  @ApiOperation({ summary: 'Get all tasks in set with paging Max-Version'})
-  getSetTasks1(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto,  @Query('page') page: number) {
-    return this.setService.getTasks(id, page);
-  }
-
-  @Get(':id/tentasks')
-  @ApiOperation({ summary: 'Get top 10 tasks in set sorted by difference'})
-  getSetTopTenTasks(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto) {
-    return this.setService.findTopTenTasks(id);
-  }
-
-  @Get(':id/meta')
-  @ApiOperation({ summary: 'Get set metadata'})
-  getMeta(@Param(new ValidationPipe({ whitelist: true })) { id }:  MongoIdDto, @Body() updateSetDto: UpdateSetDto) {
-    return this.setService.getMetadata(id);
-  }
-
-  @Patch(':id/meta')
+  @Patch(':id')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Update Set metadata'}) 
+  @ApiOperation({ summary: 'Update Set by id'}) 
   updateMeta(@Param('id') id: ObjectId, @Body() updateSetDto: UpdateSetDto, @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.updateMetadata(id, updateSetDto, user);
   }
 
-  @Patch(':id/:vote')
-  @ApiOperation({ summary: 'Vote one Set by id'})
-  vote(@Param(ValidationPipe) setVoteDto: TaskVoteDto,) {
-    return this.setService.vote(setVoteDto.id, setVoteDto.vote);
-  }
-
-  @Post(':id/add')
+  //REWORK=====================================================================================
+  @Post(':id/task')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Add Task to Set via id and Json'})
-  addTask(@Param('id') id: ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto, @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
-    return this.setService.alterTasks(id, "add", updateSetTasksDto, user);
+  @ApiOperation({ summary: 'Create Task to Set via id and Json'})
+  createTask(@Param('id') id: ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto, @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
+    return this.setService.createTask(id, updateSetTasksDto, user);
   }
   
-  @Post(':id/remove')
+  //REWORK=====================================================================================
+  @Delete(':id/task/:taskid')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Remove one Set via id and Json'})
+  @ApiOperation({ summary: 'Remove one Task via id'})
   removeTask(@Param('id') id:  ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto, @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
-    return this.setService.alterTasks(id, "remove", updateSetTasksDto, user);
+    return this.setService.removeTask(id, updateSetTasksDto, user);
   }
 
-  @Get('user/:id')
-  @ApiOperation({ summary: 'Get sets from user'})
-  userSets(@Param(new ValidationPipe({whitelist:true})){id}: MongoIdDto,  @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto){
-    return this.setService.userSets(id, +paginationDto.page,+paginationDto.limit);
-  }
-
-  @Get('healthcheck')
+  //REWORK=====================================================================================
+  @Patch(':id/task/:taskid')
   @UseGuards(JwtAuthGuard)
-  @ApiOperation({summary: 'HealthCheck for sets'})
-  healthCheck(@Request() { user }: ParameterDecorator & { user: JwtUserDto }){
-    return this.setService.healthCheck(user);
+  @ApiOperation({ summary: 'Update one Task via id and Json'})
+  updateTask(@Param('id') id:  ObjectId, @Body() updateSetTasksDto: UpdateSetTasksDto, @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
+    return this.setService.updateTask(id, updateSetTasksDto, user);
   }
 }
