@@ -19,7 +19,9 @@ export class ReportController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create a report'})
   @ApiBearerAuth()
-  create(@Body(new ValidationPipe({ whitelist: true })) createReportDto: CreateReportDto, @Request() req) {
+  create(
+    @Body(new ValidationPipe({ whitelist: true })) createReportDto: CreateReportDto, 
+    @Request() req) {
     return this.reportService.create(createReportDto, req.user);
   }
 
@@ -28,7 +30,8 @@ export class ReportController {
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Get all reports'})
   @ApiBearerAuth()
-  findAll(@Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto ) {
+  findAll(
+    @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto ) {
     return this.reportService.findAll(+paginationDto.page, +paginationDto.limit);
   }
 
@@ -37,7 +40,8 @@ export class ReportController {
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Get report via id'})
   @ApiBearerAuth()
-  findOneById(@Param(ValidationPipe) { id }: MongoIdDto) {
+  findOneById(
+    @Param(ValidationPipe) { id }: MongoIdDto) {
     return this.reportService.findOneById(id);
   }
 
@@ -47,7 +51,10 @@ export class ReportController {
   @HttpCode(204)
   @ApiOperation({ summary: 'Delete report via id'})
   @ApiBearerAuth()
-  remove(@Param(ValidationPipe) { id }: MongoIdDto, @Query('type') type: DeleteType, @Request() req) {
+  remove(
+    @Param(ValidationPipe) { id }: MongoIdDto, 
+    @Query('type') type: DeleteType, 
+    @Request() req) {
     return this.reportService.remove(id, type, req.user);
   }
 }
