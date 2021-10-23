@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { SharedModule } from '../shared/shared.module';
-import { TaskSchema } from '../task/entities/task.entity';
+import { TaskSchema } from '../set/entities/task.entity';
 import { SetSchema } from './entities/set.entity';
 import { SetController } from './set.controller';
 import { SetService } from './set.service';
