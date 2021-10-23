@@ -149,14 +149,14 @@ export class SetService {
 
   //REWORK=====================================================================================
   // Creates a new Task and checks if the message content accounts for extra user interaction
-  async createTask(createTaskDto: CreateTaskDto, creator: JwtUserDto, set: ObjectId): Promise<any> {
+  async createTask( set: ObjectId, createTaskDto: CreateTaskDto, creator: JwtUserDto): Promise<any> {
   }
 
   //REWORK=====================================================================================
   // Updates the content language and type of a Task
   async updateTask(id: ObjectId, updateTaskDto: UpdateTaskDto, user: JwtUserDto): Promise<any> {
     // Find Object
-    let task = await this.taskSchema.findById(id)
+    let task = await this.setSchema.findById(id)
 
     if (!task)
       throw new NotFoundException()
@@ -188,8 +188,8 @@ export class SetService {
   }
 
   //REWORK=====================================================================================
-  async removeTask(id: ObjectId, type: string, user: JwtUserDto): Promise<void> {
-    let task = await this.taskSchema.findById(id)
+  async removeTask(id: ObjectId, taskId: ObjectId, type: string, user: JwtUserDto): Promise<void> {
+    let task = await this.setSchema.findById(id)
 
     if (!task)
       throw new NotFoundException()
@@ -203,7 +203,7 @@ export class SetService {
 
       // Check if there is a task with this id and remove it
       try {
-        const task = await this.taskSchema.findByIdAndDelete(id)
+        const task = await this.setSchema.findByIdAndDelete(id)
       }
       catch (error) {
         throw new InternalServerErrorException()
@@ -214,9 +214,9 @@ export class SetService {
 
     // Soft delete
     // Check if User is Creator of Task or Admin
-    if (!(user.userId == task.author || user.role == "admin"))
+    if (!(user.userId == task.createdBy || user.role == "admin"))
       throw new ForbiddenException()
 
-    task = await this.taskSchema.findByIdAndUpdate(id, { status: Status.DELETED }, { new: true })
+    task = await this.setSchema.findByIdAndUpdate(id, { status: Status.DELETED }, { new: true })
   }
 }

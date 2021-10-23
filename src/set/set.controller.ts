@@ -6,7 +6,9 @@ import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { MongoIdDto } from '../shared/dto/mongoId.dto';
 import { PaginationDto } from '../shared/dto/pagination.dto';
 import { CreateSetDto } from './dto/create-set.dto';
+import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
 import { SetService } from './set.service';
 
 @ApiTags('set')
@@ -64,20 +66,21 @@ export class SetController {
   @ApiOperation({ summary: 'Create Task to Set via id and Json' })
   createTask(
     @Param('id') id: ObjectId, 
-    @Body() updateSetTasksDto: UpdateSetTasksDto,
+    @Body() createTaskDto: CreateTaskDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
-    return this.setService.createTask(id, updateSetTasksDto, user);
+    return this.setService.createTask(id, createTaskDto, user);
   }
 
   //REWORK=====================================================================================
-  @Delete(':id/task/:taskid')
+  @Delete(':id/task/:taskid/:type')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Remove one Task via id' })
   removeTask(
     @Param('id') id: ObjectId, 
-    @Body() updateSetTasksDto: UpdateSetTasksDto, 
+    @Param('taskid') taskId: ObjectId, 
+    @Param('type') type: string, 
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
-    return this.setService.removeTask(id, updateSetTasksDto, user);
+    return this.setService.removeTask(id, taskId, type, user);
   }
 
   //REWORK=====================================================================================
@@ -86,8 +89,8 @@ export class SetController {
   @ApiOperation({ summary: 'Update one Task via id and Json' })
   updateTask(
     @Param('id') id: ObjectId, 
-    @Body() updateSetTasksDto: UpdateSetTasksDto, 
+    @Body() updateTaskDto: UpdateTaskDto, 
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
-    return this.setService.updateTask(id, updateSetTasksDto, user);
+    return this.setService.updateTask(id, updateTaskDto, user);
   }
 }
