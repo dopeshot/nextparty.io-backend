@@ -10,12 +10,18 @@ export class SearchController {
 
   @Get(':searchstring')
   @ApiOperation({ summary: 'Searching for the send input in everything' })
-  search(@Param('searchstring') searchString: string, @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
+  search(
+    @Param('searchstring') searchString: string,
+    @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
     return this.searchService.search(searchString, +paginationDto.page, +paginationDto.limit)
   }
+
   @Get(':searchstring/:type')
   @ApiOperation({ summary: 'Searching for the send input in certain type' })
-  searchType(@Param('searchstring') searchString: string, @Param('type') type: string, @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
+  searchType(
+    @Param('searchstring') searchString: string,
+    @Param('type') type: string,
+    @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
     return this.searchService.search(searchString, +paginationDto.page, +paginationDto.limit, type)
   }
 }

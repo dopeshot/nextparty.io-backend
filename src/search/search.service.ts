@@ -1,16 +1,13 @@
-import { Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, ObjectId, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { SetDocument } from '../set/entities/set.entity';
 import { UserDocument } from '../user/entities/user.entity';
-import { Task, TaskContent, TaskDocument, TaskSchema, TaskContentSchema } from '../task/entities/task.entity';
-import { SearchDto } from './dto/search.dto';
 
 
 @Injectable()
 export class SearchService {
     constructor(@InjectModel('Set') private setSchema: Model<SetDocument>,
-        @InjectModel('Task') private taskSchema: Model<TaskDocument>,
         @InjectModel('User') private userSchema: Model<UserDocument>) { }
 
     async search(searchString: string, page: number, limit: number, type = 'all') {
@@ -21,30 +18,30 @@ export class SearchService {
         const skip = page * limit
         limit += skip
 
-        let taskResult = []
+        //let taskResult = []
         let setResult = []
         let userResult = []
         let regexQuery = []
 
-        if (type == 'all' || type == 'task') {
-            // Find in tasks content.message
-            // Only return active objects
-            regexQuery.push({ status: 'active' })
-            // Build a regex search for every substring
-            subStrings.forEach(string => {
-                regexQuery.push({ 'content.message': { $regex: RegExp(string), $options: 'i' } })
-            })
+        // if (type == 'all' || type == 'task') {
+        //     // Find in tasks content.message
+        //     // Only return active objects
+        //     regexQuery.push({ status: 'active' })
+        //     // Build a regex search for every substring
+        //     subStrings.forEach(string => {
+        //         regexQuery.push({ 'content.message': { $regex: RegExp(string), $options: 'i' } })
+        //     })
 
-            taskResult = await this.taskSchema.aggregate([{ $match: { $and: regexQuery } }, { $limit: limit }, { $skip: skip }])
-            if (type == 'task') {
-                return {
-                    tasks: {
-                        itemsCount: taskResult.length,
-                        items: taskResult
-                    }
-                }
-            }
-        }
+        //     taskResult = await this.taskSchema.aggregate([{ $match: { $and: regexQuery } }, { $limit: limit }, { $skip: skip }])
+        //     if (type == 'task') {
+        //         return {
+        //             tasks: {
+        //                 itemsCount: taskResult.length,
+        //                 items: taskResult
+        //             }
+        //         }
+        //     }
+        // }
 
         if (type == 'all' || type == 'set') {
             // Find in sets name and description without the taskList!
@@ -97,10 +94,10 @@ export class SearchService {
 
         if (type == 'all') {
             return {
-                tasks: {
-                    itemsCount: taskResult.length,
-                    items: taskResult
-                },
+                // tasks: {
+                //     itemsCount: taskResult.length,
+                //     items: taskResult
+                // },
                 sets: {
                     itemsCount: setResult.length,
                     items: setResult
