@@ -35,3 +35,6 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 .env
+
+# Prevent issues with seperate readme in mirrored gitlab repo
+.gitignore
