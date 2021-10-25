@@ -34,3 +34,5 @@ $ npm run test:cov
 
 [NestJS Docs](https://docs.nestjs.com/).
 
+For frontend see [here](https://github.com/Zoe-Bot/thruthOrDare-frontend).
+
