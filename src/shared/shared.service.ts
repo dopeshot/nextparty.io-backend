@@ -9,7 +9,7 @@ export class SharedService {
         limit: number,
         items: any[],
     ): PaginationPayload<any> {
-        const pageCount = Math.floor(documentCount / limit)
+        const pageCount = Math.floor(documentCount - 1 / limit)
 
         if (page > pageCount) throw new NotFoundException()
 
