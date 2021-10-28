@@ -60,11 +60,11 @@ export class SetController {
   // TODO MC: Can not reprocude error
   @HttpCode(204)
   @ApiOperation({ summary: 'Delete Set by id' })
-  remove(
+  deleteSet(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto, 
     @Query('type') type: string, 
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
-    return this.setService.remove(id, type, user)
+    return this.setService.deleteSet(id, type, user)
   }
 
   

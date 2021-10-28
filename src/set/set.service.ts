@@ -109,7 +109,7 @@ export class SetService {
     * @param id of the set
     * @param type soft/anything else or hard delete
   */
-  async remove(id: ObjectId, type: string, user: JwtUserDto): Promise<void> {
+  async deleteSet(id: ObjectId, type: string, user: JwtUserDto): Promise<void> {
     let set = await this.setSchema.findById(id)
 
     if (!set)
