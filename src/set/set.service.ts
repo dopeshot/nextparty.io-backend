@@ -18,7 +18,12 @@ export class SetService {
     private readonly sharedService: SharedService
   ) { }
 
-  async create(metaData: CreateSetDto, user: JwtUserDto): Promise<SetDocument> {
+  /**
+    * Create set:
+    * @param metaData of the new set
+    * @param user that requests to create a new set
+  */
+  async createSet(metaData: CreateSetDto, user: JwtUserDto): Promise<SetDocument> {
     try {
       const set = new this.setSchema({
         createdBy: user.userId,
@@ -33,36 +38,49 @@ export class SetService {
     }
   }
 
-  async findAll(page: number, limit: number): Promise<PaginationPayload<Set>> {
+  /**
+    * get all sets:
+  */
+  async getAllSets(): Promise<Set[]> {
     const documentCount = await this.setSchema.estimatedDocumentCount()
-    const sets: Set[] = await this.setSchema.find().limit(limit).skip(limit * page)
+    const sets: Set[] = await this.setSchema.find()
 
-    return this.sharedService.createPayloadWithPagination(documentCount, page, limit, sets)
+    return sets
   }
 
-  async findOne(id: ObjectId): Promise<Set> {
+  /**
+    * get one set:
+    * @param id of the requested set
+  */
+  async getOneSet(id: ObjectId): Promise<Set> {
     const set = await this.setSchema.findById(id).populate('createdBy', 'username _id')
     if (!set)
       throw new NotFoundException()
     return set;
   }
 
-  async userSets(id: ObjectId, page: number, limit: number) {
+  /**
+    * get one set:
+    * @param id of the user which sets are requested
+  */
+  async getSetsByUser(id: ObjectId) {
     let userSets = await this.setSchema.aggregate([
       {
         '$match': {
-          'creator': Types.ObjectId(id.toString())
+          'createdBy': Types.ObjectId(id.toString())
         }
-      }, {
-        $skip: page * limit
-      }, {
-        $limit: limit
       }
     ])
     return userSets
   }
 
-  async updateMetadata(id: ObjectId, updateSetDto: UpdateSetDto, user: JwtUserDto) {
+  /**
+    * get one set:
+    * @param id of the requested set
+    * @param updateSetDto contains the updated metaData
+    * @param user is the account requesting to patch the set 
+  */
+  async updateSetMetadata(id: ObjectId, updateSetDto: UpdateSetDto, user: JwtUserDto) {
     // Find Object
     let set = await this.setSchema.findById(id)
 
@@ -74,10 +92,10 @@ export class SetService {
       throw new ForbiddenException()
 
     try {
-      if (updateSetDto.hasOwnProperty("description"))
-        set.description = updateSetDto.description
       if (updateSetDto.hasOwnProperty("name"))
         set.name = updateSetDto.name
+      if (updateSetDto.hasOwnProperty("language"))
+        set.language = updateSetDto.language
     } catch (error) {
       throw new UnprocessableEntityException()
     }
@@ -142,7 +160,6 @@ export class SetService {
       throw new NotFoundException()
 
     return {
-      "description": set.description,
       "name": set.name
     }
   }

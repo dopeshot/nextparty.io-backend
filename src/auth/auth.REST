@@ -13,8 +13,8 @@ POST http://localhost:3000/api/auth/login
 Content-Type: application/json
 
 {
-    "email": "test@gmail.de",
-    "password": "12345678"
+    "email": "mail564@gmail.com",
+    "password": "$2b$12$v7Uo6aWKoHTF/B3xh4S4oeNXk3aD5YuPVaXuAqgmhyJDBZl21pC7q"
 }
 
 ### Google Auth

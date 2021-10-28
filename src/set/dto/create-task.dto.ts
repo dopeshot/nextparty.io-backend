@@ -1,13 +1,14 @@
-import { IsEnum, IsString, Length } from "class-validator";
+import { IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
 import { Language } from "../../shared/enums/language.enum";
 import { CurrentPlayerGender } from "../enums/currentplayergender.enum";
 import { TaskType } from "../enums/tasktype.enum";
 
 export class CreateTaskDto {
     @IsEnum(Language)
-    language: Language
+    language: Language | Language.DE
 
     @IsEnum(TaskType)
+    @IsNotEmpty()
     type: TaskType
 
     @IsEnum(CurrentPlayerGender)
@@ -15,6 +16,7 @@ export class CreateTaskDto {
 
     @IsString()
     @Length(10, 280)
+    @IsNotEmpty()
     message: string
 
 }

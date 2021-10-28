@@ -1,14 +1,12 @@
-import { IsString, Length } from "class-validator"
+import { IsNotEmpty, IsString, Length } from "class-validator"
+import { Language } from "src/shared/enums/language.enum"
 
 export class CreateSetDto  {
     @IsString()
+    @IsNotEmpty()
     @Length(3, 32)
     name: string
 
     @IsString()
-    @Length(0, 555555)
-    description: string
-
-    @IsString()
-    language: string
+    language: Language | Language.DE
 }

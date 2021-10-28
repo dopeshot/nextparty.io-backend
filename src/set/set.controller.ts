@@ -19,23 +19,40 @@ export class SetController {
   @Post()
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create new set' })
-  create(
+  createSet(
     @Body(new ValidationPipe({ whitelist: true })) createSetDto: CreateSetDto, @Request() req) {
-    return this.setService.create(createSetDto, req.user);
+    return this.setService.createSet(createSetDto, req.user);
   }
 
   @Get()
   @ApiOperation({ summary: 'Get all Sets' })
-  findAll(
-    @Query(new ValidationPipe({ whitelist: true })) paginationDto: PaginationDto) {
-    return this.setService.findAll(+paginationDto.page, +paginationDto.limit);
+  getAllSets()
+     {
+    return this.setService.getAllSets();
   }
 
   @Get(':id')
   @ApiOperation({ summary: 'Get one Set by id' })
-  findOne(
+  getOneSet(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
-    return this.setService.findOne(id);
+    return this.setService.getOneSet(id);
+  }
+
+  @Get('/user/:id')
+  @ApiOperation({ summary: 'Get one Set by id' })
+  getSetsByUser(
+    @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
+    return this.setService.getSetsByUser(id);
+  }
+
+  @Patch(':id')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Update Set by id' })
+  updateMeta(
+    @Param('id') id: ObjectId, 
+    @Body() updateSetDto: UpdateSetDto, 
+    @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
+    return this.setService.updateSetMetadata(id, updateSetDto, user);
   }
 
   @Delete(':id')
@@ -50,15 +67,9 @@ export class SetController {
     return this.setService.remove(id, type, user)
   }
 
-  @Patch(':id')
-  @UseGuards(JwtAuthGuard)
-  @ApiOperation({ summary: 'Update Set by id' })
-  updateMeta(
-    @Param('id') id: ObjectId, 
-    @Body() updateSetDto: UpdateSetDto, 
-    @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
-    return this.setService.updateMetadata(id, updateSetDto, user);
-  }
+  
+
+
 
   //REWORK=====================================================================================
   @Post(':id/task')

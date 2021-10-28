@@ -15,11 +15,8 @@ export class Set {
     @Prop({ default: Status.ACTIVE })
     status: Status | Status.ACTIVE
 
-    @Prop({ default: "", index: true })
-    description: string
-
     @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
-    createdBy: ObjectId
+    createdBy: ObjectId 
 
     @Prop({ required: true })
     language: Language
