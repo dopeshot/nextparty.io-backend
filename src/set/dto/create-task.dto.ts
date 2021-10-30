@@ -1,5 +1,4 @@
 import { IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
-import { Language } from "../../shared/enums/language.enum";
 import { CurrentPlayerGender } from "../enums/currentplayergender.enum";
 import { TaskType } from "../enums/tasktype.enum";
 
