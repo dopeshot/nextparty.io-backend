@@ -1,7 +1,7 @@
 ###Create Set
 POST http://localhost:3000/api/set
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjE3YjEzZmZmY2NhODQ0OWYwYTdiZWYxIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MzU0NTU5OTksImV4cCI6MTYzNTQ5MTk5OX0.bspVm308FHeH7ZK3Q7hmrOMWZ1xCbyXSwqYeskoj8iQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1NTg5MjUxLCJleHAiOjE2MzU2MjUyNTF9.v0BrNIDUM2A55jQtCRSmGHF4nAU8abBIyegcN8ZjlQs
 
 {
     "name": "Developer Pack"

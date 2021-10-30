@@ -99,9 +99,10 @@ export class SetController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update one Task via id and Json' })
   updateTask(
-    @Param('id') id: ObjectId, 
+    @Param('id') setId: ObjectId,
+    @Param('taskid') taskId: ObjectId, 
     @Body() updateTaskDto: UpdateTaskDto, 
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
-    return this.setService.updateTask(id, updateTaskDto, user);
+    return this.setService.updateTask(setId, taskId, updateTaskDto, user);
   }
 }

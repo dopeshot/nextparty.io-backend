@@ -10,11 +10,13 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Set, SetDocument } from './entities/set.entity';
+import { Task, TaskDocument, TaskSchema } from './entities/task.entity';
 
 @Injectable()
 export class SetService {
   constructor(
     @InjectModel('Set') private setSchema: Model<SetDocument>,
+    @InjectModel('Task') private taskSchema: Model<TaskDocument>,
     private readonly sharedService: SharedService
   ) { }
 
@@ -166,20 +168,42 @@ export class SetService {
 
   //REWORK=====================================================================================
   // Creates a new Task and checks if the message content accounts for extra user interaction
-  async createTask( set: ObjectId, createTaskDto: CreateTaskDto, creator: JwtUserDto): Promise<any> {
+  async createTask(setId: ObjectId, createTaskDto: CreateTaskDto, user: JwtUserDto): Promise<any> {
+    let set = await this.setSchema.findById(setId)
+    if (!set)
+      throw new NotFoundException()
+
+    // Check if User is Creator of Set or Admin
+    if (!(user.userId == set.createdBy || user.role == "admin"))
+      throw new ForbiddenException()
+
+    let task = new this.taskSchema({...createTaskDto})
+
+    // Add Task to Set
+    set.tasks.push(task)
+
+    // Save the task
+    return await set.save()
   }
 
   //REWORK=====================================================================================
   // Updates the content language and type of a Task
-  async updateTask(id: ObjectId, updateTaskDto: UpdateTaskDto, user: JwtUserDto): Promise<any> {
-    // Find Object
-    let task = await this.setSchema.findById(id)
+  async updateTask(setId: ObjectId, taskId: ObjectId, updateTaskDto: UpdateTaskDto, user: JwtUserDto): Promise<any> {
+    // Find Set
+    let set = await this.setSchema.findById(setId)
 
-    if (!task)
+    if (!set)
       throw new NotFoundException()
 
+    // Find if requested Task is in this set
+
+    // Update the tasks data
+
+    // Save the changes
+
+
     // // Check if User is Creator of Task or Admin
-    // if (!(user.userId == task.author || user.role == "admin"))
+    // if (!(user.userId == task.createdBy || user.role == "admin"))
     //     throw new ForbiddenException()
 
     // try {
@@ -200,7 +224,7 @@ export class SetService {
     //     throw new UnprocessableEntityException()
     // }
 
-    const result = await task.save()
+    const result = await set.save()
     return result
   }
 

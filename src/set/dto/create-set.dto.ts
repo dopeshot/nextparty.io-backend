@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, Length } from "class-validator"
+import { IsEnum, IsNotEmpty, IsOptional, IsString, Length } from "class-validator"
 import { Language } from "src/shared/enums/language.enum"
 
 export class CreateSetDto  {
@@ -7,6 +7,6 @@ export class CreateSetDto  {
     @Length(3, 32)
     name: string
 
-    @IsString()
-    language: Language | Language.DE
+    @IsOptional()
+    language: Language = Language.DE
 }

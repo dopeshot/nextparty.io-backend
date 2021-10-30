@@ -4,8 +4,6 @@ import { CurrentPlayerGender } from "../enums/currentplayergender.enum";
 import { TaskType } from "../enums/tasktype.enum";
 
 export class CreateTaskDto {
-    @IsEnum(Language)
-    language: Language | Language.DE
 
     @IsEnum(TaskType)
     @IsNotEmpty()

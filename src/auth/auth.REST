@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
     "email": "mail564@gmail.com",
-    "password": "$2b$12$v7Uo6aWKoHTF/B3xh4S4oeNXk3aD5YuPVaXuAqgmhyJDBZl21pC7q"
+    "password": "12345678"
 }
 
 ### Google Auth

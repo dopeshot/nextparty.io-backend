@@ -4,7 +4,7 @@ import { CurrentPlayerGender } from "../enums/currentplayergender.enum";
 import { TaskType } from "../enums/tasktype.enum";
 
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, _id: true })
 export class Task {
 
     @Prop({ required: true })
@@ -20,4 +20,5 @@ export class Task {
     status: Status | Status.ACTIVE
 }
 
+export type TaskDocument = Task & Document
 export const TaskSchema = SchemaFactory.createForClass(Task)
