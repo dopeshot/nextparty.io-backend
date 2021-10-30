@@ -38,8 +38,15 @@ export class SetController {
     return this.setService.getOneSet(id);
   }
 
+  @Get(':id/metadata')
+  @ApiOperation({ summary: 'Get one Set by id but without tasks' })
+  getSetMetadata(
+    @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
+    return this.setService.getSetMetadata(id);
+  }
+
   @Get('/user/:id')
-  @ApiOperation({ summary: 'Get one Set by id' })
+  @ApiOperation({ summary: 'Get Sets from a user by User id' })
   getSetsByUser(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
     return this.setService.getSetsByUser(id);

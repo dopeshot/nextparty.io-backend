@@ -62,6 +62,24 @@ export class SetService {
   }
 
   /**
+   * Get a set without it tasks
+   * @param id of the set
+   */
+  async getSetMetadata(id: ObjectId) {
+    const set = await this.setSchema.aggregate([
+      {
+        '$match': {
+          '_id': Types.ObjectId(id.toString())
+        }
+      }, {
+        '$unset': ['tasks']
+      }
+    ])
+
+    return set
+  }
+
+  /**
     * get one set:
     * @param id of the user which sets are requested
   */
@@ -147,27 +165,12 @@ export class SetService {
     })
   }
 
-  async getTasks2(id: ObjectId, page: number, limit: number): Promise<Set> {
-    const skip = page * limit
-    limit += skip
-    const set: Set = await this.setSchema.findById(id).populate('taskList')
-
-    return set
-  }
-
-  async getMetadata(id: ObjectId) {
-    const set = await this.setSchema.findById(id)
-
-    if (!set)
-      throw new NotFoundException()
-
-    return {
-      "name": set.name
-    }
-  }
-
-  //REWORK=====================================================================================
-  // Creates a new Task and checks if the message content accounts for extra user interaction
+  /**
+   * Create task: creates a task and adds it to the set
+   * @param setId of the set
+   * @param createTaskDto is used to construct a task
+   * @param user that requested to create a task
+   */
   async createTask(setId: ObjectId, createTaskDto: CreateTaskDto, user: JwtUserDto): Promise<any> {
     let set = await this.setSchema.findById(setId)
     if (!set)
@@ -177,12 +180,13 @@ export class SetService {
     if (!(user.userId == set.createdBy || user.role == "admin"))
       throw new ForbiddenException()
 
-    let task = new this.taskSchema({...createTaskDto})
+    // Create a new Task
+    let task = new this.taskSchema({ ...createTaskDto })
 
-    // Add Task to Set
+    // Add Task to the Sets task array
     set.tasks.push(task)
 
-    // Save the task
+    // Save the Set
     return await set.save()
   }
 

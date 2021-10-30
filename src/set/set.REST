@@ -13,6 +13,9 @@ GET http://localhost:3000/api/set
 ### Get one set
 GET http://localhost:3000/api/set/6134701a7dde0c50ee792364
 
+### Get one set without tasks
+GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd/metadata
+
 ### Add/Update set task list
 POST http://localhost:3000/api/set/611e66d7508d106504f645ab/add
 Content-Type: application/json
