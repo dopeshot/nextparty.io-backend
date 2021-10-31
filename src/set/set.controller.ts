@@ -26,9 +26,17 @@ export class SetController {
 
   @Get()
   @ApiOperation({ summary: 'Get all Sets' })
-  getAllSets()
-     {
+  getAllSets() {
     return this.setService.getAllSets();
+  }
+
+  @Get('/full')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get all Sets' })
+  getAllSetsFull(
+    @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
+
+    return this.setService.getAllSetsFull(user);
   }
 
   @Get(':id')
@@ -36,6 +44,15 @@ export class SetController {
   getOneSet(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
     return this.setService.getOneSet(id);
+  }
+
+  @Get(':id/full')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Get one Set by id' })
+  getOneSetFull(
+    @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto,
+    @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
+    return this.setService.getOneSetFull(id, user);
   }
 
   @Get(':id/metadata')
@@ -56,8 +73,8 @@ export class SetController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update Set by id' })
   updateMeta(
-    @Param('id') id: ObjectId, 
-    @Body() updateSetDto: UpdateSetDto, 
+    @Param('id') id: ObjectId,
+    @Body() updateSetDto: UpdateSetDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.updateSetMetadata(id, updateSetDto, user);
   }
@@ -68,13 +85,13 @@ export class SetController {
   @HttpCode(204)
   @ApiOperation({ summary: 'Delete Set by id' })
   deleteSet(
-    @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto, 
-    @Query('type') type: string, 
+    @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto,
+    @Query('type') type: string,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.deleteSet(id, type, user)
   }
 
-  
+
 
 
 
@@ -83,7 +100,7 @@ export class SetController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create Task to Set via id and Json' })
   createTask(
-    @Param('id') id: ObjectId, 
+    @Param('id') id: ObjectId,
     @Body() createTaskDto: CreateTaskDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.createTask(id, createTaskDto, user);
@@ -94,9 +111,9 @@ export class SetController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Remove one Task via id' })
   removeTask(
-    @Param('id') id: ObjectId, 
-    @Param('taskid') taskId: ObjectId, 
-    @Param('type') type: string, 
+    @Param('id') id: ObjectId,
+    @Param('taskid') taskId: ObjectId,
+    @Param('type') type: string,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.removeTask(id, taskId, type, user);
   }
@@ -107,8 +124,8 @@ export class SetController {
   @ApiOperation({ summary: 'Update one Task via id and Json' })
   updateTask(
     @Param('id') setId: ObjectId,
-    @Param('taskid') taskId: ObjectId, 
-    @Body() updateTaskDto: UpdateTaskDto, 
+    @Param('taskid') taskId: ObjectId,
+    @Body() updateTaskDto: UpdateTaskDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.updateTask(setId, taskId, updateTaskDto, user);
   }

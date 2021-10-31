@@ -1,6 +1,7 @@
-import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
+import { Role } from 'src/user/enums/role.enum';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { Status } from '../shared/enums/status.enum';
 import { PaginationPayload } from '../shared/interfaces/paginationPayload.interface';
@@ -45,19 +46,66 @@ export class SetService {
   */
   async getAllSets(): Promise<Set[]> {
     const documentCount = await this.setSchema.estimatedDocumentCount()
-    const sets: Set[] = await this.setSchema.find()
+    const sets: Set[] = await this.setSchema.aggregate([
+      {
+        '$match': {
+          'status': Status.ACTIVE
+        }
+      }
+    ])
+
+    // Removes inactive tasks from these sets
+    sets.forEach((set) => this.onlyActiveTasks(set))
 
     return sets
   }
 
   /**
-    * get one set:
+   * Returns every Set in the Database no matter the status for admin purposes
+   * @param user that requests all sets
+   */
+  async getAllSetsFull(user: JwtUserDto): Promise<Set[]> {
+    if (user.role !== Role.Admin) {
+      throw new UnauthorizedException()
+    }
+    const documentCount = await this.setSchema.estimatedDocumentCount()
+    const sets: Set[] = await this.setSchema.find().populate('createdBy', 'username _id')
+
+    return sets
+  }
+
+  /**
+    * get one set: Without the inactive tasks
     * @param id of the requested set
   */
   async getOneSet(id: ObjectId): Promise<Set> {
     const set = await this.setSchema.findById(id).populate('createdBy', 'username _id')
+
     if (!set)
       throw new NotFoundException()
+    
+    if(set.status !== Status.ACTIVE)
+      throw new ForbiddenException('This Set is not available')
+
+    // Remove tasks from array that are not active
+    this.onlyActiveTasks(set)
+
+    return set;
+  }
+
+  /**
+   * get One Set Full: Returns full information for admin services
+   * @param id of the requested set
+   * @param user that requests the set
+   */
+  async getOneSetFull(id: ObjectId, user: JwtUserDto): Promise<Set> {
+    if (user.role !== Role.Admin) {
+      throw new UnauthorizedException()
+    }
+    const set = await this.setSchema.findById(id).populate('createdBy', 'username _id')
+    if (!set)
+      throw new NotFoundException()
+
     return set;
   }
 
@@ -263,5 +311,15 @@ export class SetService {
       throw new ForbiddenException()
 
     task = await this.setSchema.findByIdAndUpdate(id, { status: Status.DELETED }, { new: true })
+  }
+
+  private onlyActiveTasks(set: Set): Task {
+    set.tasks = set.tasks.reduce((result, task) => {
+      if (task.status == Status.ACTIVE) {
+        result.push(task)
+      }
+      return result
+    }, [])
+    return new Task()
   }
 }

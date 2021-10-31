@@ -10,8 +10,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxvc
 ### Get all sets
 GET http://localhost:3000/api/set
 
-### Get one set
-GET http://localhost:3000/api/set/6134701a7dde0c50ee792364
+### Get all sets no matter the status
+GET http://localhost:3000/api/set/full
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1NjgzOTY1LCJleHAiOjE2MzU3MTk5NjV9.PsTsDCskqVnsdvYg07agRGckYhuzfnbXOUdtmFa_kFM
+
+### Get one set only active tasks
+GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd
+
+### Get one set with all tasks
+GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd/full
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1NjgxNzI2LCJleHAiOjE2MzU3MTc3MjZ9.GkcdiPT8KjUlFsoOmSBwQ1igBaPnqYLMYmM4jjhXRpg
 
 ### Get one set without tasks
 GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd/metadata
