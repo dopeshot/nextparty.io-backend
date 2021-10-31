@@ -45,13 +45,8 @@ export class SetService {
   */
   async getAllSets(): Promise<Set[]> {
     const documentCount = await this.setSchema.estimatedDocumentCount()
-    const sets: Set[] = await this.setSchema.aggregate([
-      {
-        '$match': {
-          'status': Status.ACTIVE
-        }
-      }
-    ])
+
+    const sets: Set[] = await this.setSchema.find({status: Status.ACTIVE})
 
     // Removes inactive tasks from these sets
     sets.forEach((set) => this.onlyActiveTasks(set))
@@ -312,13 +307,12 @@ export class SetService {
     task = await this.setSchema.findByIdAndUpdate(id, { status: Status.DELETED }, { new: true })
   }
 
-  private onlyActiveTasks(set: Set): Task {
+  private onlyActiveTasks(set: Set) {
     set.tasks = set.tasks.reduce((result, task) => {
       if (task.status == Status.ACTIVE) {
         result.push(task)
       }
       return result
     }, [])
-    return new Task()
   }
 }
