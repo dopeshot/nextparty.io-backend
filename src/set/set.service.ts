@@ -1,17 +1,16 @@
 import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
-import { Role } from 'src/user/enums/role.enum';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { Status } from '../shared/enums/status.enum';
-import { PaginationPayload } from '../shared/interfaces/paginationPayload.interface';
 import { SharedService } from '../shared/shared.service';
+import { Role } from '../user/enums/role.enum';
 import { CreateSetDto } from './dto/create-set.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Set, SetDocument } from './entities/set.entity';
-import { Task, TaskDocument, TaskSchema } from './entities/task.entity';
+import { Task, TaskDocument } from './entities/task.entity';
 
 @Injectable()
 export class SetService {
