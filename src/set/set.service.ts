@@ -11,6 +11,8 @@ import { UpdateSetDto } from './dto/update-set.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Set, SetDocument } from './entities/set.entity';
 import { Task, TaskDocument } from './entities/task.entity';
+import { AggregationSetWithTasks } from './types/set.aggregation';
+import { ResponseSet, ResponseSetWithTasks, ResponseTasks } from './types/set.response'
 
 @Injectable()
 export class SetService {
@@ -25,15 +27,27 @@ export class SetService {
     * @param metaData of the new set
     * @param user that requests to create a new set
   */
-  async createSet(metaData: CreateSetDto, user: JwtUserDto): Promise<SetDocument> {
+  async createSet(metaData: CreateSetDto, user: JwtUserDto): Promise<ResponseSet> {
     try {
-      const set = new this.setSchema({
+      const set: SetDocument = new this.setSchema({
         createdBy: user.userId,
         ...metaData
       })
       const result = await set.save()
 
-      return result
+      delete set.status
+
+      return {
+        _id: result.id,
+        daresCount: result.daresCount,
+        truthCount: result.truthCount,
+        language: result.language,
+        name: result.name,
+        createdBy: {
+          _id: user.userId.toString(),
+          username: user.username
+        }
+      }
     } catch (error) {
       console.log(error)
       throw new InternalServerErrorException()
@@ -43,13 +57,35 @@ export class SetService {
   /**
     * get all sets:
   */
-  async getAllSets(): Promise<Set[]> {
+  async getAllSets(): Promise<ResponseSet[]> {
     const documentCount = await this.setSchema.estimatedDocumentCount()
 
-    const sets: Set[] = await this.setSchema.find({status: Status.ACTIVE})
-
-    // Removes inactive tasks from these sets
-    sets.forEach((set) => this.onlyActiveTasks(set))
+    const sets: ResponseSet[] = await this.setSchema.aggregate([
+      {
+        $match: {
+          'status': Status.ACTIVE
+        }
+      }, {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy"
+        }
+      }, {
+        $unwind: '$createdBy'
+      }, {
+        $project: {
+          '_id': 1,
+          'daresCount': 1,
+          'truthCount': 1,
+          'name': 1,
+          'language': 1,
+          'createdBy.username': 1,
+          'createdBy._id': 1
+        }
+      }
+    ])
 
     return sets
   }
@@ -72,19 +108,59 @@ export class SetService {
     * get one set: Without the inactive tasks
     * @param id of the requested set
   */
-  async getOneSet(id: ObjectId): Promise<Set> {
-    const set = await this.setSchema.findById(id).populate('createdBy', 'username _id')
+  async getOneSet(id: ObjectId): Promise<ResponseSetWithTasks> {
+    const sets: AggregationSetWithTasks[] = await this.setSchema.aggregate([
+      {
+        $match: {
+          '_id': Types.ObjectId(id.toString())
+        }
+      }, {
+        $match: {
+          'status': Status.ACTIVE
+        }
+      }, {
+        $lookup: {
+          from: "users",
+          localField: "createdBy",
+          foreignField: "_id",
+          as: "createdBy"
+        }
+      }, {
+        $unwind: '$createdBy'
+      }, {
+        $project: {
+          '_id': 1,
+          'daresCount': 1,
+          'truthCount': 1,
+          'name': 1,
+          'language': 1,
+          'createdBy.username': 1,
+          'createdBy._id': 1,
+          'tasks': 1
+        }
+      }
 
-    if (!set)
+    ])
+
+    if (sets.length === 0)
       throw new NotFoundException()
-    
-    if(set.status !== Status.ACTIVE)
-      throw new ForbiddenException('This Set is not available')
 
+    const set = sets[0]
     // Remove tasks from array that are not active
     this.onlyActiveTasks(set)
 
-    return set;
+    return {
+      _id: set._id,
+      daresCount: set.daresCount,
+      truthCount: set.truthCount,
+      createdBy: {
+        _id: set.createdBy._id,
+        username: set.createdBy.username
+      },
+      language: set.language,
+      name: set.name,
+      tasks: set.tasks
+    };
   }
 
   /**
@@ -307,10 +383,16 @@ export class SetService {
     task = await this.setSchema.findByIdAndUpdate(id, { status: Status.DELETED }, { new: true })
   }
 
-  private onlyActiveTasks(set: Set) {
-    set.tasks = set.tasks.reduce((result, task) => {
+  // TODO: type any should be fixed later on
+  private onlyActiveTasks(set: AggregationSetWithTasks) {
+    set.tasks = set.tasks.reduce((result: any, task) => {
       if (task.status == Status.ACTIVE) {
-        result.push(task)
+        result.push({
+          _id: task._id,
+          type: task.type,
+          message: task.message,
+          currentPlayerGender: task.currentPlayerGender
+        })
       }
       return result
     }, [])

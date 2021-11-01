@@ -1,10 +1,10 @@
 ###Create Set
 POST http://localhost:3000/api/set
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1NTg5MjUxLCJleHAiOjE2MzU2MjUyNTF9.v0BrNIDUM2A55jQtCRSmGHF4nAU8abBIyegcN8ZjlQs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1NjgzOTY1LCJleHAiOjE2MzU3MTk5NjV9.PsTsDCskqVnsdvYg07agRGckYhuzfnbXOUdtmFa_kFM
 
 {
-    "name": "Developer Pack"
+    "name": "Michaels shenanigans"
 }
 
 ### Get all sets
@@ -19,7 +19,7 @@ GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd
 
 ### Get one set with all tasks
 GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd/full
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1NjgxNzI2LCJleHAiOjE2MzU3MTc3MjZ9.GkcdiPT8KjUlFsoOmSBwQ1igBaPnqYLMYmM4jjhXRpg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1NzcwNTAxLCJleHAiOjE2MzU4MDY1MDF9.mMSbTEUooi6ufynl6SnNx4q0q6AuH_j0Djt7vLSBj7I
 
 ### Get one set without tasks
 GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd/metadata

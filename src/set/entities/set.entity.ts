@@ -4,19 +4,22 @@ import { Status } from "../../shared/enums/status.enum";
 import { Language } from "../../shared/enums/language.enum";
 import { Task, TaskSchema } from "./task.entity";
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, _id: true })
 export class Set {
+
+    _id?: ObjectId
+    
     @Prop({ required: true, index: true })
     name: string
 
-    @Prop({ required: false, type: [{ type: TaskSchema}] })
+    @Prop({ required: false, type: [{ type: TaskSchema }] })
     tasks: Task[]
 
     @Prop({ default: Status.ACTIVE })
     status: Status | Status.ACTIVE
 
     @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
-    createdBy: ObjectId 
+    createdBy: ObjectId
 
     @Prop({ required: true })
     language: Language

@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { ObjectId } from "mongoose";
 import { Status } from "../../shared/enums/status.enum";
 import { CurrentPlayerGender } from "../enums/currentplayergender.enum";
 import { TaskType } from "../enums/tasktype.enum";
@@ -6,6 +7,8 @@ import { TaskType } from "../enums/tasktype.enum";
 
 @Schema({ timestamps: true, _id: true })
 export class Task {
+
+    _id?: ObjectId
 
     @Prop({ required: true })
     type: TaskType
