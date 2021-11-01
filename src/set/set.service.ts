@@ -10,9 +10,9 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { Set, SetDocument } from './entities/set.entity';
-import { Task, TaskDocument } from './entities/task.entity';
+import { TaskDocument } from './entities/task.entity';
 import { AggregationSetWithTasks } from './types/set.aggregation';
-import { ResponseSet, ResponseSetWithTasks, ResponseTasks } from './types/set.response'
+import { ResponseSet, ResponseSetWithTasks } from './types/set.response';
 
 @Injectable()
 export class SetService {
