@@ -12,7 +12,7 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { Set, SetDocument } from './entities/set.entity';
 import { TaskDocument } from './entities/task.entity';
 import { AggregationSetWithTasks } from './types/set.aggregation';
-import { ResponseSet, ResponseSetWithTasks } from './types/set.response';
+import { ResponseSet, ResponseSetWithTasks, ResponseTask } from './types/set.response';
 
 @Injectable()
 export class SetService {
@@ -145,22 +145,13 @@ export class SetService {
     if (sets.length === 0)
       throw new NotFoundException()
 
+    // There is only one set if matching with id, aggregation returns arrays per default though
     const set = sets[0]
-    // Remove tasks from array that are not active
-    this.onlyActiveTasks(set)
 
-    return {
-      _id: set._id,
-      daresCount: set.daresCount,
-      truthCount: set.truthCount,
-      createdBy: {
-        _id: set.createdBy._id,
-        username: set.createdBy.username
-      },
-      language: set.language,
-      name: set.name,
-      tasks: set.tasks
-    };
+    // Remove tasks from array that are not active
+    const finalSet:ResponseSetWithTasks = this.onlyActiveTasks(set)
+
+    return finalSet;
   }
 
   /**
@@ -384,17 +375,28 @@ export class SetService {
   }
 
   // TODO: type any should be fixed later on
-  private onlyActiveTasks(set: AggregationSetWithTasks) {
-    set.tasks = set.tasks.reduce((result: any, task) => {
-      if (task.status == Status.ACTIVE) {
-        result.push({
+  private onlyActiveTasks(set: AggregationSetWithTasks): ResponseSetWithTasks {
+
+    const reducedTasks: ResponseTask[] = [];
+
+    // Iterate over the tasks array and only push those that are active
+    set.tasks.forEach((task) => {
+      if (task.status === Status.ACTIVE) {
+        reducedTasks.push({
+          currentPlayerGender: task.currentPlayerGender,
           _id: task._id,
           type: task.type,
-          message: task.message,
-          currentPlayerGender: task.currentPlayerGender
+          message: task.message
         })
       }
-      return result
-    }, [])
+    })
+
+    // Remove the old tasks array
+    delete set.tasks
+
+    return {
+      ...set,
+      tasks: reducedTasks
+    }
   }
 }

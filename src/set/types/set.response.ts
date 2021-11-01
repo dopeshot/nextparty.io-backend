@@ -12,13 +12,13 @@ export type ResponseSet = {
     name: string
 }
 
-export type ResponseTasks = {
-    tasks: [{
-        currentPlayerGender: string
-        _id: ObjectId
-        type: string
-        message: string
-    }]
+export type ResponseTask = {
+
+    currentPlayerGender: string
+    _id: ObjectId
+    type: string
+    message: string
+
 }
 
-export type ResponseSetWithTasks = ResponseSet & ResponseTasks
+export type ResponseSetWithTasks = ResponseSet & { tasks: ResponseTask[] }
