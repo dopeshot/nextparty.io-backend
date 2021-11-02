@@ -5,7 +5,7 @@ export type ResponseSet = {
     daresCount: number
     truthCount: number
     createdBy: {
-        _id: string
+        _id: ObjectId
         username: string
     }
     language: string
@@ -22,3 +22,12 @@ export type ResponseTask = {
 }
 
 export type ResponseSetWithTasks = ResponseSet & { tasks: ResponseTask[] }
+
+export type ResponseUpdatedSet = {
+    _id: ObjectId
+    daresCount: number
+    truthCount: number
+    createdBy: ObjectId
+    language: string
+    name: string
+}

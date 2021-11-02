@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, Param, Patch, Post, Query, Request, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotImplementedException, Param, Patch, Post, Query, Request, UseGuards, ValidationPipe } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { JwtUserDto } from 'src/auth/dto/jwt.dto';
@@ -35,8 +35,8 @@ export class SetController {
   @ApiOperation({ summary: 'Get all Sets' })
   getAllSetsFull(
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
-
-    return this.setService.getAllSetsFull(user);
+    throw new NotImplementedException('Currently disabled')
+    return //this.setService.getAllSetsFull(user);
   }
 
   @Get(':id')
@@ -52,21 +52,24 @@ export class SetController {
   getOneSetFull(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
-    return this.setService.getOneSetFull(id, user);
+      throw new NotImplementedException('Currently disabled')
+    return //this.setService.getOneSetFull(id, user);
   }
 
   @Get(':id/metadata')
   @ApiOperation({ summary: 'Get one Set by id but without tasks' })
   getSetMetadata(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
-    return this.setService.getSetMetadata(id);
+      throw new NotImplementedException('Currently disabled')
+    return //this.setService.getSetMetadata(id);
   }
 
   @Get('/user/:id')
   @ApiOperation({ summary: 'Get Sets from a user by User id' })
   getSetsByUser(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
-    return this.setService.getSetsByUser(id);
+      throw new NotImplementedException('Currently disabled')
+    return //this.setService.getSetsByUser(id);
   }
 
   @Patch(':id')
@@ -82,7 +85,7 @@ export class SetController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   // TODO MC: Can not reprocude error
-  @HttpCode(204)
+  
   @ApiOperation({ summary: 'Delete Set by id' })
   deleteSet(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto,
