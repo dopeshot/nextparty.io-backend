@@ -29,6 +29,6 @@ async function bootstrap() {
   const document = SwaggerModule.createDocument(app, config)
   SwaggerModule.setup('swagger', app, document)
   app.enableCors()
-  await app.listen(+process.env.PORT || 3000, () => Logger.log(`Nest lisiting on ${process.env.HOST}`, 'Bootstrap'))
+  await app.listen(+process.env.PORT || 3000, () => Logger.log(`Nest listing on ${process.env.HOST}`, 'Bootstrap'))
 }
 bootstrap();

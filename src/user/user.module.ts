@@ -5,11 +5,13 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema } from './entities/user.entity';
 import { MailService } from '../mail/mail.service';
 import { VerifySchema } from './entities/verify.entity';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }]),
   MongooseModule.forFeature([{ name: 'Verify', schema: VerifySchema }]),
-  MongooseModule.forFeature([{ name: 'Reset', schema: VerifySchema }])],
+  MongooseModule.forFeature([{ name: 'Reset', schema: VerifySchema }]),
+  ConfigModule],
   controllers: [UserController],
   providers: [UserService, MailService],
   exports: [UserService] 
