@@ -287,7 +287,6 @@ export class SetService {
   */
   async deleteSet(id: ObjectId, type: string, user: JwtUserDto): Promise<string> {
     try {
-      console.log()
       // Check query
       const isHardDelete = type ? type.includes('hard') : false
 

@@ -85,7 +85,7 @@ export class SetController {
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
   // TODO MC: Can not reprocude error
-  
+  @HttpCode(204)
   @ApiOperation({ summary: 'Delete Set by id' })
   deleteSet(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto,
