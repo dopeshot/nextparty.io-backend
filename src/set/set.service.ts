@@ -249,7 +249,7 @@ export class SetService {
     * @param id of the set
     * @param type soft/anything else or hard delete
   */
-  async deleteSet(id: ObjectId, type: string, user: JwtUserDto): Promise<string> {
+  async deleteSet(id: ObjectId, type: string, user: JwtUserDto): Promise<void> {
 
     // Check query
     const isHardDelete = type ? type.includes('hard') : false
@@ -289,8 +289,8 @@ export class SetService {
   }
 
   // There may be a better method to directly update in the database with pushing to the array (If so adjust the method can be adjusted to 2 ifs and no unesessary db call)
-  async createTask(setId: ObjectId, createTaskDto: CreateTaskDto, user: JwtUserDto): Promise<any> {
-    const set = await this.setSchema.findById(setId)
+  async createTask(setId: ObjectId, createTaskDto: CreateTaskDto, user: JwtUserDto): Promise<TaskDocument> {
+    const set: SetDocument = await this.setSchema.findById(setId)
     if (!set)
       throw new NotFoundException()
 
@@ -305,7 +305,10 @@ export class SetService {
     set.tasks.push(task)
 
     // Save the Set
-    return await set.save()
+    await set.save()
+    return task
+
+    //TODO! what to return, has to be the task with id, when is the id generated??
   }
 
   //REWORK=====================================================================================
