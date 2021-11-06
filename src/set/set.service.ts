@@ -140,10 +140,8 @@ export class SetService {
       throw new NotFoundException()
 
     // There is only one set if matching with id, aggregation returns arrays per default though
-    const set: AggregationSetWithTasks = sets[0]
-
     // Remove tasks from array that are not active
-    const finalSet: ResponseSetWithTasks = this.onlyActiveTasks(set)
+    const finalSet: ResponseSetWithTasks = this.onlyActiveTasks(sets[0])
 
     return finalSet;
   }
@@ -194,35 +192,32 @@ export class SetService {
   //   }
   // }
 
-  /**
-    * get one set:
-    * @param id of the user which sets are requested
-  */
-  // async getSetsByUser(id: ObjectId) {
-  //   try {
-  //     let userSets = await this.setSchema.aggregate([
-  //       {
-  //         '$match': {
-  //           'createdBy': Types.ObjectId(id.toString())
-  //         }
-  //       }
-  //     ])
-  //     return userSets
-  //   } catch (error) {
-  //     console.log(error)
-  //     throw new InternalServerErrorException()
-  //   }
+  // This showes why returning certain types doesn't really work, find() will return a SetDocument but if createdBy is populated there is no direct access to the values
+  // async getSetsByUser(creatorId: ObjectId): Promise<ResponseSet[]> {
+
+  //   const userSets: SetDocument[] = await this.setSchema.find({ createdBy: creatorId, status: Status.ACTIVE }, { _id: 1, name: 1, createdBy: 1, language: 1, truthCount: 1, daresCount: 1 })
+
+  //   const sets: ResponseSet[] = []
+  //   userSets.forEach(((set) => {
+  //     sets.push({
+  //       _id: set._id,
+  //       daresCount: set.daresCount,
+  //       truthCount: set.truthCount,
+  //       language: set.language,
+  //       name: set.name,
+  //       createdBy: set.createdBy
+  //     })
+
+  //   }))
+  //   return sets
+
   // }
 
-  /**
-    * get one set:
-    * @param id of the requested set
-    * @param updateSetDto contains the updated metaData
-    * @param user is the account requesting to patch the set 
-  */
   async updateSetMetadata(id: ObjectId, updateSetDto: UpdateSetDto, user: JwtUserDto): Promise<ResponseUpdatedSet> {
 
+    // This has to be a let due to the various ifs
     let set: SetDocument
+
     if (user.role === Role.User) {
       set = await this.setSchema.findOneAndUpdate({ _id: id, createdBy: user.userId }, updateSetDto, { new: true })
     }
@@ -244,15 +239,10 @@ export class SetService {
 
   }
 
-  /**
-    * Delete set: If type is hard ==> hard delete, If type is soft or anything else => soft delete
-    * @param id of the set
-    * @param type soft/anything else or hard delete
-  */
-  async deleteSet(id: ObjectId, type: string, user: JwtUserDto): Promise<void> {
+  async deleteSet(id: ObjectId, deleteType: string, user: JwtUserDto): Promise<void> {
 
     // Check query
-    const isHardDelete = type ? type.includes('hard') : false
+    const isHardDelete = deleteType ? deleteType.includes('hard') : false
 
     // Check if Hard delete is allowed
     if (isHardDelete && user.role != 'admin') {
@@ -269,7 +259,7 @@ export class SetService {
         throw new NotFoundException
       }
 
-      // We have to return here to exit process
+      // We have to return here to exit the process
       return
 
     }
@@ -278,35 +268,60 @@ export class SetService {
     if (user.role === Role.User) {
       const set = await this.setSchema.findOneAndUpdate({ _id: id, createdBy: user.userId }, { status: Status.DELETED })
       if (!set)
-        throw new NotFoundException('There is no set with this id that belongs to you')
+        throw new NotFoundException('There is no set with this id matching the creator and requestor id')
     }
     else if (user.role === Role.Admin) {
       const set = await this.setSchema.findByIdAndUpdate(id, { status: Status.DELETED })
       if (!set)
         throw new NotFoundException()
     }
-
+    return
   }
 
-  // There may be a better method to directly update in the database with pushing to the array (If so adjust the method can be adjusted to 2 ifs and no unesessary db call)
-  async createTask(setId: ObjectId, createTaskDto: CreateTaskDto, user: JwtUserDto): Promise<TaskDocument> {
-    const set: SetDocument = await this.setSchema.findById(setId)
+  async createTask(setId: ObjectId, createTaskDto: CreateTaskDto, user: JwtUserDto): Promise<ResponseTask> {
+
+    const task: TaskDocument = new this.taskSchema({ ...createTaskDto })
+    let matchQuery = {}
+
+    if (user.role === Role.Admin) {
+      matchQuery = { _id: setId }
+    }
+    else if (user.role === Role.User) {
+      matchQuery = { _id: setId, createdBy: user.userId }
+    }
+
+    else {
+      throw new UnauthorizedException()
+    }
+
+    const set: SetDocument = await this.setSchema.findOneAndUpdate(matchQuery, { $push: { tasks: task } }, { new: true })
     if (!set)
       throw new NotFoundException()
 
-    // Check if User is Creator of Set or Admin
-    if (!(user.userId == set.createdBy || user.role == "admin"))
-      throw new ForbiddenException()
+    return {
+      _id: task._id,
+      currentPlayerGender: task.currentPlayerGender,
+      type: task.type,
+      message: task.message
+    }
 
-    // Create a new Task
-    const task: TaskDocument = new this.taskSchema({ ...createTaskDto })
 
-    // Add Task to the Sets task array
-    set.tasks.push(task)
+    // const set: SetDocument = await this.setSchema.findById(setId)
+    // if (!set)
+    //   throw new NotFoundException()
+
+    // // Check if User is Creator of Set or Admin
+    // if (!(user.userId == set.createdBy || user.role == "admin"))
+    //   throw new ForbiddenException()
+
+    // // Create a new Task
+    // const task: TaskDocument = new this.taskSchema({ ...createTaskDto })
+
+    // // Add Task to the Sets task array
+    // set.tasks.push(task)
 
     // Save the Set
-    await set.save()
-    return task
+    // await set.save()
 
     //TODO! what to return, has to be the task with id, when is the id generated??
   }

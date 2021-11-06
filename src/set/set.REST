@@ -1,10 +1,10 @@
 ###Create Set
 POST http://localhost:3000/api/set
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1ODQ0NjA1LCJleHAiOjE2MzU4ODA2MDV9.OEa1L7rU9q0m8rZJDRks3saHp3LvSwA09yoSxGQIntQ
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
 
 {
-    "name": "DingDong"
+    "name": "Jibba"
 }
 
 ### Get all sets
@@ -15,7 +15,7 @@ GET http://localhost:3000/api/set/full
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1ODQ0NjA1LCJleHAiOjE2MzU4ODA2MDV9.OEa1L7rU9q0m8rZJDRks3saHp3LvSwA09yoSxGQIntQ
 
 ### Get one set only active tasks
-GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd
+GET http://localhost:3000/api/set/61867a8931c25457f0c2bca8
 
 ### Get one set with all tasks
 GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd/full
@@ -24,13 +24,15 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxvc
 ### Get one set without tasks => only MetaData
 GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd/metadata
 
-### Add/Update set task list
-POST http://localhost:3000/api/set/611e66d7508d106504f645ab/add
+### Add task to set
+POST http://localhost:3000/api/set/61867a8931c25457f0c2bca8/task
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzODI1MzgsImV4cCI6MTYyOTQxODUzOH0.C-DwlCpN33kUuFz8gqaZrnKVgN55JpsBw4oqiRJip8c
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
 
 {
-    "tasks": ["611c38b477070d296c8b972c"]
+    "type": "truth",
+    "currentPlayerGender": "@ca",
+    "message": "Have you peed today?"
 }
 
 ### Remove set task list
