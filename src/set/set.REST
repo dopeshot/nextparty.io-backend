@@ -10,22 +10,36 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxvc
 ### Get all sets
 GET http://localhost:3000/api/set
 
-### Get all sets no matter the status
-GET http://localhost:3000/api/set/full
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1ODQ0NjA1LCJleHAiOjE2MzU4ODA2MDV9.OEa1L7rU9q0m8rZJDRks3saHp3LvSwA09yoSxGQIntQ
-
 ### Get one set only active tasks
-GET http://localhost:3000/api/set/61867a8931c25457f0c2bca8
+GET http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3
 
-### Get one set with all tasks
-GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd/full
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1NzcwNTAxLCJleHAiOjE2MzU4MDY1MDF9.mMSbTEUooi6ufynl6SnNx4q0q6AuH_j0Djt7vLSBj7I
+### Get one set MetaData
+GET http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3/metadata
 
-### Get one set without tasks => only MetaData
-GET http://localhost:3000/api/set/617d1e370493d96c5466bcdd/metadata
+### Update set metadata
+PATCH  http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
 
-### Add task to set
-POST http://localhost:3000/api/set/61867a8931c25457f0c2bca8/task
+{
+    "name": "better name",
+    "language": "en"
+}
+
+### Soft Delete Set by Id
+DELETE http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
+
+### Hard Delete Set by Id (require admin role)
+DELETE http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3?type=hard
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
+
+#-------------------------#
+#  Task related requests  #
+#-------------------------#
+
+### Add task
+POST http://localhost:3000/api/set/61898c17d852f080657801a6/task
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
 
@@ -35,37 +49,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxvc
     "message": "Have you peed today?"
 }
 
-### Remove set task list
-POST http://localhost:3000/api/set/611e66d7508d106504f645ab/remove
+### Update task
+PATCH http://localhost:3000/api/set/61898c17d852f080657801a6/task/618998b241d89c1b1cdba6c7
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJzdWIiOiI2MTE3ZDVhMTcwNDU1ODRmZjhkM2M2ODkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2MjkzODI3NTksImV4cCI6MTYyOTQxODc1OX0.-T2UMo_bkbaPb5bMVi6nJLUxARaBLGiLvMsZSF2T2gw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
 
 {
-    "tasks": ["611c38b477070d296c8b972c"]
+    "currentPlayerGender": "@ca",
+    "type": "truth"
 }
 
+### Remove task
+DELETE http://localhost:3000/api/set/61898c17d852f080657801a6/task/61899c9614db69e30407973c
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
 
-### Get Sets from specific user
-GET http://localhost:3000/api/set/user/611e45ebb6db1c3bf48eb732
- 
-### Update set metadata
-PATCH  http://localhost:3000/api/set/611e64951345e1678cac0422
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJzdWIiOiI2MTE3ZDVhMTcwNDU1ODRmZjhkM2M2ODkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2MjkzODE4NzUsImV4cCI6MTYyOTQxNzg3NX0.qdNAA5iulacHcaSHyRItfgkWgIlhg0ZWkySl1ozyxno
-
-{
-    "name": "better name",
-    "language": "gang gang"
-}
-
-
-### Soft Delete Set by Id
-DELETE http://localhost:3000/api/set/618110a01c48581354d8ad74
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1ODQ0NjA1LCJleHAiOjE2MzU4ODA2MDV9.OEa1L7rU9q0m8rZJDRks3saHp3LvSwA09yoSxGQIntQ
-
-### Hard Delete Set by Id (require admin role)
-DELETE http://localhost:3000/api/set/618110a01c48581354d8ad74?type=hard
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1ODQ0NjA1LCJleHAiOjE2MzU4ODA2MDV9.OEa1L7rU9q0m8rZJDRks3saHp3LvSwA09yoSxGQIntQ
-
-###
-GET http://localhost:3000/api/set/test?error=yes

@@ -21,9 +21,7 @@ import { SharedModule } from './shared/shared.module';
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
-        uri: configService.get<string>('DB_URI'),
-        useCreateIndex: true,
-        useFindAndModify: false
+        uri: configService.get<string>('DB_URI')
       }),
       inject: [ConfigService]
     }),

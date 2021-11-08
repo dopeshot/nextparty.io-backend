@@ -1,4 +1,5 @@
 import { ObjectId } from "mongoose";
+import { Status } from "../../shared/enums/status.enum";
 
 export type ResponseSet = {
     _id: ObjectId
@@ -21,9 +22,7 @@ export type ResponseTask = {
 
 }
 
-export type ResponseSetWithTasks = ResponseSet & { tasks: ResponseTask[] }
-
-export type ResponseUpdatedSet = {
+export type ResponseSetMetadata = {
     _id: ObjectId
     daresCount: number
     truthCount: number
@@ -31,3 +30,6 @@ export type ResponseUpdatedSet = {
     language: string
     name: string
 }
+export type ResponseSetWithTasks = ResponseSet & { tasks: ResponseTask[] }
+// Only for Backend
+export type ResponseTaskWithStatus = ResponseTask & { status: Status }

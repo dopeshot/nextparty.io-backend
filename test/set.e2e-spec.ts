@@ -33,7 +33,7 @@ describe('SetController (e2e)', () => {
           password: "12345678"
         })
         .expect(201)
-
+      
       token = res.body.access_token
       return res
     })
@@ -43,8 +43,9 @@ describe('SetController (e2e)', () => {
         .get('/api/user/profile')
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
-
+        
       userId = (await res).body.userId
+      
       return res
     })
 
@@ -79,12 +80,11 @@ describe('SetController (e2e)', () => {
         .post('/api/set')
         .set('Authorization', `Bearer ${token}`)
         .send({
-          description: "Jeder hat schon mal Wahrheit oder Pflicht mit Freunden oder auf Partys gespielt. Hier kommt aber eine Sonderedition an Wahrheit-Fragen und Pflicht-Aufgaben für dich und deinen Crush, dein Girl- oder Boyfriend. Have Fun!",
-          taskList: [],
           language: "de",
           name: "super cool set"
         })
         .expect(201)
+      expect([res.body._id, res.body.daresCount,res.body.truthCount,res.body.language,res.body.name,res.body.createdBy._id,res.body.createdBy.username]).toBeDefined()
       setId1 = (res.body._id)
       return res
     })
@@ -94,13 +94,12 @@ describe('SetController (e2e)', () => {
         .post('/api/set')
         .set('Authorization', `Bearer ${token}`)
         .send({
-          description: "Jeder hat schon mal Wahrheit oder Pflicht mit Freunden oder auf Partys gespielt. Hier kommt aber eine Sonderedition an Wahrheit-Fragen und Pflicht-Aufgaben für dich und deinen Crush, dein Girl- oder Boyfriend. Have Fun!",
-          taskList: [],
           language: "de",
           name: "super cool set"
         })
         .expect(201)
       setId2 = (res.body._id)
+      expect(setId2==setId1).toBeFalsy()
       return res
     })
   })
@@ -118,7 +117,7 @@ describe('SetController (e2e)', () => {
       const res = request(app.getHttpServer())
         .delete(`/api/set/${setId2}`)
         .set('Authorization', `Bearer ${otherToken}`)
-        .expect(403)
+        .expect(404)
       return res
     })
     

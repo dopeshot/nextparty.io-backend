@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, Length } from "class-validator"
+import { IsEnum, IsNotEmpty, IsOptional, IsString, Length, validate } from "class-validator"
 import { Language } from "../../shared/enums/language.enum"
 
 export class CreateSetDto  {
