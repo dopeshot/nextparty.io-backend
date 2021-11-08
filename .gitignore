@@ -37,4 +37,4 @@ lerna-debug.log*
 .env
 
 # Prevent issues with seperate readme in mirrored gitlab repo
-.gitignore
+README.md
