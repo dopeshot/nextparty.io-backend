@@ -59,6 +59,7 @@ export class SetController {
   @ApiOperation({ summary: 'Get one Set by id but without tasks' })
   getSetMetadata(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
+      throw new NotImplementedException('Currently disabled')
     return this.setService.getOneSetMetadata(id);
   }
 

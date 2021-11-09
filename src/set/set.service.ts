@@ -55,6 +55,9 @@ export class SetService {
       { _id: 1, daresCount: 1, truthCount: 1, name: 1, language: 1, createdBy: 1 }
     ).populate<ResponseSet[]>('createdBy', '_id username')
 
+    if (sets.length === 0)
+    throw new NotFoundException()
+
     return sets
 
   }
@@ -75,6 +78,7 @@ export class SetService {
     return result;
   }
 
+  // Not implemented in controller
   async getOneSetMetadata(id: ObjectId): Promise<ResponseSetMetadata> {
 
     const set: ResponseSetMetadata = await this.setSchema.findOne(
@@ -90,10 +94,10 @@ export class SetService {
 
   async updateSetMetadata(id: ObjectId, updateSetDto: UpdateSetDto, user: JwtUserDto): Promise<ResponseSetMetadata> {
 
-    let queryMatch = { _id: id, createdBy: user.userId }
+    let queryMatch: {_id: ObjectId, createdBy?: ObjectId} = { _id: id}
 
-    if (user.role === Role.Admin) {
-      delete queryMatch.createdBy
+    if (user.role !== Role.Admin) {
+      queryMatch.createdBy = user.userId
     }
 
     const set: ResponseSetMetadata = await this.setSchema.findOneAndUpdate(queryMatch, updateSetDto, { new: true, select: "_id daresCount truthCount language name createdBy" })
@@ -114,19 +118,18 @@ export class SetService {
 
       const set = await this.setSchema.findByIdAndDelete(id)
 
-      if (!set) {
-        throw new NotFoundException
-      }
+      if (!set)
+        throw new NotFoundException()
 
       return
 
     }
 
     // Soft delete
-    let queryMatch = { _id: id, createdBy: user.userId }
+    const queryMatch: {_id: ObjectId, createdBy?: ObjectId} = { _id: id}
 
-    if (user.role === Role.Admin)
-      delete queryMatch.createdBy
+    if (user.role !== Role.Admin)
+      queryMatch.createdBy = user.userId
 
     const set = await this.setSchema.findOneAndUpdate(queryMatch, { status: Status.DELETED })
 
@@ -140,13 +143,12 @@ export class SetService {
   async createTask(setId: ObjectId, createTaskDto: CreateTaskDto, user: JwtUserDto): Promise<ResponseTask> {
 
     const task: TaskDocument = new this.taskSchema({ ...createTaskDto })
-    let matchQuery = { _id: setId, createdBy: user.userId }
+    const queryMatch: {_id: ObjectId, createdBy?: ObjectId} = { _id: setId}
 
-    if (user.role === Role.Admin) {
-      delete matchQuery.createdBy
-    }
+    if (user.role !== Role.Admin)
+      queryMatch.createdBy = user.userId
 
-    const set: SetDocument = await this.setSchema.findOneAndUpdate(matchQuery, { $push: { tasks: task } }, { new: true })
+    const set: SetDocument = await this.setSchema.findOneAndUpdate(queryMatch, { $push: { tasks: task } }, { new: true })
 
     if (!set)
       throw new NotFoundException()
@@ -163,9 +165,9 @@ export class SetService {
   // Depending on the updateTaskDto: message, type and currentPlayerGender are updated
   async updateTask(setId: ObjectId, taskId: ObjectId, updateTaskDto: UpdateTaskDto, user: JwtUserDto): Promise<void> {
 
-    let queryMatch = { _id: setId, 'tasks._id': taskId, createdBy: user.userId }
-    if (user.role === Role.Admin)
-      delete queryMatch.createdBy
+    const queryMatch: { _id: ObjectId, 'tasks._id': ObjectId, createdBy?: ObjectId } = { _id: setId, 'tasks._id': taskId}
+    if (user.role !== Role.Admin)
+      queryMatch.createdBy = user.userId
 
     // This might not be the best practice method
     let queryUpdate = { 'tasks.$.type': updateTaskDto.type, 'tasks.$.message': updateTaskDto.message, 'tasks.$.currentPlayerGender': updateTaskDto.currentPlayerGender }
@@ -205,9 +207,9 @@ export class SetService {
     }
 
     // Soft delete
-    let queryMatch = { _id: setId, 'tasks._id': taskId, createdBy: user.userId }
-    if(user.role != 'admin')
-      delete queryMatch.createdBy
+    const queryMatch: { _id: ObjectId, 'tasks._id': ObjectId, createdBy?: ObjectId } = { _id: setId, 'tasks._id': taskId}
+    if (user.role !== Role.Admin)
+      queryMatch.createdBy = user.userId
 
     const set = await this.setSchema.findOneAndUpdate(queryMatch, {'tasks.$.status': Status.DELETED})
 
