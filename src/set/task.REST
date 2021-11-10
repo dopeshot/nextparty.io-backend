@@ -1,11 +1,11 @@
 ###Create Task
-POST http://localhost:3000/api/set/617d1e370493d96c5466bcdd/task
+POST http://localhost:3000/api/set/618bd0e91cc4d82174c9c327/task
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM1NjgxNzI2LCJleHAiOjE2MzU3MTc3MjZ9.GkcdiPT8KjUlFsoOmSBwQ1igBaPnqYLMYmM4jjhXRpg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
 
 {
     "type": "truth",
-    "currentPlayerGender" : "@ca",
+    "currentPlayerGender": "@cm",
     "message" : "Boese Woerter weswegen der spas hier Inactiv ist!!"
 }
 

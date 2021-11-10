@@ -9,7 +9,7 @@ export class CreateTaskDto {
     type: TaskType
 
     @IsEnum(CurrentPlayerGender)
-    currentPlayerGender: CurrentPlayerGender | CurrentPlayerGender.ANYONE
+    currentPlayerGender: CurrentPlayerGender = CurrentPlayerGender.ANYONE
 
     @IsString()
     @Length(10, 280)

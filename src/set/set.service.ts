@@ -1,5 +1,6 @@
 import { ConflictException, ForbiddenException, HttpCode, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { copyFile } from 'fs';
 import { Model, ObjectId } from 'mongoose';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { Status } from '../shared/enums/status.enum';
@@ -11,6 +12,7 @@ import { UpdateSetDto } from './dto/update-set.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { SetDocument } from './entities/set.entity';
 import { TaskDocument } from './entities/task.entity';
+import { TaskType } from './enums/tasktype.enum';
 import { SetSampleData } from './set.data';
 import { ResponseSet, ResponseSetMetadata, ResponseSetWithTasks, ResponseTask, ResponseTaskWithStatus } from './types/set.response';
 
@@ -149,7 +151,9 @@ export class SetService {
     if (user.role !== Role.Admin)
       queryMatch.createdBy = user.userId
 
-    const set: SetDocument = await this.setSchema.findOneAndUpdate(queryMatch, { $push: { tasks: task } }, { new: true })
+    const incrementType = createTaskDto.type == TaskType.TRUTH ?  { $push: { tasks: task }, $inc: {truthCount: 1}} : { $push: { tasks: task }, $inc: {daresCount: 1}}
+
+    const set: SetDocument = await this.setSchema.findOneAndUpdate(queryMatch, incrementType, { new: true })
 
     if (!set)
       throw new NotFoundException()
