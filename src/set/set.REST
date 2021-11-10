@@ -1,7 +1,9 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
+
 ###Create Set
 POST http://localhost:3000/api/set
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
+Authorization: Bearer {{token}}
 
 {
     "name": "Jibba"
@@ -19,8 +21,7 @@ GET http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3/metadata
 ### Update set metadata
 PATCH  http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
-
+Authorization: Bearer {{token}}
 {
     "name": "better name",
     "language": "en"
@@ -28,11 +29,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxvc
 
 ### Soft Delete Set by Id
 DELETE http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
-
+Authorization: Bearer {{token}}
 ### Hard Delete Set by Id (require admin role)
 DELETE http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3?type=hard
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
+Authorization: Bearer {{token}}
 
 #-------------------------#
 #  Task related requests  #
@@ -41,7 +41,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxvc
 ### Add task
 POST http://localhost:3000/api/set/61898c17d852f080657801a6/task
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
+Authorization: Bearer {{token}}
 
 {
     "type": "truth",
@@ -52,7 +52,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxvc
 ### Update task
 PATCH http://localhost:3000/api/set/61898c17d852f080657801a6/task/618998b241d89c1b1cdba6c7
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
+Authorization: Bearer {{token}}
 
 {
     "currentPlayerGender": "@ca",
@@ -61,5 +61,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imxvc
 
 ### Remove task
 DELETE http://localhost:3000/api/set/61898c17d852f080657801a6/task/61899c9614db69e30407973c
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2MjAzMTI4LCJleHAiOjE2MzY1NjMxMjh9.1gJR9R_eDo3V7XU3kfuEoMUCGs2xdqeEBj8wq6zuhfA
+Authorization: Bearer {{token}}
 
+### Sample sets
+POST http://localhost:3000/api/set/migrate
+Content-Type: application/json
+Authorization: Bearer {{token}}
