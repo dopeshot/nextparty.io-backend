@@ -126,4 +126,12 @@ export class SetController {
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.removeTask(id, taskId, type, user);
   }
+
+
+  @Post('migrate')
+  @UseGuards(JwtAuthGuard)
+  @ApiOperation({ summary: 'Create example data sets' })
+  public createExampelData(@Request() req) {
+    return this.setService.createExampleSets(req.user);
+  }
 }
