@@ -58,6 +58,7 @@ export class SetService {
       { _id: 1, daresCount: 1, truthCount: 1, name: 1, language: 1, createdBy: 1 }
     ).populate<ResponseSet[]>('createdBy', '_id username')
 
+    // TODO: Add Nocontentexception
     if (sets.length === 0)
       throw new NotFoundException()
 
@@ -177,6 +178,7 @@ export class SetService {
     // This might not be the best practice method
     let queryUpdate = { 'tasks.$.type': updateTaskDto.type, 'tasks.$.message': updateTaskDto.message, 'tasks.$.currentPlayerGender': updateTaskDto.currentPlayerGender }
 
+    // TODO: remove - frontend will send complete object
     if (!updateTaskDto.hasOwnProperty('type'))
       delete queryUpdate['tasks.$.type']
 
@@ -201,8 +203,9 @@ export class SetService {
       if (user.role != 'admin')
         throw new ForbiddenException()
 
+      // TODO: remove created by
       const set = await this.setSchema.findOneAndUpdate({ _id: setId, createdBy: user.userId }, { $pull: { tasks: { _id: taskId } } })
-      console.log(set)
+
       if (!set) {
         throw new NotFoundException
       }
@@ -246,9 +249,6 @@ export class SetService {
         })
       }
     })
-
-    // Remove the old tasks array to reduce lines needed in the return statement (This may also improve performance by chance)
-    delete set.tasks
 
     return {
       ...set,
