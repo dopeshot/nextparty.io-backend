@@ -11,6 +11,8 @@ export type ResponseSet = {
     }
     language: string
     name: string
+    previewImage: string
+    bannerImage: string
 }
 
 export type ResponseTask = {
