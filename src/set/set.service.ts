@@ -43,7 +43,7 @@ export class SetService {
       }
 
     } catch (error) {
-      if (error.code = '11000') {
+      if (error.code == '11000') {
         throw new ConflictException('This set already exists')
       }
       console.error(error)
