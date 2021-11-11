@@ -55,14 +55,6 @@ export class SetController {
     return //this.setService.getOneSetFull(id, user);
   }
 
-  @Get(':id/metadata')
-  @ApiOperation({ summary: 'Get one Set by id but without tasks' })
-  getSetMetadata(
-    @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
-      throw new NotImplementedException('Currently disabled')
-    return this.setService.getOneSetMetadata(id);
-  }
-
   @Get('/user/:id')
   @ApiOperation({ summary: 'Get Sets from a user by User id' })
   getSetsByUser(
