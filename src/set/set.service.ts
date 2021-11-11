@@ -39,7 +39,9 @@ export class SetService {
         createdBy: {
           _id: user.userId,
           username: user.username
-        }
+        },
+        previewImage: set.previewImage,
+        bannerImage: set.bannerImage
       }
 
     } catch (error) {
@@ -55,7 +57,7 @@ export class SetService {
 
     const sets: ResponseSet[] = await this.setSchema.find(
       { status: Status.ACTIVE },
-      { _id: 1, daresCount: 1, truthCount: 1, name: 1, language: 1, createdBy: 1 }
+      { _id: 1, daresCount: 1, truthCount: 1, name: 1, language: 1, createdBy: 1, previewImage: 1, bannerImage: 1 }
     ).populate<ResponseSet[]>('createdBy', '_id username')
 
     // TODO: Add Nocontentexception
@@ -70,7 +72,7 @@ export class SetService {
 
     const set: (ResponseSet & { tasks: ResponseTaskWithStatus[] }) = await this.setSchema.findOne(
       { _id: id, status: Status.ACTIVE },
-      { _id: 1, daresCount: 1, truthCount: 1, name: 1, language: 1, createdBy: 1, tasks: 1 }
+      { _id: 1, daresCount: 1, truthCount: 1, name: 1, language: 1, createdBy: 1, tasks: 1, previewImage: 1, bannerImage: 1 }
     ).populate<(ResponseSet & { tasks: ResponseTaskWithStatus[] })>('createdBy', '_id username').lean()
 
     if (!set)
@@ -80,20 +82,6 @@ export class SetService {
     const result: ResponseSetWithTasks = this.onlyActiveTasks(set)
 
     return result;
-  }
-
-  // Not implemented in controller
-  async getOneSetMetadata(id: ObjectId): Promise<ResponseSetMetadata> {
-
-    const set: ResponseSetMetadata = await this.setSchema.findOne(
-      { _id: id, status: Status.ACTIVE },
-      { _id: 1, daresCount: 1, truthCount: 1, name: 1, language: 1, createdBy: 1 }
-    )
-
-    if (!set)
-      throw new NotFoundException()
-
-    return set;
   }
 
   async updateSetMetadata(id: ObjectId, updateSetDto: UpdateSetDto, user: JwtUserDto): Promise<ResponseSetMetadata> {
@@ -144,6 +132,10 @@ export class SetService {
 
   }
 
+  /*------------------------------------\
+  |                Tasks                |
+  \------------------------------------*/  
+
   async createTask(setId: ObjectId, createTaskDto: CreateTaskDto, user: JwtUserDto): Promise<ResponseTask> {
 
     const task: TaskDocument = new this.taskSchema({ ...createTaskDto })
@@ -152,7 +144,7 @@ export class SetService {
     if (user.role !== Role.Admin)
       queryMatch.createdBy = user.userId
 
-    const incrementType = createTaskDto.type == TaskType.TRUTH ?  { $push: { tasks: task }, $inc: {truthCount: 1}} : { $push: { tasks: task }, $inc: {daresCount: 1}}
+    const incrementType = createTaskDto.type == TaskType.TRUTH ? { $push: { tasks: task }, $inc: { truthCount: 1 } } : { $push: { tasks: task }, $inc: { daresCount: 1 } }
 
     const set: SetDocument = await this.setSchema.findOneAndUpdate(queryMatch, incrementType, { new: true })
 
