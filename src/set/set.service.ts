@@ -60,7 +60,6 @@ export class SetService {
       { _id: 1, daresCount: 1, truthCount: 1, name: 1, language: 1, createdBy: 1, previewImage: 1, bannerImage: 1 }
     ).populate<ResponseSet[]>('createdBy', '_id username')
 
-    // TODO: Add Nocontentexception
     if (sets.length === 0)
       throw new NotFoundException()
 
@@ -167,18 +166,7 @@ export class SetService {
     if (user.role !== Role.Admin)
       queryMatch.createdBy = user.userId
 
-    // This might not be the best practice method
     let queryUpdate = { 'tasks.$.type': updateTaskDto.type, 'tasks.$.message': updateTaskDto.message, 'tasks.$.currentPlayerGender': updateTaskDto.currentPlayerGender }
-
-    // TODO: remove - frontend will send complete object
-    if (!updateTaskDto.hasOwnProperty('type'))
-      delete queryUpdate['tasks.$.type']
-
-    if (!updateTaskDto.hasOwnProperty('currentPlayerGender'))
-      delete queryUpdate['tasks.$.currentPlayerGender']
-
-    if (!updateTaskDto.hasOwnProperty('message'))
-      delete queryUpdate['tasks.$.message']
 
     const set = await this.setSchema.findOneAndUpdate(queryMatch, queryUpdate, { new: true })
 
@@ -195,8 +183,7 @@ export class SetService {
       if (user.role != 'admin')
         throw new ForbiddenException()
 
-      // TODO: remove created by
-      const set = await this.setSchema.findOneAndUpdate({ _id: setId, createdBy: user.userId }, { $pull: { tasks: { _id: taskId } } })
+      const set = await this.setSchema.findOneAndUpdate({ _id: setId}, { $pull: { tasks: { _id: taskId } } })
 
       if (!set) {
         throw new NotFoundException
