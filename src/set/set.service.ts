@@ -177,7 +177,7 @@ export class SetService {
     return updatedResult
   }
 
-  async removeTask(setId: ObjectId, taskId: ObjectId, deleteType: string, user: JwtUserDto): Promise<void> {
+  async removeTask(setId: ObjectId, taskId: ObjectId, deleteType: string, user: JwtUserDto): Promise<UpdatedCounts> {
 
     // Hard delete
     if (deleteType === 'hard') {
@@ -190,7 +190,9 @@ export class SetService {
         throw new NotFoundException
       }
 
-      return
+      const updatedResult = await this.updateCounts(setId)
+
+      return updatedResult
 
     }
 
@@ -204,7 +206,9 @@ export class SetService {
     if (!set)
       throw new NotFoundException()
 
-    return
+    const updatedResult = await this.updateCounts(setId)
+
+    return updatedResult
 
   }
 

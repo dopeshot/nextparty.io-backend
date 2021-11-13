@@ -108,7 +108,6 @@ export class SetController {
 
   @Delete(':id/task/:taskid')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(204)
   @ApiOperation({ summary: 'Remove one Task via id' })
   removeTask(
     @Param('id') id: ObjectId,
