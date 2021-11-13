@@ -97,7 +97,6 @@ export class SetController {
 
   @Patch(':id/task/:taskid')
   @UseGuards(JwtAuthGuard)
-  @HttpCode(204)
   @ApiOperation({ summary: 'Update one Task via id and Json' })
   updateTask(
     @Param('id') setId: ObjectId,

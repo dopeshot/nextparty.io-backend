@@ -32,6 +32,13 @@ export type ResponseSetMetadata = {
     language: string
     name: string
 }
+
+export type UpdatedCounts = {
+    _id: ObjectId
+    truthCount: number
+    daresCount: number
+}
 export type ResponseSetWithTasks = ResponseSet & { tasks: ResponseTask[] }
+
 // Only for Backend
 export type ResponseTaskWithStatus = ResponseTask & { status: Status }

@@ -1,7 +1,6 @@
-import { ConflictException, ForbiddenException, HttpCode, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { copyFile } from 'fs';
-import { Model, ObjectId } from 'mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { Status } from '../shared/enums/status.enum';
 import { SharedService } from '../shared/shared.service';
@@ -14,7 +13,7 @@ import { SetDocument } from './entities/set.entity';
 import { TaskDocument } from './entities/task.entity';
 import { TaskType } from './enums/tasktype.enum';
 import { SetSampleData } from './set.data';
-import { ResponseSet, ResponseSetMetadata, ResponseSetWithTasks, ResponseTask, ResponseTaskWithStatus } from './types/set.response';
+import { ResponseSet, ResponseSetMetadata, ResponseSetWithTasks, ResponseTask, ResponseTaskWithStatus, UpdatedCounts } from './types/set.response';
 
 @Injectable()
 export class SetService {
@@ -133,7 +132,7 @@ export class SetService {
 
   /*------------------------------------\
   |                Tasks                |
-  \------------------------------------*/  
+  \------------------------------------*/
 
   async createTask(setId: ObjectId, createTaskDto: CreateTaskDto, user: JwtUserDto): Promise<ResponseTask> {
 
@@ -160,7 +159,7 @@ export class SetService {
   }
 
   // Depending on the updateTaskDto: message, type and currentPlayerGender are updated
-  async updateTask(setId: ObjectId, taskId: ObjectId, updateTaskDto: UpdateTaskDto, user: JwtUserDto): Promise<void> {
+  async updateTask(setId: ObjectId, taskId: ObjectId, updateTaskDto: UpdateTaskDto, user: JwtUserDto): Promise<UpdatedCounts> {
 
     const queryMatch: { _id: ObjectId, 'tasks._id': ObjectId, createdBy?: ObjectId } = { _id: setId, 'tasks._id': taskId }
     if (user.role !== Role.Admin)
@@ -173,7 +172,9 @@ export class SetService {
     if (!set)
       throw new NotFoundException()
 
-    return
+    const updatedResult = await this.updateCounts(setId)
+
+    return updatedResult
   }
 
   async removeTask(setId: ObjectId, taskId: ObjectId, deleteType: string, user: JwtUserDto): Promise<void> {
@@ -183,7 +184,7 @@ export class SetService {
       if (user.role != 'admin')
         throw new ForbiddenException()
 
-      const set = await this.setSchema.findOneAndUpdate({ _id: setId}, { $pull: { tasks: { _id: taskId } } })
+      const set = await this.setSchema.findOneAndUpdate({ _id: setId }, { $pull: { tasks: { _id: taskId } } })
 
       if (!set) {
         throw new NotFoundException
@@ -235,11 +236,85 @@ export class SetService {
     }
   }
 
+  // Uses 2 additional database calls to update the task counts and return the new settings
+  private async updateCounts(setId: ObjectId): Promise<UpdatedCounts> {
+
+    // Recounts the active truths and dares, projects the new counts and merges them back into the existing document
+    const update = await this.setSchema.aggregate([
+      {
+        '$match': {
+          '_id': new Types.ObjectId(setId.toString())
+        }
+      }, {
+        '$set': {
+          'daresCount': {
+            '$size': {
+              '$filter': {
+                'input': '$tasks',
+                'as': 'a',
+                'cond': {
+                  '$and': [
+                    {
+                      '$eq': [
+                        '$$a.type', 'dare'
+                      ]
+                    }, {
+                      '$eq': [
+                        '$$a.status', 'active'
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          'truthCount': {
+            '$size': {
+              '$filter': {
+                'input': '$tasks',
+                'as': 'a',
+                'cond': {
+                  '$and': [
+                    {
+                      '$eq': [
+                        '$$a.type', 'truth'
+                      ]
+                    }, {
+                      '$eq': [
+                        '$$a.status', 'active'
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }, {
+        '$project': { _id: 1, truthCount: 1, daresCount: 1 }
+      }, {
+        '$merge': {
+          'into': 'sets',
+          'on': '_id',
+          'whenMatched': 'merge',
+          'whenNotMatched': 'discard'
+        }
+      }
+    ])
+    // Since the aggregation has no return value, We have to make another call to get the updated data 
+    const result = await this.setSchema.findById(setId, { _id: 1, truthCount: 1, daresCount: 1 })
+    if (!result)
+      throw new InternalServerErrorException
+
+    return {
+      _id: result._id,
+      truthCount: result.truthCount,
+      daresCount: result.daresCount
+    }
+  }
 
   // Migrations / Seeder
-
   public async createExampleSets(user: JwtUserDto) {
-
 
     SetSampleData.forEach(async (setData) => {
       const set = await this.createSet({
@@ -256,7 +331,7 @@ export class SetService {
     })
 
     return {
-      status: 201,
+      statusCode: 201,
       message: "Sample data created"
     }
   }
