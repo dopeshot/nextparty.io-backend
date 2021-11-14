@@ -125,7 +125,7 @@ export class SetController {
   @Post('migrate')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create example data sets' })
-  public createExampelData(@Request() req,@Query('test') test: string) {
+  public createExampelData(@Request() req, @Query('test') test: string) {
     return this.setService.createExampleSets(req.user, test);
   }
 }

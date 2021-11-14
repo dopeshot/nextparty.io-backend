@@ -335,7 +335,7 @@ export class SetService {
     })
     // TODO: This is a security breach due to the mock data and the need to clean it in testing
     if(user.role == "admin" && test === "true"){
-      await this.setSchema.deleteMany()
+      //await this.setSchema.deleteMany({})
     }
     return {
       statusCode: 201,
