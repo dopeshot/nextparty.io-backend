@@ -9,6 +9,7 @@ describe('AppController (e2e)', () => {
   let app: INestApplication
   let token
   let userId
+  let httpServer
   let connection: Connection
   let moduleFixture: TestingModule
 
@@ -20,6 +21,7 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api')
     await app.init();
+    httpServer = app.getHttpServer()
     connection = await moduleFixture.get(getConnectionToken());
     await connection.dropDatabase()
   })
@@ -33,16 +35,17 @@ describe('AppController (e2e)', () => {
 
   describe('Auth and User', () => {
     it('/auth/register (POST)', async () => {
-       const test = await request(app.getHttpServer())
+       const response = await request(httpServer)
         .post('/api/auth/register')
         .send({
           username: "Zoe",
           email: "zoe@gmail.com",
           password: "12345678"
         }).expect(201)
-        expect(test).toBeDefined()
+        token = response.body.access_token
 
-        token = test.body.token
+        expect(response).toBeDefined()
+        expect(response.statusCode).toBe(201)
     })
 
     // it('/auth/register (POST) duplicate', () => {
