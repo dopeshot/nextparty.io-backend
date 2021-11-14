@@ -58,7 +58,7 @@ describe('AppController (e2e)', () => {
     })
 
     it('/auth/login (POST)', async () => {
-      return request(app.getHttpServer())
+      return await request(app.getHttpServer())
         .post('/api/auth/login')
         .send({
           email: "zoe@gmail.com",
@@ -68,7 +68,7 @@ describe('AppController (e2e)', () => {
     })
 
     it('/auth/login (POST) Wrong Password', async () => {
-      return request(app.getHttpServer())
+      return await request(app.getHttpServer())
         .post('/api/auth/login')
         .send({
           email: "zoe@gmail.com",
@@ -78,7 +78,7 @@ describe('AppController (e2e)', () => {
     })
 
     it('/user/profile (GET)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .get('/api/user/profile')
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
@@ -89,7 +89,7 @@ describe('AppController (e2e)', () => {
 
   describe("Roles", () => {
     it('/user (GET) Protected Route: No Admin Role', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .get('/api/user')
         .set('Authorization', `Bearer ${token}`)
         .expect(403)
@@ -97,7 +97,7 @@ describe('AppController (e2e)', () => {
     })
 
     it('/user/testing (PATCH) Change to Admin', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .patch(`/api/user/testing/${userId}`)
         .send({
           role: "admin"
@@ -107,7 +107,7 @@ describe('AppController (e2e)', () => {
     })
 
     it('/auth/login (POST)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
       .post('/api/auth/login')
       .send({
         email: "zoe@gmail.com",
@@ -120,7 +120,7 @@ describe('AppController (e2e)', () => {
     })
 
     it('/user (GET) Protected Route: Admin Role', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .get('/api/user')
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
@@ -130,7 +130,7 @@ describe('AppController (e2e)', () => {
 
   describe('Cleanup', () => {
     it('/user/:id (DELETE)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .delete(`/api/user/${userId}`)
         .expect(200)
       return res

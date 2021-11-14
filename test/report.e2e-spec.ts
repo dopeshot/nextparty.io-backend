@@ -46,7 +46,7 @@ describe('ReportController (e2e)', () => {
     })
 
     it('/user/profile (GET)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .get('/api/user/profile')
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
@@ -67,12 +67,12 @@ describe('ReportController (e2e)', () => {
           reason: "offensive name"
         })
         .expect(201)
-        reportId = res.body._id
+      reportId = res.body._id
       return res
     })
 
     it('/user/testing (PATCH) Change to Admin', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .patch(`/api/user/testing/${userId}`)
         .send({
           role: "admin"
@@ -82,13 +82,13 @@ describe('ReportController (e2e)', () => {
     })
 
     it('/auth/login (POST)', async () => {
-      const res = request(app.getHttpServer())
-      .post('/api/auth/login')
-      .send({
-        email: "haha@gmail.com",
-        password: "12345678"
-      })
-      .expect(201)
+      const res = await request(app.getHttpServer())
+        .post('/api/auth/login')
+        .send({
+          email: "haha@gmail.com",
+          password: "12345678"
+        })
+        .expect(201)
 
       token = (await res).body.access_token
       return res
@@ -110,8 +110,8 @@ describe('ReportController (e2e)', () => {
       return res
     })
 
-    it('/report/:id (DELETE) type=soft', () => {
-      const res = request(app.getHttpServer())
+    it('/report/:id (DELETE) type=soft', async () => {
+      const res = await request(app.getHttpServer())
         .delete(`/api/report/${reportId}?type=soft`)
         .set('Authorization', `Bearer ${token}`)
         .expect(204)
@@ -120,8 +120,8 @@ describe('ReportController (e2e)', () => {
   })
 
   describe('Cleanup', () => {
-    it('/report/:id (DELETE) type=hard', () => {
-      const res = request(app.getHttpServer())
+    it('/report/:id (DELETE) type=hard', async () => {
+      const res = await request(app.getHttpServer())
         .delete(`/api/report/${reportId}?type=hard`)
         .set('Authorization', `Bearer ${token}`)
         .expect(204)
@@ -129,7 +129,7 @@ describe('ReportController (e2e)', () => {
     })
 
     it('/user/:id (DELETE)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .delete(`/api/user/${userId}`)
         .expect(200)
       return res
