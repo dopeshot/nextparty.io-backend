@@ -1,7 +1,8 @@
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2ODA4Mzc3LCJleHAiOjE2MzcxNjgzNzd9.JsziCL37a8xyTXv_0yYapoE7ZXzVcW4ri9mAJPMhMs4
-
+@set = 6191152856c9af0c03b1fb6c
+@adress = http://localhost:3000/api/set
 ###Create Set
-POST http://localhost:3000/api/set
+POST {{adress}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -10,28 +11,27 @@ Authorization: Bearer {{token}}
 }
 
 ### Get all sets
-GET http://localhost:3000/api/set
+GET {{adress}}
 
 ### Get one set only active tasks
-GET http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3
-
-### Get one set MetaData
-GET http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3/metadata
+GET {{adress}}/{{set}}
 
 ### Update set metadata
-PATCH  http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3
+PATCH {{adress}}/{{set}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
 {
     "name": "better name",
-    "language": "en"
+    "language": "en",
+    "unicorn": "asd"
 }
 
 ### Soft Delete Set by Id
-DELETE http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3
+DELETE {{adress}}/{{set}}
 Authorization: Bearer {{token}}
 ### Hard Delete Set by Id (require admin role)
-DELETE http://localhost:3000/api/set/618986bf3c7c9cf93a4b2ee3?type=hard
+DELETE {{adress}}/{{set}}?type=hard
 Authorization: Bearer {{token}}
 
 #-------------------------#
@@ -39,7 +39,7 @@ Authorization: Bearer {{token}}
 #-------------------------#
 
 ### Add task
-POST http://localhost:3000/api/set/61898c17d852f080657801a6/task
+POST {{adress}}/{{set}}/task
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
@@ -52,6 +52,6 @@ Authorization: Bearer {{token}}
 
 
 ### Sample sets
-POST http://localhost:3000/api/set/migrate
+POST {{adress}}/migrate
 Content-Type: application/json
 Authorization: Bearer {{token}}

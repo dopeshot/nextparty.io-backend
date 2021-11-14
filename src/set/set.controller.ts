@@ -51,7 +51,7 @@ export class SetController {
   getOneSetFull(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
-      throw new NotImplementedException('Currently disabled')
+    throw new NotImplementedException('Currently disabled')
     return //this.setService.getOneSetFull(id, user);
   }
 
@@ -59,7 +59,7 @@ export class SetController {
   @ApiOperation({ summary: 'Get Sets from a user by User id' })
   getSetsByUser(
     @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
-      throw new NotImplementedException('Currently disabled')
+    throw new NotImplementedException('Currently disabled')
     return //this.setService.getSetsByUser(id);
   }
 
@@ -85,12 +85,16 @@ export class SetController {
     return this.setService.deleteSet(id, type, user)
   }
 
+  /*----------------------\ 
+  |         Tasks         |
+  \----------------------*/
+
   @Post(':id/task')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create Task to Set via id and Json' })
   createTask(
     @Param('id') id: ObjectId,
-    @Body(new ValidationPipe({whitelist: true})) createTaskDto: CreateTaskDto,
+    @Body(new ValidationPipe({ whitelist: true })) createTaskDto: CreateTaskDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.createTask(id, createTaskDto, user);
   }
@@ -101,7 +105,7 @@ export class SetController {
   updateTask(
     @Param('id') setId: ObjectId,
     @Param('taskid') taskId: ObjectId,
-    @Body(new ValidationPipe({whitelist: true})) updateTaskDto: UpdateTaskDto,
+    @Body(new ValidationPipe({ whitelist: true })) updateTaskDto: UpdateTaskDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.updateTask(setId, taskId, updateTaskDto, user);
   }
@@ -121,7 +125,7 @@ export class SetController {
   @Post('migrate')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create example data sets' })
-  public createExampelData(@Request() req) {
-    return this.setService.createExampleSets(req.user);
+  public createExampelData(@Request() req,@Query('test') test: string) {
+    return this.setService.createExampleSets(req.user, test);
   }
 }

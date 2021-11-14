@@ -318,7 +318,7 @@ export class SetService {
   }
 
   // Migrations / Seeder
-  public async createExampleSets(user: JwtUserDto) {
+  public async createExampleSets(user: JwtUserDto, test: string) {
 
     SetSampleData.forEach(async (setData) => {
       const set = await this.createSet({
@@ -333,7 +333,10 @@ export class SetService {
         }, user)
       })
     })
-
+    // TODO: This is a security breach due to the mock data and the need to clean it in testing
+    if(user.role == "admin" && test === "true"){
+      await this.setSchema.deleteMany()
+    }
     return {
       statusCode: 201,
       message: "Sample data created"
