@@ -4,7 +4,6 @@
   "testEnvironment": "node",
   "collectCoverage": true,
   "verbose": true,
-  "detectOpenHandles": true,
   "testMatch": ["<rootDir>/test/**/*.e2e-spec.{ts,js}"],
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
