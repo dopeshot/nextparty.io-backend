@@ -2,15 +2,17 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { INestApplication } from '@nestjs/common'
 import * as request from 'supertest'
 import { AppModule } from './../src/app.module'
-import { Mongoose, ObjectId } from 'mongoose';
+import { Connection, Mongoose, ObjectId } from 'mongoose';
+import { getConnectionToken } from '@nestjs/mongoose';
 
 describe('ReportController (e2e)', () => {
   let app: INestApplication
   let token: string
   let userId: ObjectId
   let reportId: ObjectId
+  let connection: Connection
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -18,6 +20,14 @@ describe('ReportController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api')
     await app.init();
+    connection = await moduleFixture.get(getConnectionToken());
+    await connection.dropDatabase()
+  });
+
+  afterAll(async () => {
+    await connection.dropDatabase()
+    await connection.close()
+    await app.close();
   });
 
   describe('Login', () => {
@@ -126,8 +136,5 @@ describe('ReportController (e2e)', () => {
     })
   })
 
-  afterAll(async () => {
-    await app.close();
-  });
 });
 

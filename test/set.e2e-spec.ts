@@ -1,6 +1,7 @@
 import { INestApplication } from '@nestjs/common';
+import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId, Schema } from 'mongoose';
+import { Connection, ObjectId, Schema } from 'mongoose';
 import * as request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { TaskType } from '../src/set/enums/tasktype.enum';
@@ -30,8 +31,9 @@ describe('SetController (e2e)', () => {
     previewImage: "placeholder",
     bannerImage: "placeholder2"
   }
+  let connection: Connection
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -39,6 +41,14 @@ describe('SetController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api')
     await app.init();
+    connection = await moduleFixture.get(getConnectionToken());
+    await connection.dropDatabase()
+  });
+
+  afterAll(async () => {
+    await connection.dropDatabase()
+    await connection.close()
+    await app.close();
   });
 
   /*---------------------\ 
@@ -74,12 +84,12 @@ describe('SetController (e2e)', () => {
     })
 
     it('/user/profile (GET)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .get('/api/user/profile')
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
 
-      exampleSet.createdBy._id = (await res).body.userId
+      exampleSet.createdBy._id = res.body.userId
 
       return res
     })
@@ -99,12 +109,12 @@ describe('SetController (e2e)', () => {
     })
 
     it('/user/profile (GET)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .get('/api/user/profile')
         .set('Authorization', `Bearer ${otherToken}`)
         .expect(200)
 
-      otherUserId = (await res).body.userId
+      otherUserId = res.body.userId
       return res
     })
   })
@@ -214,7 +224,7 @@ describe('SetController (e2e)', () => {
 
     // Negative test
     it('/set/:id (GET)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .get(`/api/set/${wrongId}`)
         .set('Authorization', `Bearer ${token}`)
         .expect(404)
@@ -223,7 +233,7 @@ describe('SetController (e2e)', () => {
 
     // Negative test
     it('/set/:id (PATCH)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .patch(`/api/set/${wrongId}`)
         .set('Authorization', `Bearer ${token}`)
         .expect(404)
@@ -252,14 +262,13 @@ describe('SetController (e2e)', () => {
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
       expect(res2.body.truthCount === 1).toBeTruthy()
-
       expect(exampleTask).toEqual(res.body)
       return res
     })
 
     // Negative test
     it('/set/:id/task (POST)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .post(`/api/set/${wrongId}/task`)
         .set('Authorization', `Bearer ${token}`)
         .expect(400)
@@ -346,8 +355,8 @@ describe('SetController (e2e)', () => {
       return res
     })
 
-    it('/set/:id (DELETE) type=soft own User', () => {
-      const res = request(app.getHttpServer())
+    it('/set/:id (DELETE) type=soft own User', async () => {
+      const res = await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}`)
         .set('Authorization', `Bearer ${token}`)
         .expect(204)
@@ -355,8 +364,8 @@ describe('SetController (e2e)', () => {
     })
 
     // Negative test
-    it('/set/:id (DELETE) type=soft own User', () => {
-      const res = request(app.getHttpServer())
+    it('/set/:id (DELETE) type=soft own User', async () => {
+      const res = await request(app.getHttpServer())
         .delete(`/api/set/${wrongId}`)
         .set('Authorization', `Bearer ${token}`)
         .expect(404)
@@ -364,8 +373,8 @@ describe('SetController (e2e)', () => {
     })
 
     // Test cancel because error gets thrown in console
-    it('/set/:id (DELETE) type=soft other User', () => {
-      const res = request(app.getHttpServer())
+    it('/set/:id (DELETE) type=soft other User', async () => {
+      const res = await request(app.getHttpServer())
         .delete(`/api/set/${setId2}`)
         .set('Authorization', `Bearer ${otherToken}`)
         .expect(404)
@@ -373,8 +382,8 @@ describe('SetController (e2e)', () => {
     })
 
     // Test cancel because error gets thrown in console
-    it('/set/:id (DELETE) type=hard user', () => {
-      const res = request(app.getHttpServer())
+    it('/set/:id (DELETE) type=hard user', async () => {
+      const res = await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}?type=hard`)
         .set('Authorization', `Bearer ${token}`)
         .expect(403)
@@ -383,7 +392,7 @@ describe('SetController (e2e)', () => {
 
     // TODO: This is a security breach (November 14th 2021)
     it('/user/testing (PATCH) Change to Admin', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .patch(`/api/user/testing/${exampleSet.createdBy._id}`)
         .send({
           role: "admin"
@@ -393,7 +402,7 @@ describe('SetController (e2e)', () => {
     })
 
     it('/auth/login (POST)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .post('/api/auth/login')
         .send({
           email: "Hahaxd@gmail.com",
@@ -406,8 +415,8 @@ describe('SetController (e2e)', () => {
       return res
     })
 
-    it('/set/:id (DELETE) type=soft admin', () => {
-      const res = request(app.getHttpServer())
+    it('/set/:id (DELETE) type=soft admin', async () => {
+      const res = await request(app.getHttpServer())
         .delete(`/api/set/${setId2}`)
         .set('Authorization', `Bearer ${token}`)
         .expect(204)
@@ -431,33 +440,19 @@ describe('SetController (e2e)', () => {
 
     })
 
-    it('/set/:id (DELETE) type=hard', () => {
-      const res = request(app.getHttpServer())
+    it('/set/:id (DELETE) type=hard', async () => {
+      const res = await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}?type=hard`)
         .set('Authorization', `Bearer ${token}`)
         .expect(204)
       return res
     })
 
-    it('/set/:id (DELETE) type=hard', () => {
-      const res = request(app.getHttpServer())
+    it('/set/:id (DELETE) type=hard', async () => {
+      const res = await request(app.getHttpServer())
         .delete(`/api/set/${setId2}?type=hard`)
         .set('Authorization', `Bearer ${token}`)
         .expect(204)
-      return res
-    })
-
-    it('/user/:id (DELETE)', async () => {
-      const res = request(app.getHttpServer())
-        .delete(`/api/user/${exampleSet.createdBy._id}`)
-        .expect(200)
-      return res
-    })
-
-    it('/user/:id (DELETE)', async () => {
-      const res = request(app.getHttpServer())
-        .delete(`/api/user/${otherUserId}`)
-        .expect(200)
       return res
     })
 
@@ -465,7 +460,7 @@ describe('SetController (e2e)', () => {
     |       MockData       |
     \---------------------*/
 
-    it('/migrate (post)', async () => {
+    it('/migrate (POST)', async () => {
       const res = await request(app.getHttpServer())
         .post(`/api/set/migrate?test=true`)
         .set('Authorization', `Bearer ${token}`)
@@ -473,10 +468,23 @@ describe('SetController (e2e)', () => {
       return res
     })
 
+    // Delete Admin user
+    it('/user/:id (DELETE)', async () => {
+      const res = await request(app.getHttpServer())
+        .delete(`/api/user/${exampleSet.createdBy._id}`)
+        .expect(200)
+      return res
+    })
+
+    // Delete other user
+    it('/user/:id (DELETE)', async () => {
+      const res = await request(app.getHttpServer())
+        .delete(`/api/user/${otherUserId}`)
+        .expect(200)
+      return res
+    })
+
   })
 
-  afterAll(async () => {
-    await app.close();
-  });
 });
 
