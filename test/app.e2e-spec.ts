@@ -1,13 +1,14 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { INestApplication } from '@nestjs/common'
+import { HttpStatus, INestApplication } from '@nestjs/common'
 import * as request from 'supertest'
 import { AppModule } from './../src/app.module'
 import { Connection } from 'mongoose';
 import { getConnectionToken } from '@nestjs/mongoose';
 
+
 describe('AppController (e2e)', () => {
   let app: INestApplication
-  let token
+  let token: string
   let userId
   let httpServer
   let connection: Connection
@@ -34,18 +35,22 @@ describe('AppController (e2e)', () => {
   })
 
   describe('Auth and User', () => {
-    it('/auth/register (POST)', async () => {
-       const response = await request(httpServer)
+    it('/auth/register (POST)', () => {
+      request(httpServer)
         .post('/api/auth/register')
         .send({
           username: "Zoe",
           email: "zoe@gmail.com",
           password: "12345678"
-        }).expect(201)
-        token = response.body.access_token
-
-        expect(response).toBeDefined()
-        expect(response.statusCode).toBe(201)
+        })
+        .expect(HttpStatus.CREATED)
+        .expect(({body}) => {
+          expect(body.access_token).toBeDefined()
+        })
+    })
+    
+    it('/test', () => {
+      expect(token).toBe("xx")
     })
 
     // it('/auth/register (POST) duplicate', () => {
