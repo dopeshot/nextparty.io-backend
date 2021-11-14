@@ -23,6 +23,10 @@ describe('SetController (e2e)', () => {
     await app.init();
   });
 
+  /*---------------------\ 
+  |      User Setup      |
+  \---------------------*/
+
   describe('Login', () => {
     it('/auth/register (POST)', async () => {
       const res = await request(app.getHttpServer())
@@ -74,6 +78,10 @@ describe('SetController (e2e)', () => {
     })
   })
 
+  /*----------------------\ 
+  |      Create Data      |
+  \----------------------*/
+
   describe('Create data', () => {
     it('/set (POST)', async () => {
       const res = await request(app.getHttpServer())
@@ -103,6 +111,10 @@ describe('SetController (e2e)', () => {
       return res
     })
   })
+
+  /*---------------------\ 
+  |         Sets         |
+  \---------------------*/
 
   describe('Sets', () => {
     it('/set/:id (DELETE) type=soft own User', () => {
@@ -163,6 +175,10 @@ describe('SetController (e2e)', () => {
       return res
     })
   })
+
+  /*----------------------\ 
+  |        Cleanup        |
+  \----------------------*/
 
   describe('Cleanup', () => {
     it('/set/:id (DELETE) type=hard', () => {
