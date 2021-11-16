@@ -103,7 +103,6 @@ export class AuthService {
 
         
         if (user.status as UserStatus !== UserStatus.ACTIVE ){    // TODO: Add status check once we decided on how to handle reported user  
-            console.log('User is not active')
             return false
         }  
 
