@@ -6,6 +6,8 @@ import { RegisterDto } from './dto/register.dto'
 import * as bcrypt from 'bcrypt'
 import { AccessTokenDto } from './dto/jwt.dto'
 import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
+import { ObjectId } from 'mongoose';
+import { UserStatus } from '../user/enums/status.enum';
 
 @Injectable()
 export class AuthService {
@@ -86,5 +88,24 @@ export class AuthService {
         return {
             access_token: this.jwtService.sign(payload)
         }
+    }
+
+    async isValidJWT(userId: ObjectId): Promise<boolean> {
+        let user: User
+        try {
+            user = await this.userService.findOneById(userId)
+        } catch (error) {
+            // This is necessary as a not found exception would overwrite the guard response
+            return false
+        }
+        
+        if (!user) return false // This should never happen but just in case
+
+        
+        if (user.status !== UserStatus.ACTIVE ){    // TODO: Add status check once we decided on how to handle reported user  
+            return false
+        }  
+
+        return true
     }
 }

@@ -39,3 +39,5 @@ lerna-debug.log*
 # Prevent issues with seperate readme in mirrored gitlab repo
 README.md
 .github/workflows
+
+coverage-e2e
