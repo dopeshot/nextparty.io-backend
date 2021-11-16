@@ -1,9 +1,11 @@
+import { Inject, UnauthorizedException } from "@nestjs/common";
 import { PassportStrategy } from "@nestjs/passport";
 import { ExtractJwt, Strategy } from "passport-jwt";
+import { AuthService } from "src/auth/auth.service";
 import { JwtPayloadDto, JwtUserDto } from "../../dto/jwt.dto";
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor() {
+    constructor(@Inject(AuthService) private authService: AuthService) {
         super({
             jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
             ignoreExpiration: false,
@@ -17,7 +19,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
      * @returns decoded payload from JWT token
      */
     async validate(payload: JwtPayloadDto): Promise<JwtUserDto> {
-        // If needed, here could be some bussiness logic (like a database lookup) if we need more information about the user
+
+        // Validate if user still exists. This keeps tokens from being valid for users that have been deleted
+        if  (! await this.authService.isValidJWT(payload.sub)) {
+            throw new UnauthorizedException("This user seems to be invalid! Has your account been deleted or did your username change?")    
+        }
+
         return {
             userId: payload.sub,
             username: payload.username,
