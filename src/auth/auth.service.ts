@@ -7,9 +7,7 @@ import * as bcrypt from 'bcrypt'
 import { AccessTokenDto } from './dto/jwt.dto'
 import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
 import { ObjectId } from 'mongoose';
-import { Status } from 'src/shared/enums/status.enum';
 import { UserStatus } from 'src/user/enums/status.enum';
-import { NotFoundError } from 'rxjs';
 
 @Injectable()
 export class AuthService {
