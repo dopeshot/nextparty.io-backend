@@ -7,7 +7,7 @@ import * as bcrypt from 'bcrypt'
 import { AccessTokenDto } from './dto/jwt.dto'
 import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
 import { ObjectId } from 'mongoose';
-import { UserStatus } from 'src/user/enums/status.enum';
+import { UserStatus } from '../user/enums/status.enum';
 
 @Injectable()
 export class AuthService {
@@ -102,7 +102,7 @@ export class AuthService {
         if (!user) return false // This should never happen but just in case
 
         
-        if (user.status as UserStatus !== UserStatus.ACTIVE ){    // TODO: Add status check once we decided on how to handle reported user  
+        if (user.status !== UserStatus.ACTIVE ){    // TODO: Add status check once we decided on how to handle reported user  
             return false
         }  
 
