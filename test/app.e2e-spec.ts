@@ -22,21 +22,15 @@ describe('AppController (e2e)', () => {
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api')
     await app.init();
-    httpServer = app.getHttpServer()
-    connection = await moduleFixture.get(getConnectionToken());
-    await connection.dropDatabase()
   })
 
   afterAll(async () => {
-    await connection.dropDatabase()
-    await connection.close()
     await app.close();
-    await moduleFixture.close()
   })
 
   describe('Auth and User', () => {
     it('/auth/register (POST)', () => {
-      request(httpServer)
+      request(app.getHttpServer())
         .post('/api/auth/register')
         .send({
           username: "Zoe",
@@ -48,10 +42,7 @@ describe('AppController (e2e)', () => {
           expect(body.access_token).toBeDefined()
         })
     })
-    
-    it('/test', () => {
-      expect(token).toBe("xx")
-    })
+
 
     // it('/auth/register (POST) duplicate', () => {
     //   return request(app.getHttpServer())
