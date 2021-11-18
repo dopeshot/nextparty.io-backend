@@ -26,7 +26,7 @@ export class AuthService {
         if (!user)
             new BadRequestException()
 
-        return this.createLoginPayload(user)
+        return await this.createLoginPayload(user)
     }
 
     /**

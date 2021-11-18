@@ -28,6 +28,8 @@ export class MailService {
 		  })
 	}
 
+
+
 	/**
 	 * Method that communicates with mailserver to send mail
 	 * @param recipient - mail adress of receiver
@@ -35,16 +37,34 @@ export class MailService {
 	 * @param message - message body of the email
 	 */
 	private async sendMail(recipient: string, subject: string, message: string): Promise<void> {
-		try {
-			await this.mailTransport.sendMail({
-				to: recipient,
-				from: 'watson.schulist@ethereal.email',
-				subject: subject,
-				html: message,
-			})
-		} catch(error) {
-			throw new InternalServerErrorException(`Error sending email with subject: ${subject} with issue: ${error.message}`)
+		let attempts = 0
+		while (attempts < parseInt(process.env.MAX_MAIL_RETRIES)){
+			let err
+			try {
+				await this.mailTransport.sendMail({
+					to: recipient,
+					from: 'watson.schulist@ethereal.email',
+					subject: subject,
+					html: message,
+				})
+			}	
+			// catch error 	
+			catch (e){
+				err = e
+			} 
+			// if error has occured continue loop, else return
+			finally {
+				if (!err){
+					return
+				}
+				else{
+					err = null
+					attempts += 1
+				}
+			}
 		}
+		// getting here means sending the mail is not possible => throw an error
+		throw new InternalServerErrorException("Unable to connect to mailserver")
 	}
 
 	/**
@@ -57,7 +77,7 @@ export class MailService {
 		const message = render(tmpl, {
 			data: data
 		});
-		this.sendMail(recipient, "test", message)
+		await this.sendMail(recipient, "test", message)
 	}
 
 	/**
@@ -72,7 +92,7 @@ export class MailService {
 			verifyLink: `${process.env.HOST}/user/verify/${code}`,
 			username: name,
 		});
-		this.sendMail(mail, "Please verify your email address", message)
+		await this.sendMail(mail, "Please verify your email address", message)
 	}
 
 	/**
@@ -87,6 +107,6 @@ export class MailService {
 			resetLink: `${process.env.HOST}/user/reset-form/${resetCode}`,
 			username: name,
 		});
-		this.sendMail(mail, "Reset your pw", message)
+		await this.sendMail(mail, "Reset your pw", message)
 	}
 }
