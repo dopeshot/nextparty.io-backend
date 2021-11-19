@@ -70,19 +70,6 @@ describe('SetController (e2e)', () => {
       return res
     })
 
-    // Negative test
-    it('/auth/register (POST) duplicate conflict', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/api/auth/register')
-        .send({
-          username: "TestUserName",
-          email: "Hahaxd@gmail.com",
-          password: "12345678"
-        })
-        .expect(409)
-      return res
-    })
-
     it('/user/profile (GET)', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/user/profile')
