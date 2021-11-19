@@ -24,15 +24,15 @@
     },
     "dependencies": {
         "@nestjs-modules/mailer": "^1.6.0",
-        "@nestjs/common": "^8.2.0",
+        "@nestjs/common": "^8.2.2",
         "@nestjs/config": "^1.1.0",
-        "@nestjs/core": "^8.2.0",
+        "@nestjs/core": "^8.2.2",
         "@nestjs/jwt": "^8.0.0",
         "@nestjs/mapped-types": "*",
         "@nestjs/mongoose": "^8.0.1",
         "@nestjs/passport": "^8.0.1",
-        "@nestjs/platform-express": "^8.2.0",
-        "@nestjs/swagger": "^5.1.4",
+        "@nestjs/platform-express": "^8.2.2",
+        "@nestjs/swagger": "^5.1.5",
         "@types/faker": "^5.5.9",
         "@types/passport-discord": "^0.1.5",
         "@types/passport-facebook": "^2.1.11",
@@ -41,9 +41,9 @@
         "class-validator": "^0.13.1",
         "dotenv": "^10.0.0",
         "ejs": "^3.1.6",
-        "mongoose": "^6.0.12",
+        "mongoose": "^6.0.13",
         "nestjs-seeder": "^0.2.0",
-        "nodemailer": "^6.7.0",
+        "nodemailer": "^6.7.1",
         "nodemailer-mock": "^1.5.11",
         "passport": "^0.4.1",
         "passport-discord": "^0.1.4",
@@ -57,13 +57,13 @@
         "swagger-ui-express": "^4.1.6"
     },
     "devDependencies": {
-        "@nestjs/cli": "^8.1.4",
-        "@nestjs/schematics": "^8.0.4",
-        "@nestjs/testing": "^8.2.0",
+        "@nestjs/cli": "^8.1.5",
+        "@nestjs/schematics": "^8.0.5",
+        "@nestjs/testing": "^8.2.2",
         "@types/bcrypt": "^5.0.0",
         "@types/express": "^4.17.13",
         "@types/jest": "^26.0.24",
-        "@types/node": "^16.11.6",
+        "@types/node": "^16.11.9",
         "@types/passport-google-oauth20": "^2.0.11",
         "@types/passport-jwt": "^3.0.6",
         "@types/passport-local": "^1.0.34",
@@ -80,7 +80,7 @@
         "ts-loader": "^9.2.6",
         "ts-node": "^10.4.0",
         "tsconfig-paths": "^3.11.0",
-        "typescript": "^4.4.4"
+        "typescript": "^4.5.2"
     },
     "jest": {
         "moduleFileExtensions": [
