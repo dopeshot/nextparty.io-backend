@@ -4,19 +4,19 @@ import { Status } from "../../shared/enums/status.enum";
 import { Language } from "../../shared/enums/language.enum";
 import { Task, TaskSchema } from "./task.entity";
 
-@Schema({ timestamps: true })
+@Schema({ timestamps: true, _id: true })
 export class Set {
+
+    _id: ObjectId
+    
     @Prop({ required: true, index: true })
     name: string
 
-    @Prop({ required: false, type: [{ type: TaskSchema}] })
+    @Prop({ required: false, type: [{ type: TaskSchema }] })
     tasks: Task[]
 
     @Prop({ default: Status.ACTIVE })
     status: Status | Status.ACTIVE
-
-    @Prop({ default: "", index: true })
-    description: string
 
     @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
     createdBy: ObjectId
@@ -29,6 +29,12 @@ export class Set {
 
     @Prop({ default: 0 })
     daresCount: number
+
+    @Prop({default: "placeholder"})
+    previewImage: string
+
+    @Prop({default: "placeholder2"})
+    bannerImage: string
 }
 
 export type SetDocument = Set & Document

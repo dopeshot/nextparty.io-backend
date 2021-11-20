@@ -1,222 +1,345 @@
-import { ForbiddenException, Injectable, InternalServerErrorException, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { Status } from '../shared/enums/status.enum';
-import { PaginationPayload } from '../shared/interfaces/paginationPayload.interface';
 import { SharedService } from '../shared/shared.service';
+import { Role } from '../user/enums/role.enum';
 import { CreateSetDto } from './dto/create-set.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { Set, SetDocument } from './entities/set.entity';
+import { SetDocument } from './entities/set.entity';
+import { TaskDocument } from './entities/task.entity';
+import { TaskType } from './enums/tasktype.enum';
+import { SetSampleData } from './set.data';
+import { ResponseSet, ResponseSetMetadata, ResponseSetWithTasks, ResponseTask, ResponseTaskWithStatus, UpdatedCounts } from './types/set.response';
 
 @Injectable()
 export class SetService {
   constructor(
     @InjectModel('Set') private setSchema: Model<SetDocument>,
+    @InjectModel('Task') private taskSchema: Model<TaskDocument>,
     private readonly sharedService: SharedService
   ) { }
 
-  async create(metaData: CreateSetDto, user: JwtUserDto): Promise<SetDocument> {
-    try {
-      const set = new this.setSchema({
-        createdBy: user.userId,
-        ...metaData
-      })
-      const result = await set.save()
 
-      return result
+  async createSet(createSetDto: CreateSetDto, user: JwtUserDto): Promise<ResponseSet> {
+    try {
+
+      const set: SetDocument = await this.setSchema.create({ ...createSetDto, createdBy: user.userId })
+
+      return {
+        _id: set.id,
+        daresCount: set.daresCount,
+        truthCount: set.truthCount,
+        language: set.language,
+        name: set.name,
+        createdBy: {
+          _id: user.userId,
+          username: user.username
+        },
+        previewImage: set.previewImage,
+        bannerImage: set.bannerImage
+      }
+
     } catch (error) {
-      console.log(error)
+      if (error.code == '11000') {
+        throw new ConflictException('This set already exists')
+      }
+      console.error(error)
       throw new InternalServerErrorException()
     }
   }
 
-  async findAll(page: number, limit: number): Promise<PaginationPayload<Set>> {
-    const documentCount = await this.setSchema.estimatedDocumentCount()
-    const sets: Set[] = await this.setSchema.find().limit(limit).skip(limit * page)
+  async getAllSets(): Promise<ResponseSet[]> {
 
-    return this.sharedService.createPayloadWithPagination(documentCount, page, limit, sets)
-  }
+    const sets: ResponseSet[] = await this.setSchema.find(
+      { status: Status.ACTIVE },
+      { _id: 1, daresCount: 1, truthCount: 1, name: 1, language: 1, createdBy: 1, previewImage: 1, bannerImage: 1 }
+    ).populate<ResponseSet[]>('createdBy', '_id username')
 
-  async findOne(id: ObjectId): Promise<Set> {
-    const set = await this.setSchema.findById(id).populate('createdBy', 'username _id')
-    if (!set)
+    if (sets.length === 0)
       throw new NotFoundException()
-    return set;
+
+    return sets
+
   }
 
-  async userSets(id: ObjectId, page: number, limit: number) {
-    let userSets = await this.setSchema.aggregate([
-      {
-        '$match': {
-          'creator': Types.ObjectId(id.toString())
-        }
-      }, {
-        $skip: page * limit
-      }, {
-        $limit: limit
-      }
-    ])
-    return userSets
-  }
+  async getOneSet(id: ObjectId): Promise<ResponseSetWithTasks> {
 
-  async updateMetadata(id: ObjectId, updateSetDto: UpdateSetDto, user: JwtUserDto) {
-    // Find Object
-    let set = await this.setSchema.findById(id)
+    const set: (ResponseSet & { tasks: ResponseTaskWithStatus[] }) = await this.setSchema.findOne(
+      { _id: id, status: Status.ACTIVE },
+      { _id: 1, daresCount: 1, truthCount: 1, name: 1, language: 1, createdBy: 1, tasks: 1, previewImage: 1, bannerImage: 1 }
+    ).populate<(ResponseSet & { tasks: ResponseTaskWithStatus[] })>('createdBy', '_id username').lean()
 
     if (!set)
       throw new NotFoundException()
 
-    // Check if user is Creator of set or Admin
-    if (!(user.userId == set.createdBy || user.role == "admin"))
-      throw new ForbiddenException()
-
-    try {
-      if (updateSetDto.hasOwnProperty("description"))
-        set.description = updateSetDto.description
-      if (updateSetDto.hasOwnProperty("name"))
-        set.name = updateSetDto.name
-    } catch (error) {
-      throw new UnprocessableEntityException()
-    }
-    const result = await set.save()
+    // Remove tasks from array that are not active
+    const result: ResponseSetWithTasks = this.onlyActiveTasks(set)
 
     return result;
   }
 
-  /**
-    * Delete set: If type is hard ==> hard delete, If type is soft or anything else => soft delete
-    * @param id of the set
-    * @param type soft/anything else or hard delete
-  */
-  async remove(id: ObjectId, type: string, user: JwtUserDto): Promise<void> {
-    let set = await this.setSchema.findById(id)
+  async updateSetMetadata(id: ObjectId, updateSetDto: UpdateSetDto, user: JwtUserDto): Promise<ResponseSetMetadata> {
+
+    let queryMatch: { _id: ObjectId, createdBy?: ObjectId } = { _id: id }
+
+    if (user.role !== Role.Admin) {
+      queryMatch.createdBy = user.userId
+    }
+
+    const set: ResponseSetMetadata = await this.setSchema.findOneAndUpdate(queryMatch, updateSetDto, { new: true, select: "_id daresCount truthCount language name createdBy" })
 
     if (!set)
       throw new NotFoundException()
 
-    // Check query
-    const isHardDelete = type ? type.includes('hard') : false
+    return set
 
-    if (isHardDelete) {
+  }
+
+  async deleteSet(id: ObjectId, deleteType: string, user: JwtUserDto): Promise<void> {
+
+    // Hard delete
+    if (deleteType === 'hard') {
       if (user.role != 'admin')
         throw new ForbiddenException()
 
-      try {
-        // Check if there is a set with this id and remove it
-        const set = await this.setSchema.findByIdAndDelete(id)
+      const set = await this.setSchema.findByIdAndDelete(id)
 
-        // We have to return here to exit process
-        return
-      } catch (error) {
-        throw new InternalServerErrorException()
-      }
+      if (!set)
+        throw new NotFoundException()
+
+      return
+
     }
 
     // Soft delete
-    // Check if user is Creator of set or Admin
-    if (!(user.userId == set.createdBy || user.role == "admin"))
-      throw new ForbiddenException()
+    const queryMatch: { _id: ObjectId, createdBy?: ObjectId } = { _id: id }
 
-    set = await this.setSchema.findByIdAndUpdate(id, {
-      status: Status.DELETED
-    }, {
-      new: true
-    })
+    if (user.role !== Role.Admin)
+      queryMatch.createdBy = user.userId
+
+    const set = await this.setSchema.findOneAndUpdate(queryMatch, { status: Status.DELETED })
+
+    if (!set)
+      throw new NotFoundException()
+
+    return
+
   }
 
-  async getTasks2(id: ObjectId, page: number, limit: number): Promise<Set> {
-    const skip = page * limit
-    limit += skip
-    const set: Set = await this.setSchema.findById(id).populate('taskList')
+  /*------------------------------------\
+  |                Tasks                |
+  \------------------------------------*/
 
-    return set
-  }
+  async createTask(setId: ObjectId, createTaskDto: CreateTaskDto, user: JwtUserDto): Promise<ResponseTask> {
 
-  async getMetadata(id: ObjectId) {
-    const set = await this.setSchema.findById(id)
+    const task: TaskDocument = new this.taskSchema({ ...createTaskDto })
+    const queryMatch: { _id: ObjectId, createdBy?: ObjectId } = { _id: setId }
+
+    if (user.role !== Role.Admin)
+      queryMatch.createdBy = user.userId
+
+    const incrementType = createTaskDto.type == TaskType.TRUTH ? { $push: { tasks: task }, $inc: { truthCount: 1 } } : { $push: { tasks: task }, $inc: { daresCount: 1 } }
+
+    const set: SetDocument = await this.setSchema.findOneAndUpdate(queryMatch, incrementType, { new: true })
 
     if (!set)
       throw new NotFoundException()
 
     return {
-      "description": set.description,
-      "name": set.name
+      _id: task._id,
+      currentPlayerGender: task.currentPlayerGender,
+      type: task.type,
+      message: task.message
     }
+
   }
 
-  //REWORK=====================================================================================
-  // Creates a new Task and checks if the message content accounts for extra user interaction
-  async createTask( set: ObjectId, createTaskDto: CreateTaskDto, creator: JwtUserDto): Promise<any> {
-  }
+  // The frontend should always send all 3 updatable properties
+  async updateTask(setId: ObjectId, taskId: ObjectId, updateTaskDto: UpdateTaskDto, user: JwtUserDto): Promise<UpdatedCounts> {
 
-  //REWORK=====================================================================================
-  // Updates the content language and type of a Task
-  async updateTask(id: ObjectId, updateTaskDto: UpdateTaskDto, user: JwtUserDto): Promise<any> {
-    // Find Object
-    let task = await this.setSchema.findById(id)
+    const queryMatch: { _id: ObjectId, 'tasks._id': ObjectId, createdBy?: ObjectId } = { _id: setId, 'tasks._id': taskId }
+    if (user.role !== Role.Admin)
+      queryMatch.createdBy = user.userId
 
-    if (!task)
+    let queryUpdate = { 'tasks.$.type': updateTaskDto.type, 'tasks.$.message': updateTaskDto.message, 'tasks.$.currentPlayerGender': updateTaskDto.currentPlayerGender }
+
+    const set = await this.setSchema.findOneAndUpdate(queryMatch, queryUpdate, { new: true })
+
+    if (!set)
       throw new NotFoundException()
 
-    // // Check if User is Creator of Task or Admin
-    // if (!(user.userId == task.author || user.role == "admin"))
-    //     throw new ForbiddenException()
+    const updatedResult = await this.updateCounts(setId)
 
-    // try {
-    //     if (updateTaskDto.content.hasOwnProperty('message')) {
-    //         task.content.message = updateTaskDto.content.message
-    //         this.countPersons(task)
-    //     }
-    //     if (updateTaskDto.content.hasOwnProperty('currentPlayerGender')) {
-    //         task.content.currentPlayerGender = updateTaskDto.content.currentPlayerGender
-    //     }
-    //     if (updateTaskDto.hasOwnProperty('language')) {
-    //         task.language = updateTaskDto.language
-    //     }
-    //     if (updateTaskDto.hasOwnProperty('type')) {
-    //         task.type = updateTaskDto.type
-    //     }
-    // } catch (error) {
-    //     throw new UnprocessableEntityException()
-    // }
-
-    const result = await task.save()
-    return result
+    return updatedResult
   }
 
-  //REWORK=====================================================================================
-  async removeTask(id: ObjectId, taskId: ObjectId, type: string, user: JwtUserDto): Promise<void> {
-    let task = await this.setSchema.findById(id)
+  async removeTask(setId: ObjectId, taskId: ObjectId, deleteType: string, user: JwtUserDto): Promise<UpdatedCounts> {
 
-    if (!task)
-      throw new NotFoundException()
-
-    // Check query
-    const isHardDelete = type ? type.includes('hard') : false
-
-    if (isHardDelete) {
-      if (user.role != "admin")
+    // Hard delete
+    if (deleteType === 'hard') {
+      if (user.role != 'admin')
         throw new ForbiddenException()
 
-      // Check if there is a task with this id and remove it
-      try {
-        const task = await this.setSchema.findByIdAndDelete(id)
+      const set = await this.setSchema.findOneAndUpdate({ _id: setId }, { $pull: { tasks: { _id: taskId } } })
+
+      if (!set) {
+        throw new NotFoundException
       }
-      catch (error) {
-        throw new InternalServerErrorException()
-      }
-      // We have to return here to exit process
-      return
+
+      const updatedResult = await this.updateCounts(setId)
+
+      return updatedResult
+
     }
 
     // Soft delete
-    // Check if User is Creator of Task or Admin
-    if (!(user.userId == task.createdBy || user.role == "admin"))
-      throw new ForbiddenException()
+    const queryMatch: { _id: ObjectId, 'tasks._id': ObjectId, createdBy?: ObjectId } = { _id: setId, 'tasks._id': taskId }
+    if (user.role !== Role.Admin)
+      queryMatch.createdBy = user.userId
 
-    task = await this.setSchema.findByIdAndUpdate(id, { status: Status.DELETED }, { new: true })
+    const set = await this.setSchema.findOneAndUpdate(queryMatch, { 'tasks.$.status': Status.DELETED })
+
+    if (!set)
+      throw new NotFoundException()
+
+    const updatedResult = await this.updateCounts(setId)
+
+    return updatedResult
+
+  }
+
+
+  /*------------------------------------\
+  |               Helpers               |
+  \------------------------------------*/
+
+
+  private onlyActiveTasks(set: (ResponseSet & { tasks: ResponseTaskWithStatus[] })): ResponseSetWithTasks {
+
+    const reducedTasks: ResponseTask[] = [];
+
+    // Iterate over the tasks array and only push those that are active
+    set.tasks.forEach((task) => {
+      if (task.status === Status.ACTIVE) {
+        reducedTasks.push({
+          currentPlayerGender: task.currentPlayerGender,
+          _id: task._id,
+          type: task.type,
+          message: task.message
+        })
+      }
+    })
+
+    return {
+      ...set,
+      tasks: reducedTasks
+    }
+  }
+
+  // Uses 2 additional database calls to update the task counts and return the new settings
+  private async updateCounts(setId: ObjectId): Promise<UpdatedCounts> {
+
+    // Recounts the active truths and dares, projects the new counts and merges them back into the existing document
+    const update = await this.setSchema.aggregate([
+      {
+        '$match': {
+          '_id': new Types.ObjectId(setId.toString())
+        }
+      }, {
+        '$set': {
+          'daresCount': {
+            '$size': {
+              '$filter': {
+                'input': '$tasks',
+                'as': 'a',
+                'cond': {
+                  '$and': [
+                    {
+                      '$eq': [
+                        '$$a.type', 'dare'
+                      ]
+                    }, {
+                      '$eq': [
+                        '$$a.status', 'active'
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          'truthCount': {
+            '$size': {
+              '$filter': {
+                'input': '$tasks',
+                'as': 'a',
+                'cond': {
+                  '$and': [
+                    {
+                      '$eq': [
+                        '$$a.type', 'truth'
+                      ]
+                    }, {
+                      '$eq': [
+                        '$$a.status', 'active'
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }, {
+        '$project': { _id: 1, truthCount: 1, daresCount: 1 }
+      }, {
+        '$merge': {
+          'into': 'sets',
+          'on': '_id',
+          'whenMatched': 'merge',
+          'whenNotMatched': 'discard'
+        }
+      }
+    ])
+    // Since the aggregation has no return value, We have to make another call to get the updated data 
+    const result = await this.setSchema.findById(setId, { _id: 1, truthCount: 1, daresCount: 1 })
+    if (!result)
+      throw new InternalServerErrorException
+
+    return {
+      _id: result._id,
+      truthCount: result.truthCount,
+      daresCount: result.daresCount
+    }
+  }
+
+  // Migrations / Seeder
+  public async createExampleSets(user: JwtUserDto, test: string) {
+
+    SetSampleData.forEach(async (setData) => {
+      const set = await this.createSet({
+        name: setData.name,
+        language: setData.language
+      }, user)
+      setData.tasks.forEach(async (task) => {
+        await this.createTask(set._id, {
+          type: task.type,
+          currentPlayerGender: task.currentPlayerGender,
+          message: task.message
+        }, user)
+      })
+    })
+    // TODO: This is a security breach due to the mock data and the need to clean it in testing
+    if (user.role == "admin" && test === "true") {
+      //await this.setSchema.deleteMany({})
+    }
+    return {
+      statusCode: 201,
+      message: "Sample data created"
+    }
   }
 }

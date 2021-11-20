@@ -9,20 +9,19 @@ describe('AppController (e2e)', () => {
   let userId
 
 
-  beforeEach(async () => {
+  beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix('api')
     await app.init();
   });
 
   describe('Auth and User', () => {
     it('/auth/register (POST)', async () => {
       const res = await request(app.getHttpServer())
-        .post('/api/auth/register')
+        .post('/auth/register')
         .send({
           username: "Zoe",
           email: "zoe@gmail.com",
@@ -36,7 +35,7 @@ describe('AppController (e2e)', () => {
     
     it('/auth/register (POST) duplicate', async () => {
       const res = await request(app.getHttpServer())
-        .post('/api/auth/register')
+        .post('/auth/register')
         .send({
           username: "Zoe",
           email: "zoe@gmail.com",
@@ -48,7 +47,7 @@ describe('AppController (e2e)', () => {
 
     it('/auth/login (POST)', async () => {
       return request(app.getHttpServer())
-        .post('/api/auth/login')
+        .post('/auth/login')
         .send({
           email: "zoe@gmail.com",
           password: "12345678"
@@ -58,7 +57,7 @@ describe('AppController (e2e)', () => {
 
     it('/auth/login (POST) Wrong Password', async () => {
       return request(app.getHttpServer())
-        .post('/api/auth/login')
+        .post('/auth/login')
         .send({
           email: "zoe@gmail.com",
           password: "123"
@@ -68,7 +67,7 @@ describe('AppController (e2e)', () => {
 
     it('/user/profile (GET)', async () => {
       const res = request(app.getHttpServer())
-        .get('/api/user/profile')
+        .get('/user/profile')
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
       userId = (await res).body.userId
@@ -79,7 +78,7 @@ describe('AppController (e2e)', () => {
   describe("Roles", () => {
     it('/user (GET) Protected Route: No Admin Role', async () => {
       const res = request(app.getHttpServer())
-        .get('/api/user')
+        .get('/user')
         .set('Authorization', `Bearer ${token}`)
         .expect(403)
       return res
@@ -87,7 +86,7 @@ describe('AppController (e2e)', () => {
 
     it('/user/testing (PATCH) Change to Admin', async () => {
       const res = request(app.getHttpServer())
-        .patch(`/api/user/testing/${userId}`)
+        .patch(`/user/testing/${userId}`)
         .send({
           role: "admin"
         })
@@ -97,7 +96,7 @@ describe('AppController (e2e)', () => {
 
     it('/auth/login (POST)', async () => {
       const res = request(app.getHttpServer())
-      .post('/api/auth/login')
+      .post('/auth/login')
       .send({
         email: "zoe@gmail.com",
         password: "12345678"
@@ -110,7 +109,7 @@ describe('AppController (e2e)', () => {
 
     it('/user (GET) Protected Route: Admin Role', async () => {
       const res = request(app.getHttpServer())
-        .get('/api/user')
+        .get('/user')
         .set('Authorization', `Bearer ${token}`)
         .expect(200)
       return res
@@ -120,7 +119,8 @@ describe('AppController (e2e)', () => {
   describe('Cleanup', () => {
     it('/user/:id (DELETE)', async () => {
       const res = request(app.getHttpServer())
-        .delete(`/api/user/${userId}`)
+        .delete(`/user/${userId}`)
+        .set('Authorization', `Bearer ${token}`)
         .expect(200)
       return res
     })
@@ -130,4 +130,3 @@ describe('AppController (e2e)', () => {
     await app.close();
   });
 });
-

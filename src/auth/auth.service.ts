@@ -28,7 +28,7 @@ export class AuthService {
         if (!user)
             new BadRequestException()
 
-        return this.createLoginPayload(user)
+        return await this.createLoginPayload(user)
     }
 
     /**
@@ -102,7 +102,7 @@ export class AuthService {
         if (!user) return false // This should never happen but just in case
 
         
-        if (user.status !== UserStatus.ACTIVE ){    // TODO: Add status check once we decided on how to handle reported user  
+        if (user.status !== UserStatus.ACTIVE && user.status !== UserStatus.UNVERIFIED ){    // TODO: Add status check once we decided on how to handle reported user  
             return false
         }  
 

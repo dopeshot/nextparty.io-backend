@@ -33,7 +33,7 @@ export class UserService {
       })
       const result = await user.save()
 
-      this.createVerification(result)
+      await this.createVerification(result)
 
       return result
     } catch (error) {
@@ -62,9 +62,9 @@ export class UserService {
       userId: user._id,
       verificationCode: verifyCode
     })
-    const result = await verifyObject.save()
+    await verifyObject.save()
 
-    this.mailService.generateVerifyMail(user.username, user.email, verifyCode)
+    await this.mailService.generateVerifyMail(user.username, user.email, verifyCode)
   }
 
   /**
@@ -239,7 +239,7 @@ export class UserService {
     })
     const result = await resetObject.save()
 
-    this.mailService.sendPasswordReset(user.username, user.email, resetCode)
+    await this.mailService.sendPasswordReset(user.username, user.email, resetCode)
 
   }
 

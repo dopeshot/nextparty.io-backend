@@ -1,90 +1,57 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2ODA4Mzc3LCJleHAiOjE2MzcxNjgzNzd9.JsziCL37a8xyTXv_0yYapoE7ZXzVcW4ri9mAJPMhMs4
+@set = 6191152856c9af0c03b1fb6c
+@adress = http://localhost:3000/api/set
 ###Create Set
-POST http://localhost:3000/api/set
+POST {{adress}}
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjEyYTkwMmE4YTNhMWZkMGUxZThkY2I2Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjMxMzU5MDA0LCJleHAiOjE2MzEzOTUwMDR9.LgIdglTvitAkwr0O4nKLswRxsO_ccIjh8rrAnSmkPV8
+Authorization: Bearer {{token}}
 
 {
-    "description": "DEV DEV DEV!",
-    "language": "de",
-    "name": "Developer Pack"
+    "name": "Jibba"
 }
 
 ### Get all sets
-GET http://localhost:3000/api/set
+GET {{adress}}
 
-### Get one set
-GET http://localhost:3000/api/set/6134701a7dde0c50ee792364
+### Get one set only active tasks
+GET {{adress}}/{{set}}
 
-### Add/Update set task list
-POST http://localhost:3000/api/set/611e66d7508d106504f645ab/add
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzODI1MzgsImV4cCI6MTYyOTQxODUzOH0.C-DwlCpN33kUuFz8gqaZrnKVgN55JpsBw4oqiRJip8c
-
-{
-    "tasks": ["611c38b477070d296c8b972c"]
-}
-
-### Remove set task list
-POST http://localhost:3000/api/set/611e66d7508d106504f645ab/remove
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJzdWIiOiI2MTE3ZDVhMTcwNDU1ODRmZjhkM2M2ODkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2MjkzODI3NTksImV4cCI6MTYyOTQxODc1OX0.-T2UMo_bkbaPb5bMVi6nJLUxARaBLGiLvMsZSF2T2gw
-
-{
-    "tasks": ["611c38b477070d296c8b972c"]
-}
-
-### Get Tasks in Set
-GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tasks1
-
-### Get Tasks in Set2
-
-GET http://localhost:3000/api/set/6116bbed831a4e1c10285a38/tasks
-
-
-### Get top 10 Tasks in Set2
-GET http://localhost:3000/api/set/6117926bd45adc1f50dea882/tentasks
-
-### Get Tasks in Set paginated
-GET http://localhost:3000/api/set/613473594ff6b1519da6b8d7/tasks?page=0&limit=99999
-
-### Get Set metadata
-GET http://localhost:3000/api/set/6116ac912a8b143164f7f00b/meta
-
-### Get Sets from specific user
-GET http://localhost:3000/api/set/user/611e45ebb6db1c3bf48eb732?limit=1&page=1
- 
 ### Update set metadata
-PATCH  http://localhost:3000/api/set/611e64951345e1678cac0422/meta
+PATCH {{adress}}/{{set}}
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJzdWIiOiI2MTE3ZDVhMTcwNDU1ODRmZjhkM2M2ODkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2MjkzODE4NzUsImV4cCI6MTYyOTQxNzg3NX0.qdNAA5iulacHcaSHyRItfgkWgIlhg0ZWkySl1ozyxno
+Authorization: Bearer {{token}}
 
 {
     "name": "better name",
-    "description": "gang gang"
+    "language": "en",
+    "unicorn": "asd"
 }
 
-### Upvote set via id
-PATCH  http://localhost:3000/api/set/6117926bd45adc1f50dea882/upvote
-
-### Downvote set via id
-PATCH  http://localhost:3000/api/set/6117926bd45adc1f50dea882/downvote
-
 ### Soft Delete Set by Id
-DELETE http://localhost:3000/api/set/611e76203245bc06943d3cb5
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzODYyNTEsImV4cCI6MTYyOTQyMjI1MX0.XBBL0vPzV4gR8KE-rmVcP8wDZztCBA4bhMEiGL9KQLs
-
+DELETE {{adress}}/{{set}}
+Authorization: Bearer {{token}}
 ### Hard Delete Set by Id (require admin role)
-DELETE http://localhost:3000/api/set/611659725b415a2d2072bc92?type=hard
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJzdWIiOiI2MTE3ZDVhMTcwNDU1ODRmZjhkM2M2ODkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2MjkwNDg1NjQsImV4cCI6MTYyOTA4NDU2NH0.isQ63KUWVd_3-w1nqEM0ItcXWhjaTznz-g4VErlkkcI
+DELETE {{adress}}/{{set}}?type=hard
+Authorization: Bearer {{token}}
 
-###
-GET http://localhost:3000/api/set/healthcheck
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExZTQ3OWNmYTIxZjMxMDU4NTk4ZTYyIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2MjkzODYyNTEsImV4cCI6MTYyOTQyMjI1MX0.XBBL0vPzV4gR8KE-rmVcP8wDZztCBA4bhMEiGL9KQLs
+#-------------------------#
+#  Task related requests  #
+#-------------------------#
 
-###
-DELETE http://localhost:3000/api/set/612a9afb526da3f00df78bef?type=hard
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjEyYTkwMmE4YTNhMWZkMGUxZThkY2I2Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjMwMTgxMzA5LCJleHAiOjE2MzAyMTczMDl9.j_CwvV6o_0GXIFjx6Lw4PUO1qBmry49eBypC8b7tKpw
+### Add task
+POST {{adress}}/{{set}}/task
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "type": "truth",
+    "currentPlayerGender": "@ca",
+    "message": "Have you peed today?"
+}
 
 
-###
-GET http://localhost:3000/api/set/test?error=yes
+
+### Sample sets
+POST {{adress}}/migrate
+Content-Type: application/json
+Authorization: Bearer {{token}}
