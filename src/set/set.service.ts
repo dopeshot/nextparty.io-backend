@@ -158,7 +158,7 @@ export class SetService {
 
   }
 
-  // Depending on the updateTaskDto: message, type and currentPlayerGender are updated
+  // The frontend should always send all 3 updatable properties
   async updateTask(setId: ObjectId, taskId: ObjectId, updateTaskDto: UpdateTaskDto, user: JwtUserDto): Promise<UpdatedCounts> {
 
     const queryMatch: { _id: ObjectId, 'tasks._id': ObjectId, createdBy?: ObjectId } = { _id: setId, 'tasks._id': taskId }
@@ -334,7 +334,7 @@ export class SetService {
       })
     })
     // TODO: This is a security breach due to the mock data and the need to clean it in testing
-    if(user.role == "admin" && test === "true"){
+    if (user.role == "admin" && test === "true") {
       //await this.setSchema.deleteMany({})
     }
     return {
