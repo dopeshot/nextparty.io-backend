@@ -12,6 +12,10 @@ async function bootstrap() {
   app.setBaseViewsDir(join(__dirname, '..', 'views'))
   app.setViewEngine('ejs')
 
+  app.useStaticAssets(join(__dirname, '..', 'images',"icon_presets"),{
+    prefix: '/icons/presets/',
+  })
+
   const config = new DocumentBuilder()
     .setTitle('Truth or Dare: Community Backend')
     .setDescription('Back! End! Back! End! Back! End! End!')

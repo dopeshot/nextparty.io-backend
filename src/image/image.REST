@@ -1,0 +1,2 @@
+### GET all icons
+GET http://localhost:3000/api/image/icon/list

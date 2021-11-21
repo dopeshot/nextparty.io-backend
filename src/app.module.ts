@@ -11,6 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailModule } from './mail/mail.module';
 import { SharedModule } from './shared/shared.module';
+import { ImageModule } from './image/image.module';
 
 @Module({
   imports: [
@@ -32,7 +33,8 @@ import { SharedModule } from './shared/shared.module';
     ReportModule,
     SystemModule,
     MailModule,
-    SharedModule
+    SharedModule,
+    ImageModule
   ],
   controllers: [AppController],
   providers: [AppService],
