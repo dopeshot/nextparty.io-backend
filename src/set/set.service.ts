@@ -1,4 +1,4 @@
-import { ConflictException, ForbiddenException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, HttpException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
@@ -60,7 +60,7 @@ export class SetService {
     ).populate<ResponseSet[]>('createdBy', '_id username')
 
     if (sets.length === 0)
-      throw new NotFoundException()
+      throw new HttpException('No sets in database', 204)
 
     return sets
 

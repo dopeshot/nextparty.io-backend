@@ -21,6 +21,12 @@ export class UserController {
     return await this.userService.findAll();
   }
 
+  @Get('/verify')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  async getVerifyByUsername(@Body() userData: {userId: ObjectId}): Promise<any> {
+    return await this.userService.findVerify(userData.userId)
+  }
 
   @Get("/verify/:code")
   @Render("MailVerify")
@@ -68,6 +74,13 @@ export class UserController {
   @Get('/password-reset')
   async resetPassword(@Body() userData: {userMail: string}){
     return await this.userService.requestResetPassword(userData.userMail)
+  }
+
+  @Get('/reset')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  async getResetByUsername(@Body() userData: {userId: ObjectId}): Promise<any> {
+    return await this.userService.findReset(userData.userId)
   }
 
   @Get('/reset-form/:code')
