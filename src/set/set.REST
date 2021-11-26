@@ -30,6 +30,7 @@ Authorization: Bearer {{token}}
 ### Soft Delete Set by Id
 DELETE {{adress}}/{{set}}
 Authorization: Bearer {{token}}
+
 ### Hard Delete Set by Id (require admin role)
 DELETE {{adress}}/{{set}}?type=hard
 Authorization: Bearer {{token}}
