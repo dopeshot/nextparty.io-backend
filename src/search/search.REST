@@ -1,2 +1,3 @@
+@adress = http://localhost:3000/api/search
 ### Search for task.content.message / set.name / set.description / user.username
-GET http://localhost:3000/api/search/lorem/user
+GET {{adress}}/lorem/user

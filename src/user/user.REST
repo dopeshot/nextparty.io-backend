@@ -1,13 +1,16 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6ImxvcmVtIiwic3ViIjoiNjExYWRkYTEzMWZjNjU2OTk4NjFhMTE4Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjM2ODA4Mzc3LCJleHAiOjE2MzcxNjgzNzd9.JsziCL37a8xyTXv_0yYapoE7ZXzVcW4ri9mAJPMhMs4
+@user = 6191152856c9af0c03b1fb6c
+@adress = http://localhost:3000/api/user
 ### Get current User
-GET http://localhost:3000/api/user/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjExNmFmMDhkYWIwNjEzNTc0MzVlMGU5Iiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjI4ODc2NzgwLCJleHAiOjE2Mjg5MTI3ODB9.PCzWu_EDhEqAoP4T95RfQZWbudImpUWlS0wYZ7SHSlo
+GET {{adress}}/profile
+Authorization: Bearer {{token}}
 
 ### Get all User (Protected Route for Testing Reasons, access only with admin role)
-GET http://localhost:3000/api/user
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IlRlc3QiLCJzdWIiOiI2MTE3ZDVhMTcwNDU1ODRmZjhkM2M2ODkiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE2Mjg5NTk2MzEsImV4cCI6MTYyODk5NTYzMX0.DSO_RoFUbefVMDuL7-2bHDBHuNb4ec_pHo5uF8VpjyI
+GET {{adress}}
+Authorization: Bearer {{token}}
 
 ### Patch user by id 
-PATCH http://localhost:3000/api/user/6116b5a5c5eae23f344d2d23
+PATCH {{adress}}/{{user}}
 Content-Type: application/json
 
 {
@@ -17,7 +20,7 @@ Content-Type: application/json
 }
 
 ### Patch user by id 
-PATCH http://localhost:3000/api/user/testing/6117eeedb63fd833e0e5145e
+PATCH {{adress}}/testing/{{user}}
 Content-Type: application/json
 
 {
@@ -25,18 +28,18 @@ Content-Type: application/json
 }
 
 ### Delete User
-DELETE http://localhost:3000/api/user/61152d6fb3dac55cbcd081f2
+DELETE {{adress}}/{{user}}
 
 ### 
-GET http://localhost:3000/api/user/verify/98e97d273c8345eac435edeeb15a143c248f529cb07df581730512da1f77b8662c50265967f66f7592ec905213f5ffbab37dbd7aa1c9c13fedde8372fd62106a
+GET {{adress}}/verify/98e97d273c8345eac435edeeb15a143c248f529cb07df581730512da1f77b8662c50265967f66f7592ec905213f5ffbab37dbd7aa1c9c13fedde8372fd62106a
 
 ### Rerequest verify
 
-GET http://localhost:3000/api/user/getVerify
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNzYXNhYWEyZGFzZCIsInN1YiI6IjYxMTkwZTViZDZiMTlkNDI2Y2JhZWYyNiIsImlhdCI6MTYyOTAzMjk1NiwiZXhwIjoxNjI5MDY4OTU2fQ.kvnJ5_jhilxFzg0fHl9z7zb3dtF0cE6Cd5LLZwLkIsk
+GET {{adress}}/getVerify
+Authorization: Bearer {{token}}
 
 ### ResetPassword
-GET http://localhost:3000/api/user/password-reset
+GET {{adress}}/password-reset
 Content-Type: application/json
 
 {
@@ -44,7 +47,7 @@ Content-Type: application/json
 }
 
 ### Reset password (change code)
-POST http://localhost:3000/api/user/password-reset/284a2a050082eac63e7e0617daf69d606e8200fce1a0dc6e817902f35ea2394e5f803fc66bf5440e5bd74c8c5bf3fed75099c13dc9eae0d2d835193ce801369e
+POST {{adress}}/password-reset/284a2a050082eac63e7e0617daf69d606e8200fce1a0dc6e817902f35ea2394e5f803fc66bf5440e5bd74c8c5bf3fed75099c13dc9eae0d2d835193ce801369e
 Content-Type: application/json
 
 {
@@ -52,7 +55,7 @@ Content-Type: application/json
 }
 
 ###
-POST http://localhost:3000/api/user/submitReset
+POST {{adress}}/submitReset
 Content-Type: application/json
 
 {
