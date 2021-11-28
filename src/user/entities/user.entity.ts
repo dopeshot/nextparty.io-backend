@@ -7,7 +7,7 @@ import { UserStatus } from "../enums/status.enum"
 export class User {
     _id: ObjectId
 
-    @Prop({ required: true })
+    @Prop({ required: true, unique: true })
     username: string
 
     @Prop({ required: true, unique: true })
