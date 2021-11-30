@@ -1,5 +1,6 @@
+@adress = http://localhost:3000/api/auth
 ### Register User
-POST http://localhost:3000/api/auth/register
+POST {{adress}}/register
 Content-Type: application/json
 
 {
@@ -9,19 +10,19 @@ Content-Type: application/json
 }
 
 ### Login User
-POST http://localhost:3000/api/auth/login
+POST {{adress}}/login
 Content-Type: application/json
 
 {
-    "email": "mail564@gmail.com",
+    "email": "test@gmail.de",
     "password": "12345678"
 }
 
 ### Google Auth
-GET http://localhost:3000/api/auth/google
+GET {{adress}}/google
 
 ### Facebook Auth
-GET http://localhost:3000/api/auth/facebook
+GET {{adress}}/facebook
 
 ### Discord Auth
-GET http://localhost:3000/api/auth/discord
+GET {{adress}}/discord

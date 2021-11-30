@@ -8,7 +8,7 @@ import * as bcyrpt from 'bcrypt'
 import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
 import { UserStatus } from './enums/status.enum';
 import { MailService } from '../mail/mail.service';
-import { VerifyDocument } from './entities/verify.entity';
+import { EmailVerify, VerifyDocument } from './entities/verify.entity';
 import * as crypto from 'crypto'
 
 @Injectable()
@@ -42,7 +42,6 @@ export class UserService {
       else if (error.code === 11000 && error.keyPattern.email)
         throw new ConflictException('Email is already taken.')
       throw new InternalServerErrorException("User Create failed")
-
     }
   }
 
@@ -191,6 +190,16 @@ export class UserService {
     return user
   }
 
+  async findVerify(userId: ObjectId): Promise<EmailVerify> {
+    const verifyObject = await this.verifySchema.findOne({
+      'userId': userId
+    }).lean()
+    if (!verifyObject) {
+      throw new NotFoundException()
+    }
+    return verifyObject
+  }
+
   async veryfiyUser(code: string) {
 
     const verifyObject = await this.verifySchema.findOne({
@@ -241,6 +250,16 @@ export class UserService {
 
     await this.mailService.sendPasswordReset(user.username, user.email, resetCode)
 
+  }
+
+  async findReset(userId: ObjectId): Promise<EmailVerify> {
+    const verifyObject = await this.resetSchema.findOne({
+      'userId': userId
+    }).lean()
+    if (!verifyObject) {
+      throw new NotFoundException()
+    }
+    return verifyObject
   }
 
   /**

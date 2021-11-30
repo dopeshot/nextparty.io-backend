@@ -30,26 +30,10 @@ Authorization: Bearer {{token}}
 ### Soft Delete Set by Id
 DELETE {{adress}}/{{set}}
 Authorization: Bearer {{token}}
+
 ### Hard Delete Set by Id (require admin role)
 DELETE {{adress}}/{{set}}?type=hard
 Authorization: Bearer {{token}}
-
-#-------------------------#
-#  Task related requests  #
-#-------------------------#
-
-### Add task
-POST {{adress}}/{{set}}/task
-Content-Type: application/json
-Authorization: Bearer {{token}}
-
-{
-    "type": "truth",
-    "currentPlayerGender": "@ca",
-    "message": "Have you peed today?"
-}
-
-
 
 ### Sample sets
 POST {{adress}}/migrate
