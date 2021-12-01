@@ -1,0 +1,29 @@
+version: "3.7"
+services:
+  backend-server:
+    container_name: oap-backend-server
+    image: oap-backend
+    command: sh -c "npm run start"
+    restart: always
+    build: 
+      context: ./
+      dockerfile: Dockerfile
+      target: full
+    ports:
+      - "${DOCKER_PORT_OUT}:${DOCKER_PORT_IN}"
+    links:
+      - mongo
+    depends_on:
+      - mongo
+    
+  mongo:
+    image: mongo:5
+    volumes:
+      - ./data:/data/db
+    ports:
+      - "27017:27017"
+    logging:
+      driver: "none"
+
+  
+             
