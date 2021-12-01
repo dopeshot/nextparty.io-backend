@@ -264,7 +264,7 @@ describe('SetController (e2e)', () => {
 
     it('/set/:id/task/:taskid (PATCH)', async () => {
       const res = await request(app.getHttpServer())
-        .patch(`/api/set/${exampleSet._id}/task/${exampleTask._id}`)
+        .put(`/api/set/${exampleSet._id}/task/${exampleTask._id}`)
         .set('Authorization', `Bearer ${token}`)
         .send({
           type: TaskType.DARE,
