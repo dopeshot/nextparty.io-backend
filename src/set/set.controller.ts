@@ -99,7 +99,7 @@ export class SetController {
     return this.setService.createTask(id, createTaskDto, user);
   }
 
-  @Patch(':id/task/:taskid')
+  @Put(':id/task/:taskid')
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Update one Task via id and Json' })
   updateTask(

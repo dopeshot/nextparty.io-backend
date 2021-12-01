@@ -14,7 +14,7 @@ Authorization: Bearer {{token}}
 }
 
 ### Update task
-PATCH {{adress}}{{set}}/task/{{task}}
+PUT {{adress}}{{set}}/task/{{task}}
 Content-Type: application/json
 Authorization: Bearer {{token}}
 
