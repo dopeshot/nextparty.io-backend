@@ -262,7 +262,7 @@ describe('SetController (e2e)', () => {
       return res
     })
 
-    it('/set/:id/task/:taskid (PATCH)', async () => {
+    it('/set/:id/task/:taskid (PUT)', async () => {
       const res = await request(app.getHttpServer())
         .put(`/api/set/${exampleSet._id}/task/${exampleTask._id}`)
         .set('Authorization', `Bearer ${token}`)
@@ -278,9 +278,9 @@ describe('SetController (e2e)', () => {
     })
 
     // Negative test
-    it('/set/:id/task/:taskid (PATCH)', async () => {
+    it('/set/:id/task/:taskid (PUT)', async () => {
       const res = await request(app.getHttpServer())
-        .patch(`/api/set/${exampleSet._id}/task/${wrongId}`)
+        .put(`/api/set/${exampleSet._id}/task/${wrongId}`)
         .set('Authorization', `Bearer ${token}`)
         .send({
           type: "dare",
