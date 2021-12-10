@@ -1,8 +1,8 @@
 version: "3.7"
 services:
   backend-server:
-    container_name: oap-backend-server
-    image: oap-backend
+    container_name: wop-backend-server
+    image: wop-backend
     command: sh -c "npm run start"
     restart: always
     build: 
