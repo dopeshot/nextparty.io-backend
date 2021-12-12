@@ -59,10 +59,7 @@ export class UserController {
   }
 
   @Patch('/:id')
-  async update(@Param('id') id: ObjectId, @Body(new ValidationPipe({
-    // whitelist will strip all fields which are not in the DTO
-    whitelist: true
-  })) updateUserDto: UpdateUserDto): Promise<User> {
+  async update(@Param('id') id: ObjectId, @Body() updateUserDto: UpdateUserDto): Promise<User> {
     return await this.userService.updateUser(id, updateUserDto);
   }
 

@@ -20,7 +20,7 @@ export class ReportController {
   @ApiOperation({ summary: 'Create a report'})
   @ApiBearerAuth()
   create(
-    @Body(new ValidationPipe({ whitelist: true })) createReportDto: CreateReportDto, 
+    @Body() createReportDto: CreateReportDto, 
     @Request() req) {
     return this.reportService.create(createReportDto, req.user);
   }
