@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, NotImplementedException, Param, Patch, Post, Put, Query, Request, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotImplementedException, Param, Patch, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { JwtUserDto } from 'src/auth/dto/jwt.dto';
