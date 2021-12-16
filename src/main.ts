@@ -1,4 +1,4 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
@@ -11,6 +11,7 @@ async function bootstrap() {
   
   app.setBaseViewsDir(join(__dirname, '..', 'views'))
   app.setViewEngine('ejs')
+  app.useGlobalPipes(new ValidationPipe({whitelist: true}))
 
   const config = new DocumentBuilder()
     .setTitle('Truth or Dare: Community Backend')

@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, ObjectId, Schema } from 'mongoose';
@@ -40,6 +40,7 @@ describe('SetController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api')
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
     await app.init();
     connection = await moduleFixture.get(getConnectionToken());
     await connection.dropDatabase()
@@ -64,21 +65,19 @@ describe('SetController (e2e)', () => {
           email: "Hahaxd@gmail.com",
           password: "12345678"
         })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
 
       token = res.body.access_token
-      return res
     })
 
     it('/user/profile (GET)', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/user/profile')
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
 
       exampleSet.createdBy._id = res.body.userId
 
-      return res
     })
 
     it('/auth/register (POST)', async () => {
@@ -89,20 +88,18 @@ describe('SetController (e2e)', () => {
           email: "Hahaxd2@gmail.com",
           password: "12345678"
         })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
 
       otherToken = res.body.access_token
-      return res
     })
 
     it('/user/profile (GET)', async () => {
       const res = await request(app.getHttpServer())
         .get('/api/user/profile')
         .set('Authorization', `Bearer ${otherToken}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
 
       otherUserId = res.body.userId
-      return res
     })
   })
 
@@ -116,7 +113,7 @@ describe('SetController (e2e)', () => {
         .post('/api/set')
         .set('Authorization', `Bearer ${token}`)
         .send({ language: exampleSet.language, name: exampleSet.name })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
       expect(res.body.language).toEqual(exampleSet.language)
       expect(res.body.name).toEqual(exampleSet.name)
       // Expect to have the format of ResponseSet
@@ -124,7 +121,6 @@ describe('SetController (e2e)', () => {
       expect(res.body.status).toBeUndefined()
       // Update example set
       exampleSet._id = res.body._id
-      return res
     })
 
     it('/set (POST)', async () => {
@@ -135,23 +131,21 @@ describe('SetController (e2e)', () => {
           language: "de",
           name: "super cool set"
         })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
       setId2 = (res.body._id)
       expect(setId2 == exampleSet._id).toBeFalsy()
-      return res
     })
 
     // Negative test
     it('/set (POST)', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/api/set')
         .set('Authorization', `Bearer ${token}`)
         .send({
           language: "wrong",
           name: "Doesn't matter"
         })
-        .expect(400)
-      return res
+        .expect(HttpStatus.BAD_REQUEST)
     })
 
   })
@@ -165,18 +159,16 @@ describe('SetController (e2e)', () => {
       const res = await request(app.getHttpServer())
         .get('/api/set')
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
       expect(res.body.length === 2).toBeTruthy()
-      return res
     })
 
     it('/set/:id (GET)', async () => {
       const res = await request(app.getHttpServer())
         .get(`/api/set/${exampleSet._id}`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
       expect(res.body).toEqual({ ...exampleSet, tasks: [] })
-      return res
     })
 
     it('/set/:id (PATCH)', async () => {
@@ -187,44 +179,40 @@ describe('SetController (e2e)', () => {
           language: Language.EN,
           name: "English Set"
         })
-        .expect(200)
+        .expect(HttpStatus.OK)
 
       expect(res.body.language).toEqual(Language.EN)
       expect(res.body.name).toEqual("English Set")
       exampleSet.language = res.body.language
       exampleSet.name = res.body.name
 
-      return res
     })
 
     // Negative test
     it('/set/:id (PATCH)', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .patch(`/api/set/${exampleSet._id}`)
         .set('Authorization', `Bearer ${token}`)
         .send({
           language: "adsa"
         })
-        .expect(400)
-      return res
+        .expect(HttpStatus.BAD_REQUEST)
     })
 
     // Negative test
     it('/set/:id (GET)', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get(`/api/set/${wrongId}`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(404)
-      return res
+        .expect(HttpStatus.NOT_FOUND)
     })
 
     // Negative test
     it('/set/:id (PATCH)', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .patch(`/api/set/${wrongId}`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(404)
-      return res
+        .expect(HttpStatus.NOT_FOUND)
     })
 
     /*----------------------\ 
@@ -240,26 +228,24 @@ describe('SetController (e2e)', () => {
           currentPlayerGender: exampleTask.currentPlayerGender,
           message: exampleTask.message
         })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
       exampleTask._id = res.body._id
 
       // Check if the count has been updated
       const res2 = await request(app.getHttpServer())
         .get(`/api/set/${exampleSet._id}`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
       expect(res2.body.truthCount === 1).toBeTruthy()
       expect(exampleTask).toEqual(res.body)
-      return res
     })
 
     // Negative test
     it('/set/:id/task (POST)', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post(`/api/set/${wrongId}/task`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(400)
-      return res
+        .expect(HttpStatus.BAD_REQUEST)
     })
 
     it('/set/:id/task/:taskid (PUT)', async () => {
@@ -271,15 +257,14 @@ describe('SetController (e2e)', () => {
           currentPlayerGender: exampleTask.currentPlayerGender,
           message: exampleTask.message
         })
-        .expect(200)
+        .expect(HttpStatus.OK)
       expect(res.body.daresCount === 1).toBeTruthy()
       expect(res.body.truthCount === 0).toBeTruthy()
-      return res
     })
 
     // Negative test
     it('/set/:id/task/:taskid (PUT)', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .put(`/api/set/${exampleSet._id}/task/${wrongId}`)
         .set('Authorization', `Bearer ${token}`)
         .send({
@@ -287,8 +272,7 @@ describe('SetController (e2e)', () => {
           currentPlayerGender: exampleTask.currentPlayerGender,
           message: exampleTask.message
         })
-        .expect(404)
-      return res
+        .expect(HttpStatus.NOT_FOUND)
     })
 
     /*----------------------\ 
@@ -297,95 +281,85 @@ describe('SetController (e2e)', () => {
 
     // Negativ test
     it('/set/:id/task/:taskid (DELETE) type=soft other User', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}/task/${exampleTask._id}`)
         .set('Authorization', `Bearer ${otherToken}`)
-        .expect(404)
-      return res
+        .expect(HttpStatus.NOT_FOUND)
     })
 
     // Negativ test
     it('/set/:id/task/:taskid (DELETE) type=soft other User', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}/task/${exampleTask._id}?type=hard`)
         .set('Authorization', `Bearer ${otherToken}`)
-        .expect(403)
-      return res
+        .expect(HttpStatus.FORBIDDEN)
     })
 
     // Negativ test
     it('/set/:id/task/:taskid (DELETE) type=soft other User', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}/task/${wrongId}`)
         .set('Authorization', `Bearer ${otherToken}`)
-        .expect(404)
-      return res
+        .expect(HttpStatus.NOT_FOUND)
     })
 
     it('/set/:id/task/:taskid (DELETE) type=soft own User', async () => {
       const res = await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}/task/${exampleTask._id}`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
 
       expect(res.body.daresCount === 0).toBeTruthy()
       expect(res.body.truthCount === 0).toBeTruthy()
-      return res
     })
 
     // Negative test
     it('/set/:id/task/:taskid (DELETE) type=soft wrongId', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}/task/${wrongId}`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(404)
-      return res
+        .expect(HttpStatus.NOT_FOUND)
     })
 
     it('/set/:id (DELETE) type=soft own User', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(204)
-      return res
+        .expect(HttpStatus.NO_CONTENT)
     })
 
     // Negative test
     it('/set/:id (DELETE) type=soft own User', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/set/${wrongId}`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(404)
-      return res
+        .expect(HttpStatus.NOT_FOUND)
     })
 
     // Test cancel because error gets thrown in console
     it('/set/:id (DELETE) type=soft other User', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/set/${setId2}`)
         .set('Authorization', `Bearer ${otherToken}`)
-        .expect(404)
-      return res
+        .expect(HttpStatus.NOT_FOUND)
     })
 
     // Test cancel because error gets thrown in console
     it('/set/:id (DELETE) type=hard user', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}?type=hard`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(403)
-      return res
+        .expect(HttpStatus.FORBIDDEN)
     })
 
     // TODO: This is a security breach (November 14th 2021)
     it('/user/testing (PATCH) Change to Admin', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .patch(`/api/user/testing/${exampleSet.createdBy._id}`)
         .send({
           role: "admin"
         })
-        .expect(200)
-      return res
+        .expect(HttpStatus.OK)
     })
 
     it('/auth/login (POST)', async () => {
@@ -395,19 +369,17 @@ describe('SetController (e2e)', () => {
           email: "Hahaxd@gmail.com",
           password: "12345678"
         })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
 
       // Admin token
-      token = (await res).body.access_token
-      return res
+      token = res.body.access_token
     })
 
     it('/set/:id (DELETE) type=soft admin', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/set/${setId2}`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(204)
-      return res
+        .expect(HttpStatus.NO_CONTENT)
     })
   })
 
@@ -420,27 +392,24 @@ describe('SetController (e2e)', () => {
       const res = await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}/task/${exampleTask._id}?type=hard`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
+        .expect(HttpStatus.OK)
       expect(res.body.truthCount == 0).toBeTruthy()
       expect(res.body.daresCount == 0).toBeTruthy()
-      return res
 
     })
 
     it('/set/:id (DELETE) type=hard', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/set/${exampleSet._id}?type=hard`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(204)
-      return res
+        .expect(HttpStatus.NO_CONTENT)
     })
 
     it('/set/:id (DELETE) type=hard', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/set/${setId2}?type=hard`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(204)
-      return res
+        .expect(HttpStatus.NO_CONTENT)
     })
 
     /*---------------------\ 
@@ -448,27 +417,24 @@ describe('SetController (e2e)', () => {
     \---------------------*/
 
     it('/migrate (POST)', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post(`/api/set/migrate?test=true`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(201)
-      return res
+        .expect(HttpStatus.CREATED)
     })
 
     // Delete Admin user
     it('/user/:id (DELETE)', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/user/${exampleSet.createdBy._id}`)
-        .expect(200)
-      return res
+        .expect(HttpStatus.OK)
     })
 
     // Delete other user
     it('/user/:id (DELETE)', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/api/user/${otherUserId}`)
-        .expect(200)
-      return res
+        .expect(HttpStatus.OK)
     })
 
   })

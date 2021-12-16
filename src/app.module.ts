@@ -3,7 +3,6 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { SetModule } from './set/set.module';
 import { SearchModule } from './search/search.module';
-import { ReportModule } from './report/report.module';
 import { SystemModule } from './system/system.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -27,7 +26,6 @@ import { SharedModule } from './shared/shared.module';
     UserModule,
     SetModule,
     SearchModule,
-    ReportModule,
     SystemModule,
     MailModule,
     SharedModule

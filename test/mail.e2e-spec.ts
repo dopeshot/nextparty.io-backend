@@ -8,6 +8,7 @@ import * as request from 'supertest'
 
 //project imports
 import { AppModule } from './../src/app.module';
+import { HttpStatus } from '@nestjs/common';
 
 const { mock } = require('nodemailer');
 
@@ -32,19 +33,19 @@ beforeEach( async () => {
 
 describe("sendMail", () => {
 
-    it("should return 201 to valid request", async () => {
+    it("should return HttpStatus.CREATED to valid request", async () => {
 
-        const res = await request(app.getHttpServer())
+        await request(app.getHttpServer())
         .post('/mail')
         .set("Content-Type", "application/json")
         .send({
             recipient: "unit1@test.mock"
         })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
     })
 
     it("should send email", async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
       .post('/mail')
       .set("Content-Type", "application/json")
       .send({
@@ -63,7 +64,7 @@ describe("sendMail", () => {
       .send({
           recipient: "unit2@test.mock"
       })
-      .expect(201)
+      .expect(HttpStatus.CREATED)
 
       const receivedMail = mock.getSentMail()[0]
 
@@ -79,22 +80,22 @@ describe("sendMail", () => {
       .send({
           recipient: "unit2@test.mock"
       })
-      .expect(500)
+      .expect(HttpStatus.INTERNAL_SERVER_ERROR)
     })
 })
 
 describe("generateVerifyMail", () => {
   it('/auth/register (POST) should send mail verification', async () => {
-    const res = request(app.getHttpServer())
+    const res = await request(app.getHttpServer())
       .post('/auth/register')
       .send({
         username: "unit test",
         email: "dummy@unit.test",
         password: "verysecurepassword"
       })
-      .expect(201)
+      .expect(HttpStatus.CREATED)
 
-      token = (await res).body.access_token
+      token = res.body.access_token
 
       //checking send mail (content is ignored as this would make changing templates annoying)
       const sendMails =  mock.getSentMail()    
@@ -110,10 +111,9 @@ describe("sendPasswordReset", () => {
       .send({
         userMail: "dummy@unit.test"
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
 
-      
-      //checking send mail (content is ignored as this would make changing templates annoying)
+      // Checking send mail (content is ignored as this would make changing templates annoying)
       const sendMails =  mock.getSentMail()
       expect(sendMails.length).toBe(1)
       expect(sendMails[0].to).toBe("dummy@unit.test")
@@ -122,11 +122,11 @@ describe("sendPasswordReset", () => {
 
 
 afterAll(async () => {
-    let res = request(app.getHttpServer())
+    const res = await request(app.getHttpServer())
       .get('/user/profile')
       .set('Authorization', `Bearer ${token}`)
 
-    let userId = (await res).body.userId
+    let userId = res.body.userId
 
     await request(app.getHttpServer())
       .delete(`/user/${userId}`)

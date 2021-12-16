@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpCode, NotImplementedException, Param, Patch, Post, Put, Query, Request, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, NotImplementedException, Param, Patch, Post, Put, Query, Request, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
 import { JwtUserDto } from 'src/auth/dto/jwt.dto';
@@ -19,7 +19,7 @@ export class SetController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Create new set' })
   createSet(
-    @Body(new ValidationPipe({ whitelist: true })) createSetDto: CreateSetDto, @Request() req) {
+    @Body() createSetDto: CreateSetDto, @Request() req) {
     return this.setService.createSet(createSetDto, req.user);
   }
 
@@ -41,7 +41,7 @@ export class SetController {
   @Get(':id')
   @ApiOperation({ summary: 'Get one Set by id' })
   getOneSet(
-    @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
+    @Param() { id }: MongoIdDto) {
     return this.setService.getOneSet(id);
   }
 
@@ -49,7 +49,7 @@ export class SetController {
   @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get one Set by id' })
   getOneSetFull(
-    @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto,
+    @Param() { id }: MongoIdDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     throw new NotImplementedException('Currently disabled')
     return //this.setService.getOneSetFull(id, user);
@@ -58,7 +58,7 @@ export class SetController {
   @Get('/user/:id')
   @ApiOperation({ summary: 'Get Sets from a user by User id' })
   getSetsByUser(
-    @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto) {
+    @Param() { id }: MongoIdDto) {
     throw new NotImplementedException('Currently disabled')
     return //this.setService.getSetsByUser(id);
   }
@@ -68,7 +68,7 @@ export class SetController {
   @ApiOperation({ summary: 'Update Set by id' })
   updateMeta(
     @Param('id') id: ObjectId,
-    @Body(new ValidationPipe({ whitelist: true })) updateSetDto: UpdateSetDto,
+    @Body() updateSetDto: UpdateSetDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.updateSetMetadata(id, updateSetDto, user);
   }
@@ -79,7 +79,7 @@ export class SetController {
   @HttpCode(204)
   @ApiOperation({ summary: 'Delete Set by id' })
   deleteSet(
-    @Param(new ValidationPipe({ whitelist: true })) { id }: MongoIdDto,
+    @Param() { id }: MongoIdDto,
     @Query('type') type: string,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.deleteSet(id, type, user)
@@ -94,7 +94,7 @@ export class SetController {
   @ApiOperation({ summary: 'Create Task to Set via id and Json' })
   createTask(
     @Param('id') id: ObjectId,
-    @Body(new ValidationPipe({ whitelist: true })) createTaskDto: CreateTaskDto,
+    @Body() createTaskDto: CreateTaskDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.createTask(id, createTaskDto, user);
   }
@@ -105,7 +105,7 @@ export class SetController {
   updateTask(
     @Param('id') setId: ObjectId,
     @Param('taskid') taskId: ObjectId,
-    @Body(new ValidationPipe({ whitelist: true })) updateTaskDto: UpdateTaskDto,
+    @Body() updateTaskDto: UpdateTaskDto,
     @Request() { user }: ParameterDecorator & { user: JwtUserDto }) {
     return this.setService.updateTask(setId, taskId, updateTaskDto, user);
   }

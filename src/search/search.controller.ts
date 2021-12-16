@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseArrayPipe, ValidationPipe, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query, ValidationPipe } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { PaginationDto } from '../shared/dto/pagination.dto';
 import { SearchService } from './search.service';
@@ -12,7 +12,7 @@ export class SearchController {
   @ApiOperation({ summary: 'Searching for the send input in everything' })
   search(
     @Param('searchstring') searchString: string,
-    @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
+    @Query(new ValidationPipe({ whitelist: true, transform: true })) paginationDto: PaginationDto) {
     return this.searchService.search(searchString, +paginationDto.page, +paginationDto.limit)
   }
 
@@ -21,7 +21,7 @@ export class SearchController {
   searchType(
     @Param('searchstring') searchString: string,
     @Param('type') type: string,
-    @Query(new ValidationPipe({ transform: true })) paginationDto: PaginationDto) {
+    @Query(new ValidationPipe({ whitelist: true, transform: true })) paginationDto: PaginationDto) {
     return this.searchService.search(searchString, +paginationDto.page, +paginationDto.limit, type)
   }
 }
