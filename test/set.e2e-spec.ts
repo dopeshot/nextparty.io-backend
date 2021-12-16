@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, ObjectId, Schema } from 'mongoose';
@@ -40,6 +40,7 @@ describe('SetController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
     app.setGlobalPrefix('api')
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
     await app.init();
     connection = await moduleFixture.get(getConnectionToken());
     await connection.dropDatabase()
