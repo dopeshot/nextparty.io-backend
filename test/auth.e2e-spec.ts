@@ -1,4 +1,4 @@
-import { ValidationPipe } from '@nestjs/common';
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
 import { join } from 'path';
@@ -35,34 +35,31 @@ describe('AppController (e2e)', () => {
           email: "zoe@gmail.com",
           password: "12345678"
         })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
 
       token = res.body.access_token
-      return res
     })
     
     it('/auth/register (POST) duplicate mail', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/auth/register')
         .send({
           username: "not Zoe",
           email: "zoe@gmail.com",
           password: "12345678"
         })
-        .expect(409)
-      return res
+        .expect(HttpStatus.CONFLICT)
     })
 
     it('/auth/register (POST) duplicate username', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
         .post('/auth/register')
         .send({
           username: "Zoe",
           email: "NotZoe@gmail.com",
           password: "12345678"
         })
-        .expect(409)
-      return res
+        .expect(HttpStatus.CONFLICT)
     })
 
     it('/auth/login (POST)', async () => {
@@ -72,7 +69,7 @@ describe('AppController (e2e)', () => {
           email: "zoe@gmail.com",
           password: "12345678"
         })
-        .expect(201)
+        .expect(HttpStatus.CREATED)
     })
 
     it('/auth/login (POST) Wrong Password', async () => {
@@ -82,57 +79,52 @@ describe('AppController (e2e)', () => {
           email: "zoe@gmail.com",
           password: "123"
         })
-        .expect(401)
+        .expect(HttpStatus.UNAUTHORIZED)
     })
 
     it('/user/profile (GET)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
         .get('/user/profile')
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
-      userId = (await res).body.userId
-      return res
+        .expect(HttpStatus.OK)
+      userId = res.body.userId
     })
 
     it('/getVerify (GET) rerequest verify', async () => {
-      const res = request(app.getHttpServer())
+      await request(app.getHttpServer())
       .get('/user/getVerify')
       .set('Authorization', `Bearer ${token}`)
-      .expect(200)
-      return res
+      .expect(HttpStatus.OK)
     })
   })
 
   describe("Roles", () => {
     it('/user (GET) Protected Route: No Admin Role', async () => {
-      const res = request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/user')
         .set('Authorization', `Bearer ${token}`)
-        .expect(403)
-      return res
+        .expect(HttpStatus.FORBIDDEN)
     })
 
     it('/user/testing (PATCH) Change to Admin', async () => {
-      const res = request(app.getHttpServer())
+      await request(app.getHttpServer())
         .patch(`/user/testing/${userId}`)
         .send({
           role: "admin"
         })
-        .expect(200)
-      return res
+        .expect(HttpStatus.OK)
     })
 
     it('/auth/login (POST)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
       .post('/auth/login')
       .send({
         email: "zoe@gmail.com",
         password: "12345678"
       })
-      .expect(201)
+      .expect(HttpStatus.CREATED)
 
-      token = (await res).body.access_token
-      return res
+      token = res.body.access_token
     })
 
     it('/user/verify (GET) Protected Route: Admin Role', async () => {
@@ -142,21 +134,19 @@ describe('AppController (e2e)', () => {
         .send({
           userId: userId
         })
-        .expect(200)
+        .expect(HttpStatus.OK)
       
-      verifyCode = (await res).body.verificationCode
-      return res
+      verifyCode = res.body.verificationCode
       
     })
 
     it('/user/password-reset (GET)', async () => {
-      const res = request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/user/password-reset')
         .send({
           userMail: "zoe@gmail.com"
         })
-        .expect(200)
-      return res
+        .expect(HttpStatus.OK)
     })
 
     it('/user/reset (GET) Protected Route: Admin Role', async () => {
@@ -166,96 +156,87 @@ describe('AppController (e2e)', () => {
         .send({
           userId: userId
         })
-        .expect(200)
+        .expect(HttpStatus.OK)
       
-      resetCode = (await res).body.verificationCode
-      return res
+      resetCode = res.body.verificationCode
     })
 
     it('/user (GET) Protected Route: Admin Role', async () => {
-      const res = request(app.getHttpServer())
+      await request(app.getHttpServer())
         .get('/user')
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
-      return res
+        .expect(HttpStatus.OK)
     })
 
     it('/user/:id (PATCH)', async () => {
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
       .patch('/user/'+userId)
       .set('Authorization', `Bearer ${token}`)
       .send({
         email: "AlsoZoe@gmail.com"
       })
-      .expect(200)
+      .expect(HttpStatus.OK)
 
-      token = (await res).body.access_token
-      return res
+      token = res.body.access_token
     })   
   })
 
   describe('Verify and Password', () => {
     it('user/verify/:id (GET) verify user', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
       .get('/user/verify/'+verifyCode)
-      .expect(200)
-      return res
+      .expect(HttpStatus.OK)
     })
 
     it('user/verify/:id (GET) error if invalid code', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
       .get('/user/verify/invalidCode')
-      .expect(404)
-      return res
+      .expect(HttpStatus.NOT_FOUND)
     })
 
     it('user/reset-form/:id (GET)', async () => {
-      const res = await request(app.getHttpServer())
+      await request(app.getHttpServer())
       .get('/user/reset-form/'+resetCode)
-      .expect(200)
-      return res
+      .expect(HttpStatus.OK)
     })
 
     it('user/submitReset (POST) should set new password', async () => {
-      const init = await request(app.getHttpServer())
+      await request(app.getHttpServer())
       .post('/user/submitReset')
       .send({
         password: "new password", 
         code: resetCode
       })
-      .expect(201)
+      .expect(HttpStatus.CREATED)
       
-      const res = request(app.getHttpServer())
+      const res = await request(app.getHttpServer())
       .post('/auth/login')
       .send({
         email: "zoe@gmail.com",
         password: "new password"
       })
-      .expect(201)
+      .expect(HttpStatus.CREATED)
 
-      token = (await res).body.access_token
-      return res
+      token = res.body.access_token
     })
 
-    it('user/submitReset (POST) should return 404 if invalid code', async () => {
-      const res = await request(app.getHttpServer())
+    it('user/submitReset (POST) should return HttpStatus.NOT_FOUND if invalid code', async () => {
+      await request(app.getHttpServer())
       .post('/user/submitReset')
       .send({
         password: "new password", 
         code: "invalid :("
       })
-      .expect(404)
-      return res
+      .expect(HttpStatus.NOT_FOUND)
     })
   })
 
   describe('Cleanup', () => {
     it('/user/:id (DELETE)', async () => {
-      const res = request(app.getHttpServer())
+      await request(app.getHttpServer())
         .delete(`/user/${userId}`)
         .set('Authorization', `Bearer ${token}`)
-        .expect(200)
-      return res
+        .expect(HttpStatus.OK)
     })
   })
 
