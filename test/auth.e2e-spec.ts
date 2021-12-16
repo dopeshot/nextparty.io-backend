@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing'
-import { INestApplication, ValidationPipe } from '@nestjs/common'
-import * as request from 'supertest'
-import { AppModule } from '../src/app.module'
+import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
+import { Test, TestingModule } from '@nestjs/testing';
 import { join } from 'path';
+import * as request from 'supertest';
+import { AppModule } from '../src/app.module';
 
 describe('AppController (e2e)', () => {
   // This has to be nestexpress otherwise endpoints with render will throw 500
