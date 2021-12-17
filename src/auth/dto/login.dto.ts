@@ -1,5 +1,5 @@
-import { IsString, Length } from "class-validator"
-import { ObjectId } from "mongoose"
+import { IsString, Length } from 'class-validator'
+import { ObjectId } from 'mongoose'
 
 export class LoginDto {
     _id: ObjectId

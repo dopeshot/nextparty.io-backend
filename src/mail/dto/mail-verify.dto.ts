@@ -6,6 +6,5 @@ export class MailVerifyDto {
     name: string
 
     @IsString()
-    @Length(64)
-    code: string
+    link: string
 }

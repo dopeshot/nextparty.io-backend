@@ -1,20 +1,26 @@
-import { BadRequestException, ForbiddenException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { User } from '../user/entities/user.entity';
+import {
+    BadRequestException,
+    ForbiddenException,
+    Injectable,
+    InternalServerErrorException,
+    UnauthorizedException,
+} from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
+import { User } from '../user/entities/user.entity'
 import { UserService } from '../user/user.service'
 import { RegisterDto } from './dto/register.dto'
 import * as bcrypt from 'bcrypt'
 import { AccessTokenDto } from './dto/jwt.dto'
-import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
-import { ObjectId } from 'mongoose';
-import { UserStatus } from '../user/enums/status.enum';
+import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface'
+import { ObjectId } from 'mongoose'
+import { UserStatus } from '../user/enums/status.enum'
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userService: UserService,
-        private readonly jwtService: JwtService
-    ) { }
+        private readonly jwtService: JwtService,
+    ) {}
 
     /**
      * Register User (Creates a new one)
@@ -22,12 +28,12 @@ export class AuthService {
      * @returns the new registered User
      */
     async registerUser(credentials: RegisterDto): Promise<any> {
-        //While this might seem unnecessary now, this way of implementing this allows us to add logic to register later without affecting the user create itself  
+        // While this might seem unnecessary now, this way of implementing this allows us to add logic to register later without affecting the user create itself
         const user: User = await this.userService.create(credentials)
 
-        if (!user)
-            new BadRequestException()
+        if (!user) new BadRequestException("User could not be created")
 
+        // Generate and return JWT
         return await this.createLoginPayload(user)
     }
 
@@ -35,39 +41,64 @@ export class AuthService {
      * Search for a user by username and validate with the password
      * @param username of the user
      * @param password of the user
-     * @returns user without password or if user do not exist returns null 
+     * @returns user without password or if user do not exist returns null
      */
-    async validateUserWithEmailPassword(email: string, password: string): Promise<any> {
+    async validateUserWithEmailPassword(
+        email: string,
+        password: string,
+    ): Promise<User> {
         const user = await this.userService.findOneByEmail(email)
         if (!user)
-            throw new BadRequestException(`There is no user with the email: ${email}`)
+            throw new BadRequestException(
+                `Login Failed due to invalid credentials`
+            )
 
         if (user.provider)
-            throw new UnauthorizedException(`User can't login with Username and Password, already has account on ${user.provider}`)
+            throw new UnauthorizedException(
+                `Login Failed due to invalid credentials. There might be a third party login with this email`
+            )
 
         if (await bcrypt.compare(password, user.password)) {
-            const { password, ...result } = user
-            return result
+            return user
         }
-        return null
+        throw new UnauthorizedException(
+            `Login Failed due to invalid credentials`
+        )
     }
 
-    async handleProviderLogin(userDataFromProvider: userDataFromProvider): Promise<any> {
+    async handleProviderLogin(
+        userDataFromProvider: userDataFromProvider,
+    ): Promise<any> {
         if (!userDataFromProvider)
-            throw new InternalServerErrorException('Request does not have a user. Please contact the administrator')
+            throw new InternalServerErrorException(
+                'Request does not have a user. Please contact the administrator',
+            )
 
         // Check if user already exits
-        const alreadyCreatedUser = await this.userService.findOneByEmail(userDataFromProvider.email)
+        const alreadyCreatedUser = await this.userService.findOneByEmail(
+            userDataFromProvider.email,
+        )
 
         // Check if provider is the same
-        if (alreadyCreatedUser && alreadyCreatedUser.provider !== userDataFromProvider.provider)
-            throw new ForbiddenException(`This email is already registered with ${alreadyCreatedUser.provider ? alreadyCreatedUser.provider : 'Email and Password Auth'}`)
+        if (
+            alreadyCreatedUser &&
+            alreadyCreatedUser.provider !== userDataFromProvider.provider
+        )
+            throw new ForbiddenException(
+                `This email is already registered with ${
+                    alreadyCreatedUser.provider
+                        ? alreadyCreatedUser.provider
+                        : 'Email and Password Auth'
+                }`,
+            )
 
         if (alreadyCreatedUser)
             return this.createLoginPayload(alreadyCreatedUser)
 
         // Create User
-        const newUser: User = await this.userService.createUserFromProvider(userDataFromProvider)
+        const newUser: User = await this.userService.createUserFromProvider(
+            userDataFromProvider,
+        )
 
         // Create Payload and JWT
         return this.createLoginPayload(newUser)
@@ -76,17 +107,17 @@ export class AuthService {
     /**
      * Creates Login Payload and generate JWT with the payload
      * @param user logged in user
-     * @returns access token 
+     * @returns access token
      */
     async createLoginPayload(user: User): Promise<AccessTokenDto> {
         const payload = {
             username: user.username,
             sub: user._id,
-            role: user.role
+            role: user.role,
         }
 
         return {
-            access_token: this.jwtService.sign(payload)
+            access_token: this.jwtService.sign(payload),
         }
     }
 
@@ -98,13 +129,16 @@ export class AuthService {
             // This is necessary as a not found exception would overwrite the guard response
             return false
         }
-        
+
         if (!user) return false // This should never happen but just in case
 
-        
-        if (user.status !== UserStatus.ACTIVE && user.status !== UserStatus.UNVERIFIED ){    // TODO: Add status check once we decided on how to handle reported user  
+        if (
+            user.status !== UserStatus.ACTIVE &&
+            user.status !== UserStatus.UNVERIFIED
+        ) {
+            // TODO: Add status check once we decided on how to handle reported user
             return false
-        }  
+        }
 
         return true
     }

@@ -1,18 +1,11 @@
-import { Injectable, InternalServerErrorException, ServiceUnavailableException } from '@nestjs/common'
+import { Injectable, ServiceUnavailableException } from '@nestjs/common'
 import { render } from 'ejs'
-import { access, readFile as _readFile } from 'fs'
+import { readFile as _readFile } from 'fs'
 import { promisify } from 'util'
-import { dirname } from 'path'
-import { ConfigService } from '@nestjs/config'
 import * as nodemailer from 'nodemailer'
-import {
-    delay,
-    retryWhen,
-    tap,
-    scan,
-} from 'rxjs/operators'
 import { MailVerifyDto } from './dto/mail-verify.dto'
 import { MailPwResetDto } from './dto/mail-pw-reset.dto'
+import { MailTestDto } from './dto/mail-test.dto'
 
 const readFile = promisify(_readFile)
 
@@ -22,7 +15,7 @@ export class MailService {
     maxRetries: number
     errorDelay: number
 
-    constructor(private readonly configService: ConfigService) {
+    constructor() {
         this.mailTransport = nodemailer.createTransport({
             host: process.env.MAIL_HOST,
             port: parseInt(process.env.MAIL_HOST_PORT),
@@ -33,50 +26,50 @@ export class MailService {
                 pass: process.env.MAIL_PASS,
             },
         })
-        this.maxRetries = parseInt(process.env.MAIL_MAX_RETRIES)
+        this.maxRetries = parseInt(process.env.MAX_MAIL_RETRIES)
         this.errorDelay = parseInt(process.env.MAIL_ERROR_DELAY)
     }
 
     
-    private  passToMailserver(
-        recipient: string,
-        subject: string,
-        message: string,
-    ): void {
-        const mailer = this.mailTransport.sendMail({
-            to: recipient,
-            from: process.env.MAIL_ADRESS,
-            subject: subject,
-            html: message,
-        })
-        return mailer.pipe(
-            retryWhen((errors) =>
-                errors.pipe(
-                    scan(
-                        // If an error occurs retry and increment the error count
-                        (acc, error) => ({
-                            count: acc.count + 1,
-                            error,
-                        }),
-                        { count: 0, error: undefined as any },
-                    ),
-                    // Retry for a set amount of times
-                    tap((current) => {
-                        if (current.count > this.maxRetries) {
-                            throw new ServiceUnavailableException('This is an issue on our side. Please retry later.')
-                        }
-                    }),
-                    delay(this.errorDelay),
-                ),
-            ),
-        )
-    }
+    private async  passToMailserver(recipient: string, subject: string, message: string): Promise<void> {
 
-    async sendMail(recipient: string, template: string, mailData: (MailVerifyDto | MailPwResetDto), subject ): Promise<void>{
-        const mailTemplate = await readFile(dirname + '/templates/' + template + '.ejs', 'utf-8')
+        // Sleep helper func
+        const delay = ms => new Promise(res => setTimeout(res, ms));
+
+		let attempts = 0
+		while (attempts < this.maxRetries){
+			let err
+			try {
+				await this.mailTransport.sendMail({
+					to: recipient,
+					from: process.env.MAIL_ADRESS,
+					subject: subject,
+					html: message,
+				})
+			}	
+			// catch error 	
+			catch (e){
+				err = e
+			} 
+			// if error has occured continue loop, else return
+			finally {
+				if (!err){
+					return
+				}
+				else{
+					err = null
+					attempts += 1
+                    delay(this.errorDelay)
+				}
+			}
+		}
+		// getting here means sending the mail is not possible => throw an error
+		throw new ServiceUnavailableException("Unable to connect to mailserver")
+	}
+
+    async sendMail(recipient: string, template: string, mailData: (MailVerifyDto | MailPwResetDto | MailTestDto), subject: string ): Promise<void>{
+        const mailTemplate = await readFile(__dirname + '/templates/' + template + '.ejs', 'utf-8')
         const mailContent = render(mailTemplate, mailData as any)
-        this.passToMailserver(recipient, subject, mailContent)
-    }
-
-   
+        await this.passToMailserver(recipient, subject, mailContent)
+    } 
 }

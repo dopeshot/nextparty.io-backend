@@ -1,5 +1,5 @@
-import { ObjectId } from "mongoose"
-import { Role } from "../../user/enums/role.enum"
+import { ObjectId } from 'mongoose'
+import { Role } from '../../user/enums/role.enum'
 
 export class JwtPayloadDto {
     sub: ObjectId
