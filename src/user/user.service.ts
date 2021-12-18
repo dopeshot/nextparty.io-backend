@@ -17,21 +17,16 @@ import * as bcyrpt from 'bcrypt'
 import { userDataFromProvider } from './interfaces/userDataFromProvider.interface'
 import { UserStatus } from './enums/status.enum'
 import { MailService } from '../mail/mail.service'
-import { EmailVerify, VerifyDocument } from './entities/verify.entity'
-import * as crypto from 'crypto'
 import { MailVerifyDto } from '../mail/dto/mail-verify.dto'
-import { MailPwResetDto } from '../mail/dto/mail-pw-reset.dto'
 import { Role } from './enums/role.enum'
-import { isInstance } from 'class-validator'
-import { Roles } from '../auth/roles/roles.decorator'
 import { JwtUserDto } from '../auth/dto/jwt.dto'
+import { JwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectModel('User') private userSchema: Model<UserDocument>,
-        @InjectModel('Verify') private verifySchema: Model<VerifyDocument>,
-        @InjectModel('Reset') private resetSchema: Model<VerifyDocument>,
+        private readonly jwtService: JwtService,
         private readonly mailService: MailService,
     ) {}
 
@@ -57,6 +52,7 @@ export class UserService {
 
             return result
         } catch (error) {
+            console.log(error)
             if (error.code === 11000 && error.keyPattern.username)
                 throw new ConflictException('Username is already taken.')
             else if (error.code === 11000 && error.keyPattern.email)
@@ -78,13 +74,17 @@ export class UserService {
     }
 
     async createVerification(user: User): Promise<void> {
-        const verifyCode = crypto.randomBytes(64).toString('hex')
-        const verifyObject = new this.verifySchema({
-            userId: user._id,
-            verificationCode: verifyCode,
-        })
-        await verifyObject.save()
 
+        const payload = {
+            mail: user.email,
+            name: user.username,
+            id: user._id,
+            create_time: Date.now()
+        }
+
+        let verifyCode =  this.jwtService.sign(payload)
+
+        console.log(`${process.env.HOST}/api/user/verify/?code=${verifyCode}`)
 
         await this.mailService.sendMail( user.email, 'MailVerify', {name: user.username, link: `${process.env.HOST}/user/verify/${verifyCode}`} as MailVerifyDto, 'Verify your email')
     }
@@ -225,34 +225,23 @@ export class UserService {
         return user
     }
 
-    async findVerify(userId: ObjectId): Promise<EmailVerify> {
-        const verifyObject = await this.verifySchema
-            .findOne({
-                userId: userId,
-            })
-            .lean()
-        if (!verifyObject) {
-            return null
+    async validateVerifyCode(userId: ObjectId): Promise<boolean> {
+            let user: User
+            try {
+                user = await this.findOneById(userId)
+            } catch (error) {
+                // This is necessary as a not found exception would overwrite the guard response
+                return false
+            }
+            if (!user) return false // This should never happen but just in case    
+            if (user.status !== UserStatus.UNVERIFIED){
+                return false
+            }
+            return true
         }
-        return verifyObject
-    }
-
-    async veryfiyUser(code: string): Promise<User> {
-        const verifyObject = await this.verifySchema
-            .findOne({
-                verificationCode: code,
-            })
-            .lean()
-
-        if (!verifyObject) {
-            throw new NotFoundException()
-        }
-
-        if ( Date.now() - verifyObject._id.getTimestamp() > +process.env.VERIFY_TTL) {
-            throw new BadRequestException('Verification code expired')
-        }
-
-        const user = await this.userSchema.findByIdAndUpdate(verifyObject.userId, {status: UserStatus.ACTIVE})
+        
+    async veryfiyUser(userId: ObjectId): Promise<User> {
+        const user = await this.userSchema.findByIdAndUpdate(userId, {status: UserStatus.ACTIVE})
 
         if (!user) {
             throw new NotFoundException()
@@ -260,82 +249,5 @@ export class UserService {
 
         return user
     }
-
-    /**
-     * Sends the code for a password reset to the mail adress
-     * @param mail - usermail
-     */
-    async requestResetPassword(mail: string) {
-        const user = await this.userSchema
-            .findOne({
-                email: mail,
-            })
-            .lean()
-
-        if (!user) {
-            throw new NotFoundException()
-        }
-
-        const resetCode = crypto.randomBytes(64).toString('hex')
-        const resetObject = new this.resetSchema({
-            userId: user._id,
-            verificationCode: resetCode,
-        })
-        await resetObject.save()
-
-        await this.mailService.sendMail( user.email, 'PasswordReset', {name: user.username, link: `${process.env.HOST}/user/reset-form/${resetCode}`} as MailPwResetDto , 'Reset your password')
-    }
-
-    async findReset(userId: ObjectId): Promise<EmailVerify> {
-        const verifyObject = await this.resetSchema
-            .findOne({
-                userId: userId,
-            })
-            .lean()
-        if (!verifyObject) {
-            throw new NotFoundException()
-        }
-        return verifyObject
-    }
-
-    /**
-     * Overwrites the password with the new one
-     * @param code - resetcode as passed in url
-     * @param password new password
-     * @returns
-     */
-    async validatePasswordReset(code: string, password: string) {
-        const resetObject = await this.resetSchema.findOneAndDelete({
-            verificationCode: code,
-        })
-
-        if (!resetObject) {
-            throw new NotFoundException()
-        }
-
-        if (
-            Date.now() - resetObject._id.getTimestamp() >
-            +process.env.RESET_TTL
-        ) {
-            throw new BadRequestException('Token expired.')
-        }
-
-        const hash = await bcyrpt.hash(password, 12)
-
-        const updatedUser: User = await this.userSchema.findByIdAndUpdate(
-            resetObject.userId,
-            {
-                password: hash,
-            },
-            {
-                new: true,
-            },
-        )
-
-        if (!updatedUser) {
-            throw new NotFoundException()
-        }
-
-        return updatedUser
-    }
 }
+

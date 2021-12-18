@@ -9,14 +9,14 @@
 </head>
 
 <body>
-    <h1>Hey <%=name%>,</h1>
-    <p>
+    <h1>Hello <%=name%>,</h1>
+    <p href="<%=link%>">
         We at dopeshot take security very seriously and try to ensure a pleasent expirience for all our users<br>
         Veryfing email adresses is a very important step in this proccess.<br>
         To use our services we kindly ask you to verify your email by clicking the Button below.<br>
     </p>
-    <form>
-        <input style="background-color: rgb(6, 140, 202)" type="button" onclick="window.location.href = '<%=link%>';" value="verify">
+    <form action='<%=link%>'>
+        <input style="background-color: rgb(6, 140, 202)" type="button" onclick="location.href='<%=link%>'" value="verify">
     </form>
     <p>
         <br>Thanks from the dopeshot team!

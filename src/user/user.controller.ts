@@ -6,6 +6,7 @@ import {
     Param,
     Patch,
     Post,
+    Query,
     Render,
     Request,
     UseGuards,
@@ -18,8 +19,8 @@ import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard'
 import { ENVGuard} from '../shared/guards/environment.guard'
 import { UpdateUserDto } from './dto/update-user.dto'
 import { User } from './entities/user.entity'
-import { EmailVerify } from './entities/verify.entity'
 import { Role } from './enums/role.enum'
+import { VerifyJWTGuard } from './guards/mailVerify-jwt.guard'
 import { UserService } from './user.service'
 
 @ApiTags('user')
@@ -35,19 +36,10 @@ export class UserController {
     }
 
     @Get('/verify')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.Admin)
-    async getVerifyByUsername(
-        @Body() userData: { userId: ObjectId },
-    ): Promise<EmailVerify> {
-        return await this.userService.findVerify(userData.userId)
-    }
-
-    @Get('/verify/:code')
+    @UseGuards(VerifyJWTGuard)
     @Render('MailVerify')
-    async verifyMail(@Param('code') code: any): Promise<User> {
-        console.log(code)
-        return await this.userService.veryfiyUser(code)
+    async verifyMail(@Request() req): Promise<User> {
+        return await this.userService.veryfiyUser(req.user)
     }
 
     @Get('/profile')
@@ -70,6 +62,10 @@ export class UserController {
         )
     }
 
+    
+
+    
+
     @Patch('/:id')
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.Admin)
@@ -84,36 +80,5 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     async remove(@Param('id') id: ObjectId, @Request() req): Promise<User> {
         return await this.userService.remove(id, req.user)
-    }
-
-    @Get('/password-reset')
-    async resetPassword(@Body() userdata: { userMail:string }): Promise<void> {
-        return await this.userService.requestResetPassword(userdata.userMail)
-    }
-
-    @Get('/reset')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.Admin)
-    async getResetByUsername(
-        @Body() userData: { userId: ObjectId },
-    ): Promise<EmailVerify> {
-        return await this.userService.findReset(userData.userId)
-    }
-
-    @Get('/reset-form/:code')
-    @Render('reset')
-    async getResetForm(@Param('code') Usercode: string): Promise<{code: string, submitURL: string}> {
-        return {
-            code: Usercode,
-            submitURL: `${process.env.HOST}/api/user/submitReset`,
-        }
-    }
-
-    @Post('/submitReset')
-    async validateReset(@Body() values: { password: string; code: string }): Promise<User> {
-        return await this.userService.validatePasswordReset(
-            values.code,
-            values.password,
-        )
     }
 }
