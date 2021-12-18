@@ -20,7 +20,8 @@
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "jest --config ./jest-e2e.json --runInBand",
         "seed": "node dist/seeder",
-        "seed:refresh": "cross-env NODE_OPTIONS=--max-old-space-size=8192 node dist/seeder --refresh"
+        "seed:refresh": "cross-env NODE_OPTIONS=--max-old-space-size=8192 node dist/seeder --refresh",
+        "prepare": "husky install"
     },
     "dependencies": {
         "@nestjs-modules/mailer": "^1.6.0",
@@ -74,7 +75,9 @@
         "eslint": "^7.30.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-prettier": "^3.4.1",
+        "husky": "^7.0.4",
         "jest": "27.0.6",
+        "lint-staged": "^12.1.3",
         "prettier": "^2.4.1",
         "supertest": "^6.1.6",
         "ts-jest": "^27.0.7",
@@ -99,5 +102,13 @@
         ],
         "coverageDirectory": "../coverage",
         "testEnvironment": "node"
+    },
+    "husky": {
+        "hooks": {
+            "pre-commit": "lint-staged"
+        }
+    },
+    "lint-staged": {
+        "**/*.(t|j)s": "eslint --cache --fix"
     }
 }

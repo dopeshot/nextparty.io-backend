@@ -1,1 +1,8 @@
-{"typescript.preferences.importModuleSpecifier": "relative"}
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "[typescript]": {
+        "files.trimTrailingWhitespace": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    }
+}
