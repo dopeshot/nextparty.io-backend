@@ -3,23 +3,23 @@ import {
     ForbiddenException,
     Injectable,
     InternalServerErrorException,
-    UnauthorizedException,
-} from '@nestjs/common'
-import { JwtService } from '@nestjs/jwt'
-import { User } from '../user/entities/user.entity'
-import { UserService } from '../user/user.service'
-import { RegisterDto } from './dto/register.dto'
-import * as bcrypt from 'bcrypt'
-import { AccessTokenDto } from './dto/jwt.dto'
-import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface'
-import { ObjectId } from 'mongoose'
-import { UserStatus } from '../user/enums/status.enum'
+    UnauthorizedException
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { User } from '../user/entities/user.entity';
+import { UserService } from '../user/user.service';
+import { RegisterDto } from './dto/register.dto';
+import * as bcrypt from 'bcrypt';
+import { AccessTokenDto } from './dto/jwt.dto';
+import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
+import { ObjectId } from 'mongoose';
+import { UserStatus } from '../user/enums/status.enum';
 
 @Injectable()
 export class AuthService {
     constructor(
         private readonly userService: UserService,
-        private readonly jwtService: JwtService,
+        private readonly jwtService: JwtService
     ) {}
 
     /**
@@ -29,12 +29,12 @@ export class AuthService {
      */
     async registerUser(credentials: RegisterDto): Promise<any> {
         // While this might seem unnecessary now, this way of implementing this allows us to add logic to register later without affecting the user create itself
-        const user: User = await this.userService.create(credentials)
+        const user: User = await this.userService.create(credentials);
 
-        if (!user) new BadRequestException("User could not be created")
+        if (!user) new BadRequestException('User could not be created');
 
         // Generate and return JWT
-        return await this.createLoginPayload(user)
+        return await this.createLoginPayload(user);
     }
 
     /**
@@ -45,39 +45,39 @@ export class AuthService {
      */
     async validateUserWithEmailPassword(
         email: string,
-        password: string,
+        password: string
     ): Promise<User> {
-        const user = await this.userService.findOneByEmail(email)
+        const user = await this.userService.findOneByEmail(email);
         if (!user)
             throw new BadRequestException(
                 `Login Failed due to invalid credentials`
-            )
+            );
 
         if (user.provider)
             throw new UnauthorizedException(
                 `Login Failed due to invalid credentials. There might be a third party login with this email`
-            )
+            );
 
         if (await bcrypt.compare(password, user.password)) {
-            return user
+            return user;
         }
         throw new UnauthorizedException(
             `Login Failed due to invalid credentials`
-        )
+        );
     }
 
     async handleProviderLogin(
-        userDataFromProvider: userDataFromProvider,
+        userDataFromProvider: userDataFromProvider
     ): Promise<any> {
         if (!userDataFromProvider)
             throw new InternalServerErrorException(
-                'Request does not have a user. Please contact the administrator',
-            )
+                'Request does not have a user. Please contact the administrator'
+            );
 
         // Check if user already exits
         const alreadyCreatedUser = await this.userService.findOneByEmail(
-            userDataFromProvider.email,
-        )
+            userDataFromProvider.email
+        );
 
         // Check if provider is the same
         if (
@@ -89,19 +89,19 @@ export class AuthService {
                     alreadyCreatedUser.provider
                         ? alreadyCreatedUser.provider
                         : 'Email and Password Auth'
-                }`,
-            )
+                }`
+            );
 
         if (alreadyCreatedUser)
-            return this.createLoginPayload(alreadyCreatedUser)
+            return this.createLoginPayload(alreadyCreatedUser);
 
         // Create User
         const newUser: User = await this.userService.createUserFromProvider(
-            userDataFromProvider,
-        )
+            userDataFromProvider
+        );
 
         // Create Payload and JWT
-        return this.createLoginPayload(newUser)
+        return this.createLoginPayload(newUser);
     }
 
     /**
@@ -113,33 +113,33 @@ export class AuthService {
         const payload = {
             username: user.username,
             sub: user._id,
-            role: user.role,
-        }
+            role: user.role
+        };
 
         return {
-            access_token: this.jwtService.sign(payload),
-        }
+            access_token: this.jwtService.sign(payload)
+        };
     }
 
     async isValidJWT(userId: ObjectId): Promise<boolean> {
-        let user: User
+        let user: User;
         try {
-            user = await this.userService.findOneById(userId)
+            user = await this.userService.findOneById(userId);
         } catch (error) {
             // This is necessary as a not found exception would overwrite the guard response
-            return false
+            return false;
         }
 
-        if (!user) return false // This should never happen but just in case
+        if (!user) return false; // This should never happen but just in case
 
         if (
             user.status !== UserStatus.ACTIVE &&
             user.status !== UserStatus.UNVERIFIED
         ) {
             // TODO: Add status check once we decided on how to handle reported user
-            return false
+            return false;
         }
 
-        return true
+        return true;
     }
 }

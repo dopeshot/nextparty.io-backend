@@ -6,29 +6,34 @@ import {
     NotFoundException,
     Provider,
     ServiceUnavailableException,
-    UnauthorizedException,
-} from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model, ObjectId } from 'mongoose'
-import { CreateUserDto } from './dto/create-user.dto'
-import { UpdateUserDto } from './dto/update-user.dto'
-import { User, UserDocument } from './entities/user.entity'
-import * as bcyrpt from 'bcrypt'
-import { userDataFromProvider } from './interfaces/userDataFromProvider.interface'
-import { UserStatus } from './enums/status.enum'
-import { MailService } from '../mail/mail.service'
-import { MailVerifyDto } from '../mail/dto/mail-verify.dto'
-import { Role } from './enums/role.enum'
-import { JwtUserDto } from '../auth/dto/jwt.dto'
-import { JwtService } from '@nestjs/jwt'
+    UnauthorizedException
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, ObjectId } from 'mongoose';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User, UserDocument } from './entities/user.entity';
+import * as bcyrpt from 'bcrypt';
+import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
+import { UserStatus } from './enums/status.enum';
+import { MailService } from '../mail/mail.service';
+import { MailVerifyDto } from '../mail/dto/mail-verify.dto';
+import { Role } from './enums/role.enum';
+import { JwtUserDto } from '../auth/dto/jwt.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectModel('User') private userSchema: Model<UserDocument>,
         private readonly jwtService: JwtService,
-        private readonly mailService: MailService,
+        private readonly mailService: MailService
     ) {}
+
+    // Allows for changing the hashing algo without breaking tests and other linked functionality
+    async hashPassword(plaintext: string) {
+        return await bcyrpt.hash(plaintext, 12);
+    }
 
     /**
      * Create new user with credentials
@@ -37,56 +42,59 @@ export class UserService {
      */
     async create(credentials: CreateUserDto): Promise<User> {
         try {
-            const hash = await bcyrpt.hash(credentials.password, 12)
+            const hash = await this.hashPassword(credentials.password);
             const user = new this.userSchema({
                 ...credentials,
                 status: UserStatus.UNVERIFIED,
-                password: hash,
-            })
+                password: hash
+            });
 
-            await this.createVerification(user)
+            await this.createVerification(user);
 
-            const result = await user.save()
+            const result = await user.save();
 
-            
-
-            return result
+            return result;
         } catch (error) {
-            console.log(error)
             if (error.code === 11000 && error.keyPattern.username)
-                throw new ConflictException('Username is already taken.')
+                throw new ConflictException('Username is already taken.');
             else if (error.code === 11000 && error.keyPattern.email)
-                throw new ConflictException('Email is already taken.')
-            else if (error instanceof ServiceUnavailableException )
-                throw error
-            throw new InternalServerErrorException('User Create failed')
+                throw new ConflictException('Email is already taken.');
+            else if (error instanceof ServiceUnavailableException) throw error;
+            throw new InternalServerErrorException('User Create failed');
         }
     }
 
     async parseJWTtOUsable(JWTuser): Promise<UserDocument> {
-        const user = await this.userSchema.findById(JWTuser.userId)
+        const user = await this.userSchema.findById(JWTuser.userId);
 
         if (!user) {
-            throw new NotFoundException()
+            throw new NotFoundException();
         }
 
-        return user
+        return user;
     }
 
     async createVerification(user: User): Promise<void> {
-
         const payload = {
             mail: user.email,
             name: user.username,
             id: user._id,
             create_time: Date.now()
-        }
+        };
 
-        let verifyCode =  this.jwtService.sign(payload)
+        const verifyCode = this.jwtService.sign(payload);
 
-        console.log(`${process.env.HOST}/api/user/verify/?code=${verifyCode}`)
+        //console.log(`${process.env.HOST}/api/user/verify/?code=${verifyCode}`)
 
-        await this.mailService.sendMail( user.email, 'MailVerify', {name: user.username, link: `${process.env.HOST}/user/verify/${verifyCode}`} as MailVerifyDto, 'Verify your email')
+        await this.mailService.sendMail(
+            user.email,
+            'MailVerify',
+            {
+                name: user.username,
+                link: `${process.env.HOST}/user/verify/${verifyCode}`
+            } as MailVerifyDto,
+            'Verify your email'
+        );
     }
 
     /**
@@ -95,17 +103,19 @@ export class UserService {
      * @returns user
      */
     async createUserFromProvider(
-        userDataFromProvider: userDataFromProvider,
+        userDataFromProvider: userDataFromProvider
     ): Promise<User> {
         try {
-            const user: UserDocument = new this.userSchema(userDataFromProvider)
-            const result = await user.save()
+            const user: UserDocument = new this.userSchema(
+                userDataFromProvider
+            );
+            const result = await user.save();
 
-            return result
+            return result;
         } catch (error) {
             throw new InternalServerErrorException(
-                'Error occured while saving user from provider.',
-            )
+                'Error occured while saving user from provider.'
+            );
         }
     }
 
@@ -114,11 +124,11 @@ export class UserService {
      * @returns Array aus allen User
      */
     async findAll(): Promise<User[]> {
-        const users = await this.userSchema.find()
+        const users = await this.userSchema.find();
 
-        if (!users) throw new NotFoundException()
+        if (!users) throw new NotFoundException();
 
-        return users
+        return users;
     }
 
     /**
@@ -127,11 +137,11 @@ export class UserService {
      * @returns User
      */
     async findOneById(id: ObjectId): Promise<User> {
-        const user = await this.userSchema.findById(id).lean()
+        const user = await this.userSchema.findById(id).lean();
 
-        if (!user) throw new NotFoundException()
+        if (!user) throw new NotFoundException();
 
-        return user
+        return user;
     }
 
     /**
@@ -140,11 +150,11 @@ export class UserService {
      * @returns User
      */
     async findOneByUsername(username: string): Promise<User> {
-        const user = await this.userSchema.findOne({ username }).lean()
+        const user = await this.userSchema.findOne({ username }).lean();
 
-        if (!user) throw new NotFoundException()
+        if (!user) throw new NotFoundException();
 
-        return user
+        return user;
     }
 
     /**
@@ -153,11 +163,11 @@ export class UserService {
      * @returns User
      */
     async findOneByEmail(email: string): Promise<User | null> {
-        const user = await this.userSchema.findOne({ email }).lean()
+        const user = await this.userSchema.findOne({ email }).lean();
 
-        if (!user) return null
+        if (!user) return null;
 
-        return user
+        return user;
     }
 
     /**
@@ -171,16 +181,16 @@ export class UserService {
             const updatedUser: User = await this.userSchema.findByIdAndUpdate(
                 id,
                 {
-                    role: role.role,
+                    role: role.role
                 },
                 {
-                    new: true,
-                },
-            )
+                    new: true
+                }
+            );
 
-            return updatedUser
+            return updatedUser;
         } catch (error) {
-            throw new InternalServerErrorException('Update Role failed')
+            throw new InternalServerErrorException('Update Role failed');
         }
     }
 
@@ -192,62 +202,66 @@ export class UserService {
      */
     async updateUser(
         id: ObjectId,
-        updateUserDto: UpdateUserDto,
+        updateUserDto: UpdateUserDto
     ): Promise<User> {
         try {
             const updatedUser: User = await this.userSchema.findByIdAndUpdate(
                 id,
                 {
-                    ...updateUserDto,
+                    ...updateUserDto
                 },
                 {
-                    new: true,
-                },
-            )
+                    new: true
+                }
+            );
 
-            return updatedUser
+            return updatedUser;
         } catch (error) {
             if (error.code === 11000)
-                throw new ConflictException('Username is already taken.')
-            else throw new InternalServerErrorException('Update User failed')
+                throw new ConflictException('Username is already taken.');
+            else throw new InternalServerErrorException('Update User failed');
         }
     }
 
     async remove(id: ObjectId, requestingUser: JwtUserDto): Promise<User> {
-        if (requestingUser.role !== Role.Admin && id !== requestingUser.userId){
-            throw new UnauthorizedException()
+        if (
+            requestingUser.role !== Role.Admin &&
+            id !== requestingUser.userId
+        ) {
+            throw new UnauthorizedException();
         }
-        
-        const user = await this.userSchema.findByIdAndDelete(id)
 
-        if (!user) throw new NotFoundException()
+        const user = await this.userSchema.findByIdAndDelete(id);
 
-        return user
+        if (!user) throw new NotFoundException();
+
+        return user;
     }
 
     async validateVerifyCode(userId: ObjectId): Promise<boolean> {
-            let user: User
-            try {
-                user = await this.findOneById(userId)
-            } catch (error) {
-                // This is necessary as a not found exception would overwrite the guard response
-                return false
-            }
-            if (!user) return false // This should never happen but just in case    
-            if (user.status !== UserStatus.UNVERIFIED){
-                return false
-            }
-            return true
+        let user: User;
+        try {
+            user = await this.findOneById(userId);
+        } catch (error) {
+            // This is necessary as a not found exception would overwrite the guard response
+            return false;
         }
-        
+        if (!user) return false; // This should never happen but just in case
+        if (user.status !== UserStatus.UNVERIFIED) {
+            return false;
+        }
+        return true;
+    }
+
     async veryfiyUser(userId: ObjectId): Promise<User> {
-        const user = await this.userSchema.findByIdAndUpdate(userId, {status: UserStatus.ACTIVE})
+        const user = await this.userSchema.findByIdAndUpdate(userId, {
+            status: UserStatus.ACTIVE
+        });
 
         if (!user) {
-            throw new NotFoundException()
+            throw new NotFoundException();
         }
 
-        return user
+        return user;
     }
 }
-

@@ -48,15 +48,6 @@ export class UserController {
         return req.user;
     }
 
-    @Patch('/testing/:id')
-    @UseGuards(ENVGuard)
-    async updateRole(
-        @Param('id') id: ObjectId,
-        @Body() role: Role
-    ): Promise<User> {
-        return await this.userService.patchRole(id, role);
-    }
-
     @Get('/getVerify')
     @UseGuards(JwtAuthGuard)
     async regenerateVerify(@Request() req): Promise<void> {
