@@ -12,7 +12,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId } from 'mongoose';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserDocument } from './entities/user.entity';
+import { User, UserDocument, UserSchema } from './entities/user.entity';
 import * as bcyrpt from 'bcrypt';
 import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
 import { UserStatus } from './enums/status.enum';
@@ -26,7 +26,7 @@ import { returnUser } from './dto/return-user.dto';
 @Injectable()
 export class UserService {
     constructor(
-        @InjectModel('User') private userSchema: Model<UserDocument>,
+        @InjectModel(User.name) private userSchema: Model<UserDocument>,
         private readonly jwtService: JwtService,
         private readonly mailService: MailService
     ) {}
