@@ -12,7 +12,7 @@ import { getJWT, getTestUser } from './__mocks__/user-mock-data';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
-} from './helpers/MongoMemoryHelpers';
+} from './helpers/mongoMemoryHelpers';
 import { ConfigModule } from '@nestjs/config';
 import { Connection, Model } from 'mongoose';
 import { getConnectionToken } from '@nestjs/mongoose';

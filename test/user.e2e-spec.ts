@@ -12,7 +12,7 @@ import { ThirdPartyGuardMock } from './helpers/fake-provider-strategy';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
-} from './helpers/MongoMemoryHelpers';
+} from './helpers/mongoMemoryHelpers';
 import {
     getJWT,
     getTestAdmin,

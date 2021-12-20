@@ -20,7 +20,7 @@ import { ProviderGuardFaker } from './helpers/fake-third-party-guard';
 import {
     rootMongooseTestModule,
     closeInMongodConnection
-} from './helpers/MongoMemoryHelpers';
+} from './helpers/mongoMemoryHelpers';
 import { getJWT, getTestUser } from './__mocks__/user-mock-data';
 const { mock } = require('nodemailer');
 
