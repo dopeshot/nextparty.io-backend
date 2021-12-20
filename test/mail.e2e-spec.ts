@@ -7,7 +7,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import * as request from 'supertest';
 
 //project imports
-import { HttpStatus } from '@nestjs/common';
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { getJWT, getTestUser } from './__mocks__/user-mock-data';
 import {
     closeInMongodConnection,
@@ -45,6 +45,7 @@ beforeAll(async () => {
     userModel = connection.model('User');
 
     app = moduleFixture.createNestApplication();
+    app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
     await app.init();
 });
 
