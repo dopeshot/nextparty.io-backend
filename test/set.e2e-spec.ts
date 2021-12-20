@@ -70,11 +70,35 @@ describe('Sets (e2e)', () => {
 
     describe('Set POST', () => {
         it('/set (POST) one set', async () => {
-            await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .post('/set')
                 .send(getMockSet())
                 .expect(HttpStatus.CREATED)
             expect((await setModel.find()).length).toBe(2)
+
+            // Testing type ResponseSet
+            const set = res.body
+            expect(set).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    language: expect.any(String),
+                    daresCount: expect.any(Number),
+                    truthCount: expect.any(Number),
+                    createdBy: expect.any(Object),
+                    name: expect.any(String),
+                    previewImage: expect.any(String),
+                    bannerImage: expect.any(String),
+                }),
+            )
+            expect(set).toEqual(
+                expect.not.objectContaining({
+                    status: expect.any(String),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                    __v: expect.any(String),
+                    tasks: expect.any(Array),
+                }),
+            )
         })
 
         // Negative test
@@ -135,16 +159,86 @@ describe('Sets (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .get('/set')
                 .expect(HttpStatus.OK)
-            expect(res.body.length === 1).toBeTruthy()
+            const sets = res.body
+            expect(sets.length === 1).toBeTruthy()
+
+            // Testing type ResponseSet
+            const set = sets[0]
+            expect(set).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    language: expect.any(String),
+                    daresCount: expect.any(Number),
+                    truthCount: expect.any(Number),
+                    createdBy: null,
+                    name: expect.any(String),
+                    previewImage: expect.any(String),
+                    bannerImage: expect.any(String),
+                }),
+            )
+            expect(set).toEqual(
+                expect.not.objectContaining({
+                    status: expect.any(String),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                    __v: expect.any(String),
+                    tasks: expect.any(Array),
+                }),
+            )
         })
 
         it('/set/:id (GET) by id', async () => {
             const res = await request(app.getHttpServer())
                 .get(`/set/${getSetSetupData()._id}`)
                 .expect(HttpStatus.OK)
-            res.body.tasks[0]['status'] = Status.ACTIVE
+
+            // Testing type ResponseSet
+            const set = res.body
+            expect(set).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    language: expect.any(String),
+                    daresCount: expect.any(Number),
+                    truthCount: expect.any(Number),
+                    createdBy: null,
+                    name: expect.any(String),
+                    previewImage: expect.any(String),
+                    bannerImage: expect.any(String),
+                    tasks: expect.any(Array),
+                }),
+            )
+            expect(set).toEqual(
+                expect.not.objectContaining({
+                    status: expect.any(String),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                    __v: expect.any(String),
+                }),
+            )
+
+            // Testing type ResponseTask
+            const task = set.tasks[0]
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    type: expect.any(String),
+                    message: expect.any(String),
+                    currentPlayerGender: expect.any(String),
+                }),
+            )
+            expect(task).toEqual(
+                expect.not.objectContaining({
+                    __v: expect.any(String),
+                    status: expect.any(String),
+                    createdAt: expect.any(Date),
+                    createdBy: expect.any(Date),
+                }),
+            )
+
+            // Testing content
+            task['status'] = Status.ACTIVE
             expect({
-                ...res.body,
+                ...set,
                 createdBy: getSetSetupData().createdBy,
                 status: Status.ACTIVE,
             }).toEqual({ ...getSetSetupData() })
@@ -164,7 +258,32 @@ describe('Sets (e2e)', () => {
                 .patch(`/set/${getSetSetupData()._id}`)
                 .send({ language: Language.DE })
                 .expect(HttpStatus.OK)
-            expect(res.body.language).toEqual(Language.DE)
+
+            const set = res.body
+            expect(set.language).toEqual(Language.DE)
+
+            // Testing type ResponseSetMetadata
+            expect(set).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    daresCount: expect.any(Number),
+                    truthCount: expect.any(Number),
+                    createdBy: expect.any(String),
+                    language: expect.any(String),
+                    name: expect.any(String),
+                }),
+            )
+            expect(set).toEqual(
+                expect.not.objectContaining({
+                    status: expect.any(String),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                    __v: expect.any(String),
+                    tasks: expect.any(Array),
+                    previewImage: expect.any(String),
+                    bannerImage: expect.any(String),
+                }),
+            )
         })
 
         it('/set/:id (PATCH) by id by user', async () => {
@@ -288,34 +407,93 @@ describe('Sets (e2e)', () => {
 
     describe('Task POST', () => {
         it('/set/:id/task (POST)', async () => {
-            await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .post(`/set/${getSetSetupData()._id}/task`)
                 .send(getMockTask())
                 .expect(HttpStatus.CREATED)
             const set = await setModel.findById(getSetSetupData()._id)
             expect(set.tasks.length).toBe(2)
             expect(set.truthCount).toBe(2)
+
+            // Testing type responseTask
+            const task = res.body
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    type: expect.any(String),
+                    message: expect.any(String),
+                    currentPlayerGender: expect.any(String),
+                }),
+            )
+            expect(task).toEqual(
+                expect.not.objectContaining({
+                    __v: expect.any(String),
+                    status: expect.any(String),
+                    createdAt: expect.any(Date),
+                    createdBy: expect.any(Date),
+                }),
+            )
         })
 
         it('/set/:id/task (POST) without CurrentPlayerGender', async () => {
             const { currentPlayerGender, ...obj } = getMockTask()
-            await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .post(`/set/${getSetSetupData()._id}/task`)
                 .send(obj)
                 .expect(HttpStatus.CREATED)
             expect(
                 (await setModel.findById(getSetSetupData()._id)).tasks.length,
             ).toBe(2)
+
+            // Testing type ResponseTask
+            const task = res.body
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    type: expect.any(String),
+                    message: expect.any(String),
+                    currentPlayerGender: expect.any(String),
+                }),
+            )
+            expect(task).toEqual(
+                expect.not.objectContaining({
+                    __v: expect.any(String),
+                    status: expect.any(String),
+                    createdAt: expect.any(Date),
+                    createdBy: expect.any(Date),
+                }),
+            )
         })
 
         it('/set/:id/task (POST) with extra parameter', async () => {
-            await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .post(`/set/${getSetSetupData()._id}/task`)
                 .send({ ...getMockTask(), more: 'Some more' })
                 .expect(HttpStatus.CREATED)
             expect(
                 (await setModel.findById(getSetSetupData()._id)).tasks.length,
             ).toBe(2)
+
+            // Testing type ResponseTask
+            const task = res.body
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    type: expect.any(String),
+                    message: expect.any(String),
+                    currentPlayerGender: expect.any(String),
+                }),
+            )
+            expect(task).toEqual(
+                expect.not.objectContaining({
+                    __v: expect.any(String),
+                    status: expect.any(String),
+                    createdAt: expect.any(Date),
+                    createdBy: expect.any(Date),
+                    // The extra parameter send
+                    more: expect.any(String),
+                }),
+            )
         })
 
         // Negative test
@@ -379,7 +557,7 @@ describe('Sets (e2e)', () => {
 
     describe('Task PUT', () => {
         it('/set/:id/task (PUT) changing type for counts check', async () => {
-            await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .put(
                     `/set/${getSetSetupData()._id}/task/${
                         getSetSetupData().tasks[0]._id
@@ -394,11 +572,22 @@ describe('Sets (e2e)', () => {
 
             const message = set.tasks[0].message
             expect(message).toEqual(getMockTask().message)
+
+            // Testing type UpdatedCounts
+            const task = res.body
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    truthCount: expect.any(Number),
+                    daresCount: expect.any(Number),
+                }),
+            )
+            // It is unnecessary to tes what is not in the type
         })
 
         it('/set/:id/task (PUT) with Admin changing type for counts check', async () => {
             fakeAuthGuard.setUser(getMockAuthAdmin())
-            await request(app.getHttpServer())
+            const res = await request(app.getHttpServer())
                 .put(
                     `/set/${getSetSetupData()._id}/task/${
                         getSetSetupData().tasks[0]._id
@@ -412,6 +601,17 @@ describe('Sets (e2e)', () => {
 
             const message = set.tasks[0].message
             expect(message).toEqual(getMockTask().message)
+
+            // Testing type UpdatedCounts
+            const task = res.body
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    truthCount: expect.any(Number),
+                    daresCount: expect.any(Number),
+                }),
+            )
+            // It is unnecessary to tes what is not in the type
         })
 
         // Omitting dto tests since they duplicate with task POST tests
