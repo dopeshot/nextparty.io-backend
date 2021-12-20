@@ -3,6 +3,7 @@ import {
     Controller,
     Delete,
     Get,
+    HttpCode,
     Param,
     Patch,
     Render,
@@ -65,12 +66,9 @@ export class UserController {
     }
 
     @Delete('/:id')
+    @HttpCode(204)
     @UseGuards(JwtAuthGuard)
-    async remove(
-        @Param('id') id: ObjectId,
-        @Request() req
-    ): Promise<returnUser> {
-        const user = await this.userService.remove(id, req.user);
-        return await this.userService.transformToReturn(user);
+    async remove(@Param('id') id: ObjectId, @Request() req): Promise<void> {
+        await this.userService.remove(id, req.user);
     }
 }
