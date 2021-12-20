@@ -1,32 +1,77 @@
-import { JwtService } from "@nestjs/jwt"
-let jwtService: JwtService
+import { CurrentPlayerGender } from '../../src/set/enums/currentplayergender.enum'
+import { TaskType } from '../../src/set/enums/tasktype.enum'
+import { Language } from '../../src/shared/enums/language.enum'
+import { Status } from '../../src/shared/enums/status.enum'
 
 export const getSetSetupData = () => {
-    return [
-        { language: "en", name: "Set number 1" },
-        { language: "de", name: "Set number 2" }
-    ]
+    return {
+        _id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
+        status: Status.ACTIVE,
+        language: Language.EN,
+        name: 'User Set',
+        createdBy: 'aaaaaaaaaaaaaaaaaaaaaaac',
+        previewImage: 'placeholder',
+        bannerImage: 'placeHolder2',
+        daresCount: 0,
+        truthCount: 1,
+        tasks: [
+            {
+                _id: 'aaaaaaaaaaaaaaaaaaaaaaba',
+                status: Status.ACTIVE,
+                type: TaskType.TRUTH,
+                currentPlayerGender: CurrentPlayerGender.ANYONE,
+                message: '1234567890',
+            },
+        ],
+    }
 }
 
 export const getMockSet = () => {
-    return { language: "de", name: "Set number 0" }
+    return { language: Language.DE, name: 'Set number 0' }
 }
 
-export const getUserSetupData = () => {
-    return [
-        { _id: "aaaaaaaaaaaaaaaaaaaaaaaa", name: "Set number 1" },
-        { _id: "aaaaaaaaaaaaaaaaaaaaaaab", name: "Set number 2" }
-    ]
-}
-
-let user = {
-    _id: "aaaaaaaaaaaaaaaaaaaaaaac",
-    username: "TestUserName",
-    email: "Hahaxd@gmail.com",
-    password: "12345678"
+export const getMockAuthUser = () => {
+    return {
+        userId: 'aaaaaaaaaaaaaaaaaaaaaaac',
+        username: 'User',
+        role: 'user',
+    }
 }
 
 export const getMockUser = () => {
-    let token = jwtService.sign(user)
-    return { user, token }
+    return {
+        _id: 'aaaaaaaaaaaaaaaaaaaaaaac',
+        username: 'User',
+        role: 'user',
+        email: 'test.test@test.de',
+    }
+}
+
+export const getMockAuthAdmin = () => {
+    return {
+        userId: 'aaaaaaaaaaaaaaaaaaaaaaad',
+        username: 'Admin',
+        role: 'admin',
+    }
+}
+export const getMockAdmin = () => {
+    return { _id: 'aaaaaaaaaaaaaaaaaaaaaaad', username: 'Admin', role: 'admin' }
+}
+
+export const getWrongId = () => {
+    return 'aaaaaaaaaaaaaaaaaaaaaaae'
+}
+export const getMockTask = () => {
+    return {
+        type: TaskType.TRUTH,
+        currentPlayerGender: CurrentPlayerGender.ANYONE,
+        message: 'new long enough Task',
+    }
+}
+export const getString = (number: number) => {
+    let string = ''
+    for (let i = 0; i < number; i++) {
+        string += 'a'
+    }
+    return string
 }
