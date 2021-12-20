@@ -1,5 +1,6 @@
 import {
     BadRequestException,
+    ConflictException,
     ForbiddenException,
     Injectable,
     InternalServerErrorException,
@@ -27,11 +28,13 @@ export class AuthService {
      * @param credentials of the user
      * @returns the new registered User
      */
-    async registerUser(credentials: RegisterDto): Promise<any> {
+    async registerUser(credentials: RegisterDto): Promise<AccessTokenDto> {
         // While this might seem unnecessary now, this way of implementing this allows us to add logic to register later without affecting the user create itself
         const user: User = await this.userService.create(credentials);
 
-        if (!user) new BadRequestException('User could not be created');
+        /* istanbul ignore next */
+        if (!user)
+            new InternalServerErrorException('User could not be created');
 
         // Generate and return JWT
         return await this.createLoginPayload(user);
@@ -49,14 +52,15 @@ export class AuthService {
     ): Promise<User> {
         const user = await this.userService.findOneByEmail(email);
         if (!user)
-            throw new BadRequestException(
+            throw new UnauthorizedException(
                 `Login Failed due to invalid credentials`
             );
 
-        if (user.provider)
+        if (user.provider) {
             throw new UnauthorizedException(
                 `Login Failed due to invalid credentials. There might be a third party login with this email`
             );
+        }
 
         if (await bcrypt.compare(password, user.password)) {
             return user;
@@ -68,7 +72,9 @@ export class AuthService {
 
     async handleProviderLogin(
         userDataFromProvider: userDataFromProvider
-    ): Promise<any> {
+    ): Promise<AccessTokenDto> {
+        // This is a failsave that should never occur
+        /* istanbul ignore next */
         if (!userDataFromProvider)
             throw new InternalServerErrorException(
                 'Request does not have a user. Please contact the administrator'
@@ -84,7 +90,7 @@ export class AuthService {
             alreadyCreatedUser &&
             alreadyCreatedUser.provider !== userDataFromProvider.provider
         )
-            throw new ForbiddenException(
+            throw new ConflictException(
                 `This email is already registered with ${
                     alreadyCreatedUser.provider
                         ? alreadyCreatedUser.provider
@@ -101,7 +107,7 @@ export class AuthService {
         );
 
         // Create Payload and JWT
-        return this.createLoginPayload(newUser);
+        return await this.createLoginPayload(newUser);
     }
 
     /**
@@ -130,6 +136,7 @@ export class AuthService {
             return false;
         }
 
+        /* istanbul ignore next */
         if (!user) return false; // This should never happen but just in case
 
         if (

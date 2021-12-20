@@ -19,7 +19,13 @@ Content-Type: application/json
 }
 
 ### Google Auth
-GET {{adress}}/google
+GET {{adress}}/google/redirect
+
+{
+        "username": "googleman",
+        " email": "googleuser@google.com",
+        " provider": "google"
+}
 
 ### Facebook Auth
 GET {{adress}}/facebook

@@ -5,8 +5,6 @@ import {
     Get,
     Param,
     Patch,
-    Post,
-    Query,
     Render,
     Request,
     UseGuards
@@ -16,9 +14,8 @@ import { ObjectId } from 'mongoose';
 import { Roles } from '../auth/roles/roles.decorator';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
-import { ENVGuard } from '../shared/guards/environment.guard';
+import { returnUser } from './dto/return-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User } from './entities/user.entity';
 import { Role } from './enums/role.enum';
 import { VerifyJWTGuard } from './guards/mailVerify-jwt.guard';
 import { UserService } from './user.service';
@@ -31,44 +28,49 @@ export class UserController {
     @Get()
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.Admin)
-    async findAll(): Promise<User[]> {
+    async findAll(): Promise<returnUser[]> {
         return await this.userService.findAll();
     }
 
     @Get('/verify')
     @UseGuards(VerifyJWTGuard)
     @Render('MailVerify')
-    async verifyMail(@Request() req): Promise<User> {
-        return await this.userService.veryfiyUser(req.user);
+    async verifyMail(@Request() req): Promise<returnUser> {
+        const user = await this.userService.veryfiyUser(req.user);
+        return await this.userService.transformToReturn(user);
     }
 
     @Get('/profile')
     @UseGuards(JwtAuthGuard)
-    getProfile(@Request() req): Promise<User> {
-        return req.user;
+    async getProfile(@Request() req): Promise<returnUser> {
+        const user = await this.userService.findOneById(req.user.userId);
+        return await this.userService.transformToReturn(user);
     }
 
-    @Get('/getVerify')
+    @Get('/get-verify')
     @UseGuards(JwtAuthGuard)
     async regenerateVerify(@Request() req): Promise<void> {
-        return this.userService.createVerification(
-            await this.userService.parseJWTtOUsable(req.user)
-        );
+        const userData = await this.userService.parseJWTtOUsable(req.user);
+        await this.userService.createVerification(userData);
     }
 
     @Patch('/:id')
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.Admin)
+    @UseGuards(JwtAuthGuard)
     async update(
         @Param('id') id: ObjectId,
         @Body() updateUserDto: UpdateUserDto
-    ): Promise<User> {
-        return await this.userService.updateUser(id, updateUserDto);
+    ): Promise<returnUser> {
+        const user = await this.userService.updateUser(id, updateUserDto);
+        return await this.userService.transformToReturn(user);
     }
 
     @Delete('/:id')
     @UseGuards(JwtAuthGuard)
-    async remove(@Param('id') id: ObjectId, @Request() req): Promise<User> {
-        return await this.userService.remove(id, req.user);
+    async remove(
+        @Param('id') id: ObjectId,
+        @Request() req
+    ): Promise<returnUser> {
+        const user = await this.userService.remove(id, req.user);
+        return await this.userService.transformToReturn(user);
     }
 }

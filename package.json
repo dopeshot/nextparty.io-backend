@@ -78,6 +78,7 @@
         "eslint-plugin-prettier": "^3.4.1",
         "husky": "^7.0.4",
         "jest": "27.0.6",
+        "passport-custom": "^1.1.1",
         "prettier": "^2.4.1",
         "supertest": "^6.1.6",
         "ts-jest": "^27.0.7",

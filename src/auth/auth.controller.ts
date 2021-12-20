@@ -6,17 +6,18 @@ import {
     Request,
     UseGuards,
     Get,
-    HttpCode,
-} from '@nestjs/common'
-import { RegisterDto } from './dto/register.dto'
-import { AuthService } from './auth.service'
-import { LocalAuthGuard } from './strategies/local/local-auth.guard'
-import { User } from '../user/entities/user.entity'
-import { GoogleAuthGuard } from './strategies/google/google-auth.guard'
-import { FacebookAuthGuard } from './strategies/facebook/facebook-auth.guard'
-import { DiscordAuthGuard } from './strategies/discord/discord-auth.guard'
-import { ApiTags } from '@nestjs/swagger'
-import { AccessTokenDto } from './dto/jwt.dto'
+    HttpCode
+} from '@nestjs/common';
+import { RegisterDto } from './dto/register.dto';
+import { AuthService } from './auth.service';
+import { LocalAuthGuard } from './strategies/local/local-auth.guard';
+import { User } from '../user/entities/user.entity';
+import { GoogleAuthGuard } from './strategies/google/google-auth.guard';
+import { FacebookAuthGuard } from './strategies/facebook/facebook-auth.guard';
+import { DiscordAuthGuard } from './strategies/discord/discord-auth.guard';
+import { ApiTags } from '@nestjs/swagger';
+import { AccessTokenDto } from './dto/jwt.dto';
+import { returnUser } from '../user/dto/return-user.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -25,15 +26,15 @@ export class AuthController {
 
     @Post('register')
     async registerUser(
-        @Body(ValidationPipe) credentials: RegisterDto,
-    ): Promise<User> {
-        return await this.authService.registerUser(credentials)
+        @Body(ValidationPipe) credentials: RegisterDto
+    ): Promise<AccessTokenDto> {
+        return await this.authService.registerUser(credentials);
     }
 
     @Post('login')
     @UseGuards(LocalAuthGuard)
     async login(@Request() req): Promise<AccessTokenDto> {
-        return await this.authService.createLoginPayload(req.user)
+        return await this.authService.createLoginPayload(req.user);
     }
 
     @Get('/google')
@@ -45,7 +46,7 @@ export class AuthController {
     @Get('/google/redirect')
     @UseGuards(GoogleAuthGuard)
     googleLoginRedirect(@Request() req): Promise<AccessTokenDto> {
-        return this.authService.handleProviderLogin(req.user)
+        return this.authService.handleProviderLogin(req.user);
     }
 
     @Get('/facebook')
@@ -59,7 +60,7 @@ export class AuthController {
     @UseGuards(FacebookAuthGuard)
     @HttpCode(200)
     async facebookLoginRedirect(@Request() req): Promise<AccessTokenDto> {
-        return this.authService.handleProviderLogin(req.user)
+        return this.authService.handleProviderLogin(req.user);
     }
 
     @Get('/discord')
@@ -73,6 +74,6 @@ export class AuthController {
     @UseGuards(DiscordAuthGuard)
     @HttpCode(200)
     async discordLoginRedirect(@Request() req): Promise<AccessTokenDto> {
-        return this.authService.handleProviderLogin(req.user)
+        return this.authService.handleProviderLogin(req.user);
     }
 }

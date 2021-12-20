@@ -21,6 +21,7 @@ import { MailVerifyDto } from '../mail/dto/mail-verify.dto';
 import { Role } from './enums/role.enum';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { JwtService } from '@nestjs/jwt';
+import { returnUser } from './dto/return-user.dto';
 
 @Injectable()
 export class UserService {
@@ -60,6 +61,7 @@ export class UserService {
             else if (error.code === 11000 && error.keyPattern.email)
                 throw new ConflictException('Email is already taken.');
             else if (error instanceof ServiceUnavailableException) throw error;
+            /* istanbul ignore next */
             throw new InternalServerErrorException('User Create failed');
         }
     }
@@ -67,6 +69,8 @@ export class UserService {
     async parseJWTtOUsable(JWTuser): Promise<UserDocument> {
         const user = await this.userSchema.findById(JWTuser.userId);
 
+        // this should be unreachable if the guard works correctly
+        /* istanbul ignore next */
         if (!user) {
             throw new NotFoundException();
         }
@@ -74,7 +78,7 @@ export class UserService {
         return user;
     }
 
-    async createVerification(user: User): Promise<void> {
+    async generateVerifyCode(user: User): Promise<string> {
         const payload = {
             mail: user.email,
             name: user.username,
@@ -82,9 +86,13 @@ export class UserService {
             create_time: Date.now()
         };
 
-        const verifyCode = this.jwtService.sign(payload);
+        return this.jwtService.sign(payload);
+    }
 
-        //console.log(`${process.env.HOST}/api/user/verify/?code=${verifyCode}`)
+    async createVerification(user: User): Promise<string> {
+        const verifyCode = await this.generateVerifyCode(user);
+
+        //console.log(`${process.env.HOST}/api/user/verify/?code=${verifyCode}`);
 
         await this.mailService.sendMail(
             user.email,
@@ -95,6 +103,8 @@ export class UserService {
             } as MailVerifyDto,
             'Verify your email'
         );
+
+        return verifyCode;
     }
 
     /**
@@ -145,19 +155,6 @@ export class UserService {
     }
 
     /**
-     * Find user by username
-     * @param username of the user
-     * @returns User
-     */
-    async findOneByUsername(username: string): Promise<User> {
-        const user = await this.userSchema.findOne({ username }).lean();
-
-        if (!user) throw new NotFoundException();
-
-        return user;
-    }
-
-    /**
      * Find user by email
      * @param email of the user
      * @returns User
@@ -168,30 +165,6 @@ export class UserService {
         if (!user) return null;
 
         return user;
-    }
-
-    /**
-     * FOR TESTING update role
-     * @param id object id
-     * @param role
-     * @returns User
-     */
-    async patchRole(id: ObjectId, role: any): Promise<User> {
-        try {
-            const updatedUser: User = await this.userSchema.findByIdAndUpdate(
-                id,
-                {
-                    role: role.role
-                },
-                {
-                    new: true
-                }
-            );
-
-            return updatedUser;
-        } catch (error) {
-            throw new InternalServerErrorException('Update Role failed');
-        }
     }
 
     /**
@@ -258,10 +231,24 @@ export class UserService {
             status: UserStatus.ACTIVE
         });
 
+        //failsave that should never occur so istanbul ignore\
+        /* istanbul ignore next */
         if (!user) {
             throw new NotFoundException();
         }
 
         return user;
+    }
+
+    async transformToReturn(user: User): Promise<returnUser> {
+        const strip = {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            status: user.status,
+            role: user.role,
+            provider: user.provider
+        };
+        return strip;
     }
 }

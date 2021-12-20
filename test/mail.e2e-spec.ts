@@ -1,119 +1,164 @@
-'use strict'
+'use strict';
 //NestJS imports
 import { Test, TestingModule } from '@nestjs/testing';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 //node imports
-import * as request from 'supertest'
+import * as request from 'supertest';
 
 //project imports
-import { AppModule } from './../src/app.module';
 import { HttpStatus } from '@nestjs/common';
+import { getJWT, getTestUser } from './__mocks__/user-mock-data';
+import {
+    closeInMongodConnection,
+    rootMongooseTestModule
+} from './helpers/MongoMemoryHelpers';
+import { ConfigModule } from '@nestjs/config';
+import { Connection, Model } from 'mongoose';
+import { getConnectionToken } from '@nestjs/mongoose';
+import { UserDocument } from '../src/user/entities/user.entity';
+import { AuthModule } from '../src/auth/auth.module';
+import { MailModule } from '../src/mail/mail.module';
+import { UserModule } from '../src/user/user.module';
 
 const { mock } = require('nodemailer');
 
-let app: NestExpressApplication
-let token: string
+let app: NestExpressApplication;
+let token: string;
+let connection: Connection;
+let userModel: Model<UserDocument>;
 
 beforeAll(async () => {
-  const moduleFixture: TestingModule = await Test.createTestingModule({
-    imports: [AppModule],
-  }).compile();
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [
+            rootMongooseTestModule(),
+            UserModule,
+            AuthModule,
+            MailModule,
+            ConfigModule.forRoot({
+                envFilePath: ['.env', '.development.env']
+            })
+        ]
+    }).compile();
+
+    connection = await moduleFixture.get(getConnectionToken());
+    userModel = connection.model('User');
 
     app = moduleFixture.createNestApplication();
     await app.init();
-})
+});
 
-beforeEach( async () => {
-
+beforeEach(async () => {
+    await userModel.deleteMany();
     // mockmailer should be reset and not throw artificial errors
-    mock.reset()
-    mock.setShouldFail(false)
-})
+    mock.reset();
+    mock.setShouldFail(false);
+});
 
-describe("sendMail", () => {
+describe('MailModule', () => {
+    describe('sendMail', () => {
+        describe('Mail basics', () => {
+            it('should return HttpStatus.CREATED to valid request', async () => {
+                await request(app.getHttpServer())
+                    .post('/mail')
+                    .set('Content-Type', 'application/json')
+                    .send({
+                        recipient: 'unit1@test.mock'
+                    })
+                    .expect(HttpStatus.CREATED);
+            });
 
-    it("should return HttpStatus.CREATED to valid request", async () => {
+            it('should send email', async () => {
+                await request(app.getHttpServer())
+                    .post('/mail')
+                    .set('Content-Type', 'application/json')
+                    .send({
+                        recipient: 'unit2@test.mock'
+                    });
 
-        await request(app.getHttpServer())
-        .post('/mail')
-        .set("Content-Type", "application/json")
-        .send({
-            recipient: "unit1@test.mock"
-        })
-        .expect(HttpStatus.CREATED)
-    })
+                const sendMails = mock.getSentMail();
 
-    it("should send email", async () => {
-      await request(app.getHttpServer())
-      .post('/mail')
-      .set("Content-Type", "application/json")
-      .send({
-          recipient: "unit2@test.mock"
-      })
+                expect(sendMails.length).toBe(1);
+            });
 
-      const sendMails = mock.getSentMail()
+            it('should send email with test content', async () => {
+                await request(app.getHttpServer())
+                    .post('/mail')
+                    .set('Content-Type', 'application/json')
+                    .send({
+                        recipient: 'unit2@test.mock'
+                    })
+                    .expect(HttpStatus.CREATED);
 
-      expect(sendMails.length).toBe(1)
-    })
+                const receivedMail = mock.getSentMail()[0];
 
-    it("should send email with test content", async () => {
-      await request(app.getHttpServer())
-      .post('/mail')
-      .set("Content-Type", "application/json")
-      .send({
-          recipient: "unit2@test.mock"
-      })
-      .expect(HttpStatus.CREATED)
+                expect(receivedMail.subject).toBe('test');
+                expect(receivedMail.html).toBe('this is a dummy endpoint');
+            });
 
-      const receivedMail = mock.getSentMail()[0]
+            it('should return an error if Mail fails to send', async () => {
+                mock.setShouldFail(true);
+                await request(app.getHttpServer())
+                    .post('/mail')
+                    .set('Content-Type', 'application/json')
+                    .send({
+                        recipient: 'unit2@test.mock'
+                    })
+                    .expect(HttpStatus.SERVICE_UNAVAILABLE);
+            });
+        });
 
-      expect(receivedMail.subject).toBe("test")
-      expect(receivedMail.html).toBe("this is a dummy endpoint")
-    })
+        describe('generateVerifyMail', () => {
+            it('/auth/register (POST) should send mail verification', async () => {
+                await request(app.getHttpServer())
+                    .post('/auth/register')
+                    .send({
+                        username: 'unit test',
+                        email: 'dummy@unit.test',
+                        password: 'verysecurepassword'
+                    })
+                    .expect(HttpStatus.CREATED);
 
-    it("should return an error if Mail fails to send", async () => {
-      mock.setShouldFail(true)
-      await request(app.getHttpServer())
-      .post('/mail')
-      .set("Content-Type", "application/json")
-      .send({
-          recipient: "unit2@test.mock"
-      })
-      .expect(HttpStatus.SERVICE_UNAVAILABLE)
-    })
-})
+                //checking send mail (content is ignored as this would make changing templates annoying)
+                const sendMails = mock.getSentMail();
+                expect(sendMails.length).toBe(1);
+                expect(sendMails[0].to).toBe('dummy@unit.test');
+            });
 
-describe("generateVerifyMail", () => {
-  it('/auth/register (POST) should send mail verification', async () => {
-    const res = await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({
-        username: "unit test",
-        email: "dummy@unit.test",
-        password: "verysecurepassword"
-      })
-      .expect(HttpStatus.CREATED)
+            it('/user/get-verify (POST) should send mail verification', async () => {
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .get('/user/get-verify')
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestUser())}`
+                    )
+                    .expect(HttpStatus.OK);
 
-      token = res.body.access_token
+                //checking send mail (content is ignored as this would make changing templates annoying)
+                const sendMails = mock.getSentMail();
+                expect(sendMails.length).toBe(1);
+                expect(sendMails[0].to).toBe('mock@mock.mock');
+            });
 
-      //checking send mail (content is ignored as this would make changing templates annoying)
-      const sendMails =  mock.getSentMail()    
-      expect(sendMails.length).toBe(1)
-      expect(sendMails[0].to).toBe("dummy@unit.test")
-    })  
-})
+            it('/auth/register (POST) should fail on mailserver fail', async () => {
+                mock.setShouldFail(true);
+                await request(app.getHttpServer())
+                    .post('/auth/register')
+                    .send({
+                        username: 'unit test',
+                        email: 'dummy@unit.test',
+                        password: 'verysecurepassword'
+                    })
+                    .expect(HttpStatus.SERVICE_UNAVAILABLE);
+            });
+        });
+    });
+});
 
 afterAll(async () => {
-    const res = await request(app.getHttpServer())
-      .get('/user/profile')
-      .set('Authorization', `Bearer ${token}`)
-
-    let userId = res.body.userId
-
-    await request(app.getHttpServer())
-      .delete(`/user/${userId}`)
-      .set('Authorization', `Bearer ${token}`)
-
-    await app.close()
-})
+    await connection.close();
+    closeInMongodConnection();
+    await app.close();
+    await app.close();
+});
