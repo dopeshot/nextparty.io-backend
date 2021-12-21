@@ -1,3 +1,4 @@
+import { Role } from '../../src/user/enums/role.enum';
 import { CurrentPlayerGender } from '../../src/set/enums/currentplayergender.enum';
 import { TaskType } from '../../src/set/enums/tasktype.enum';
 import { Language } from '../../src/shared/enums/language.enum';
@@ -34,7 +35,7 @@ export const getMockAuthUser = () => {
     return {
         userId: 'aaaaaaaaaaaaaaaaaaaaaaac',
         username: 'User',
-        role: 'user'
+        role: Role.User
     };
 };
 
@@ -42,7 +43,7 @@ export const getMockUser = () => {
     return {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaac',
         username: 'User',
-        role: 'user',
+        role: Role.User,
         email: 'test.test@test.de'
     };
 };
@@ -51,14 +52,14 @@ export const getMockAuthAdmin = () => {
     return {
         userId: 'aaaaaaaaaaaaaaaaaaaaaaad',
         username: 'Admin',
-        role: 'admin'
+        role: Role.Admin
     };
 };
 export const getMockAdmin = () => {
     return {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaad',
         username: 'Admin',
-        role: 'admin'
+        role: Role.Admin
     };
 };
 
