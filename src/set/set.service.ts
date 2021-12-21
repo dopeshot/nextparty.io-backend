@@ -2,46 +2,46 @@ import {
     ForbiddenException,
     Injectable,
     InternalServerErrorException,
-    NotFoundException,
-} from '@nestjs/common'
-import { InjectModel } from '@nestjs/mongoose'
-import { Model, ObjectId, Types } from 'mongoose'
-import { JwtUserDto } from '../auth/dto/jwt.dto'
-import { Status } from '../shared/enums/status.enum'
-import { Role } from '../user/enums/role.enum'
-import { CreateSetDto } from './dto/create-set.dto'
-import { CreateTaskDto } from './dto/create-task.dto'
-import { UpdateSetDto } from './dto/update-set.dto'
-import { UpdateTaskDto } from './dto/update-task.dto'
-import { SetDocument } from './entities/set.entity'
-import { TaskDocument } from './entities/task.entity'
-import { TaskType } from './enums/tasktype.enum'
-import { SetSampleData } from './set.data'
+    NotFoundException
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, ObjectId, Types } from 'mongoose';
+import { JwtUserDto } from '../auth/dto/jwt.dto';
+import { Status } from '../shared/enums/status.enum';
+import { Role } from '../user/enums/role.enum';
+import { CreateSetDto } from './dto/create-set.dto';
+import { CreateTaskDto } from './dto/create-task.dto';
+import { UpdateSetDto } from './dto/update-set.dto';
+import { UpdateTaskDto } from './dto/update-task.dto';
+import { SetDocument } from './entities/set.entity';
+import { Task, TaskDocument } from './entities/task.entity';
+import { TaskType } from './enums/tasktype.enum';
+import { SetSampleData } from './set.data';
 import {
     ResponseSet,
     ResponseSetMetadata,
     ResponseSetWithTasks,
     ResponseTask,
     ResponseTaskWithStatus,
-    UpdatedCounts,
-} from './types/set.response'
+    UpdatedCounts
+} from './types/set.response';
 
 @Injectable()
 export class SetService {
     constructor(
-        @InjectModel('Set') private setSchema: Model<SetDocument>,
-        @InjectModel('Task') private taskSchema: Model<TaskDocument>,
+        @InjectModel(Set.name) private setSchema: Model<SetDocument>,
+        @InjectModel(Task.name) private taskSchema: Model<TaskDocument>
     ) {}
 
     async createSet(
         createSetDto: CreateSetDto,
-        user: JwtUserDto,
+        user: JwtUserDto
     ): Promise<ResponseSet> {
         try {
             const set: SetDocument = await this.setSchema.create({
                 ...createSetDto,
-                createdBy: user.userId,
-            })
+                createdBy: user.userId
+            });
 
             return {
                 _id: set.id,
@@ -51,14 +51,14 @@ export class SetService {
                 name: set.name,
                 createdBy: {
                     _id: user.userId,
-                    username: user.username,
+                    username: user.username
                 },
                 previewImage: set.previewImage,
-                bannerImage: set.bannerImage,
-            }
+                bannerImage: set.bannerImage
+            };
         } catch (error) {
             /* istanbul ignore next */ // Unable to test Internal server error here
-            throw error
+            throw error;
         }
     }
 
@@ -74,12 +74,12 @@ export class SetService {
                     language: 1,
                     createdBy: 1,
                     previewImage: 1,
-                    bannerImage: 1,
-                },
+                    bannerImage: 1
+                }
             )
-            .populate<ResponseSet[]>('createdBy', '_id username')
+            .populate<ResponseSet[]>('createdBy', '_id username');
 
-        return sets
+        return sets;
     }
 
     async getOneSet(id: ObjectId): Promise<ResponseSetWithTasks> {
@@ -96,32 +96,32 @@ export class SetService {
                         createdBy: 1,
                         tasks: 1,
                         previewImage: 1,
-                        bannerImage: 1,
-                    },
+                        bannerImage: 1
+                    }
                 )
                 .populate<ResponseSet & { tasks: ResponseTaskWithStatus[] }>(
                     'createdBy',
-                    '_id username',
+                    '_id username'
                 )
-                .lean()
+                .lean();
 
-        if (!set) throw new NotFoundException()
+        if (!set) throw new NotFoundException();
 
         // Remove tasks from array that are not active
-        const result: ResponseSetWithTasks = this.onlyActiveTasks(set)
+        const result: ResponseSetWithTasks = this.onlyActiveTasks(set);
 
-        return result
+        return result;
     }
 
     async updateSetMetadata(
         id: ObjectId,
         updateSetDto: UpdateSetDto,
-        user: JwtUserDto,
+        user: JwtUserDto
     ): Promise<ResponseSetMetadata> {
-        let queryMatch: { _id: ObjectId; createdBy?: ObjectId } = { _id: id }
+        const queryMatch: { _id: ObjectId; createdBy?: ObjectId } = { _id: id };
 
         if (user.role !== Role.Admin) {
-            queryMatch.createdBy = user.userId
+            queryMatch.createdBy = user.userId;
         }
 
         const set: ResponseSetMetadata = await this.setSchema.findOneAndUpdate(
@@ -129,80 +129,78 @@ export class SetService {
             updateSetDto,
             {
                 new: true,
-                select: '_id daresCount truthCount language name createdBy',
-            },
-        )
+                select: '_id daresCount truthCount language name createdBy'
+            }
+        );
 
-        if (!set) throw new NotFoundException()
+        if (!set) throw new NotFoundException();
 
-        return set
+        return set;
     }
 
     async deleteSet(
         id: ObjectId,
         deleteType: string,
-        user: JwtUserDto,
+        user: JwtUserDto
     ): Promise<void> {
         // Hard delete
         if (deleteType === 'hard') {
-            if (user.role != 'admin') throw new ForbiddenException()
+            if (user.role != 'admin') throw new ForbiddenException();
 
-            const set = await this.setSchema.findByIdAndDelete(id)
+            const set = await this.setSchema.findByIdAndDelete(id);
 
-            if (!set) throw new NotFoundException()
+            if (!set) throw new NotFoundException();
 
-            return
+            return;
         }
 
         // Soft delete
-        const queryMatch: { _id: ObjectId; createdBy?: ObjectId } = { _id: id }
+        const queryMatch: { _id: ObjectId; createdBy?: ObjectId } = { _id: id };
 
-        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId
+        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId;
 
         const set = await this.setSchema.findOneAndUpdate(queryMatch, {
-            status: Status.DELETED,
-        })
+            status: Status.DELETED
+        });
 
-        if (!set) throw new NotFoundException()
+        if (!set) throw new NotFoundException();
 
-        return
+        return;
     }
 
-    /*------------------------------------\
-  |                Tasks                |
-  \------------------------------------*/
+    // Tasks
 
     async createTask(
         setId: ObjectId,
         createTaskDto: CreateTaskDto,
-        user: JwtUserDto,
+        user: JwtUserDto
     ): Promise<ResponseTask> {
-        const task: TaskDocument = new this.taskSchema({ ...createTaskDto })
+        const task: TaskDocument = new this.taskSchema({ ...createTaskDto });
         const queryMatch: { _id: ObjectId; createdBy?: ObjectId } = {
-            _id: setId,
-        }
+            _id: setId
+        };
 
-        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId
+        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId;
 
         const incrementType =
             createTaskDto.type == TaskType.TRUTH
                 ? { $push: { tasks: task }, $inc: { truthCount: 1 } }
-                : { $push: { tasks: task }, $inc: { daresCount: 1 } }
+                : { $push: { tasks: task }, $inc: { daresCount: 1 } };
 
         const set: SetDocument = await this.setSchema.findOneAndUpdate(
             queryMatch,
             incrementType,
-            { new: true },
-        )
+            { new: true }
+        );
 
-        if (!set) throw new NotFoundException()
+        if (!set) throw new NotFoundException();
 
         return {
             _id: task._id,
             currentPlayerGender: task.currentPlayerGender,
             type: task.type,
-            message: task.message,
-        }
+            message: task.message
+        };
     }
 
     // The frontend should always send all 3 updatable properties
@@ -210,83 +208,83 @@ export class SetService {
         setId: ObjectId,
         taskId: ObjectId,
         updateTaskDto: UpdateTaskDto,
-        user: JwtUserDto,
+        user: JwtUserDto
     ): Promise<UpdatedCounts> {
         const queryMatch: {
-            _id: ObjectId
-            'tasks._id': ObjectId
-            createdBy?: ObjectId
-        } = { _id: setId, 'tasks._id': taskId }
-        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId
+            _id: ObjectId;
+            'tasks._id': ObjectId;
+            createdBy?: ObjectId;
+        } = { _id: setId, 'tasks._id': taskId };
+        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId;
 
-        let queryUpdate = {
+        const queryUpdate = {
             'tasks.$.type': updateTaskDto.type,
             'tasks.$.message': updateTaskDto.message,
-            'tasks.$.currentPlayerGender': updateTaskDto.currentPlayerGender,
-        }
+            'tasks.$.currentPlayerGender': updateTaskDto.currentPlayerGender
+        };
 
         const set = await this.setSchema.findOneAndUpdate(
             queryMatch,
             queryUpdate,
-            { new: true },
-        )
+            { new: true }
+        );
 
-        if (!set) throw new NotFoundException()
+        if (!set) throw new NotFoundException();
 
-        const updatedResult = await this.updateCounts(setId)
+        const updatedResult = await this.updateCounts(setId);
 
-        return updatedResult
+        return updatedResult;
     }
 
     async removeTask(
         setId: ObjectId,
         taskId: ObjectId,
         deleteType: string,
-        user: JwtUserDto,
+        user: JwtUserDto
     ): Promise<UpdatedCounts> {
         // Hard delete
         if (deleteType === 'hard') {
-            if (user.role != 'admin') throw new ForbiddenException()
+            if (user.role != 'admin') throw new ForbiddenException();
 
             const set = await this.setSchema.findOneAndUpdate(
                 { _id: setId, 'tasks._id': taskId },
-                { $pull: { tasks: { _id: taskId } } },
-            )
+                { $pull: { tasks: { _id: taskId } } }
+            );
 
             if (!set) {
-                throw new NotFoundException()
+                throw new NotFoundException();
             }
 
-            const updatedResult = await this.updateCounts(setId)
+            const updatedResult = await this.updateCounts(setId);
 
-            return updatedResult
+            return updatedResult;
         }
 
         // Soft delete
         const queryMatch: {
-            _id: ObjectId
-            'tasks._id': ObjectId
-            createdBy?: ObjectId
-        } = { _id: setId, 'tasks._id': taskId }
-        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId
+            _id: ObjectId;
+            'tasks._id': ObjectId;
+            createdBy?: ObjectId;
+        } = { _id: setId, 'tasks._id': taskId };
+        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId;
 
         const set = await this.setSchema.findOneAndUpdate(queryMatch, {
-            'tasks.$.status': Status.DELETED,
-        })
+            'tasks.$.status': Status.DELETED
+        });
 
-        if (!set) throw new NotFoundException()
+        if (!set) throw new NotFoundException();
 
-        const updatedResult = await this.updateCounts(setId)
+        const updatedResult = await this.updateCounts(setId);
 
-        return updatedResult
+        return updatedResult;
     }
 
     // Helpers
 
     private onlyActiveTasks(
-        set: ResponseSet & { tasks: ResponseTaskWithStatus[] },
+        set: ResponseSet & { tasks: ResponseTaskWithStatus[] }
     ): ResponseSetWithTasks {
-        const reducedTasks: ResponseTask[] = []
+        const reducedTasks: ResponseTask[] = [];
 
         // Iterate over the tasks array and only push those that are active
         set.tasks.forEach((task) => {
@@ -295,25 +293,32 @@ export class SetService {
                     currentPlayerGender: task.currentPlayerGender,
                     _id: task._id,
                     type: task.type,
-                    message: task.message,
-                })
+                    message: task.message
+                });
             }
-        })
+        });
 
         return {
             ...set,
-            tasks: reducedTasks,
-        }
+            tasks: reducedTasks
+        };
     }
 
     // Uses 2 additional database calls to update the task counts and return the new settings
     private async updateCounts(setId: ObjectId): Promise<UpdatedCounts> {
         // Recounts the active truths and dares, projects the new counts and merges them back into the existing document
-        const update = await this.setSchema.aggregate([
+        /*
+        1. matches the desired set via id
+        2. Sets the field daresCount by getting the size of the array filtered from tasks being active and have the type dare
+        3. Does the same for truthCount
+        4. Projects only the desired fields daresCount truthCount and id
+        5. Merges the aggregation pipeline result back into the sets collection on the set matching the _id
+        */
+        await this.setSchema.aggregate([
             {
                 $match: {
-                    _id: new Types.ObjectId(setId.toString()),
-                },
+                    _id: new Types.ObjectId(setId.toString())
+                }
             },
             {
                 $set: {
@@ -325,15 +330,15 @@ export class SetService {
                                 cond: {
                                     $and: [
                                         {
-                                            $eq: ['$$a.type', 'dare'],
+                                            $eq: ['$$a.type', 'dare']
                                         },
                                         {
-                                            $eq: ['$$a.status', 'active'],
-                                        },
-                                    ],
-                                },
-                            },
-                        },
+                                            $eq: ['$$a.status', 'active']
+                                        }
+                                    ]
+                                }
+                            }
+                        }
                     },
                     truthCount: {
                         $size: {
@@ -343,44 +348,46 @@ export class SetService {
                                 cond: {
                                     $and: [
                                         {
-                                            $eq: ['$$a.type', 'truth'],
+                                            $eq: ['$$a.type', 'truth']
                                         },
                                         {
-                                            $eq: ['$$a.status', 'active'],
-                                        },
-                                    ],
-                                },
-                            },
-                        },
-                    },
-                },
+                                            $eq: ['$$a.status', 'active']
+                                        }
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
             },
             {
-                $project: { _id: 1, truthCount: 1, daresCount: 1 },
+                $project: { _id: 1, truthCount: 1, daresCount: 1 }
             },
             {
                 $merge: {
                     into: 'sets',
                     on: '_id',
                     whenMatched: 'merge',
-                    whenNotMatched: 'discard',
-                },
-            },
-        ])
+                    whenNotMatched: 'discard'
+                }
+            }
+        ]);
+
         // Since the aggregation has no return value, We have to make another call to get the updated data
         const result = await this.setSchema.findById(setId, {
             _id: 1,
             truthCount: 1,
-            daresCount: 1,
-        })
+            daresCount: 1
+        });
+
         /* istanbul ignore next */ // Unable to test Internal server error here
-        if (!result) throw new InternalServerErrorException()
+        if (!result) throw new InternalServerErrorException();
 
         return {
             _id: result._id,
             truthCount: result.truthCount,
-            daresCount: result.daresCount,
-        }
+            daresCount: result.daresCount
+        };
     }
 
     // Migrations / Seeder
@@ -390,29 +397,30 @@ export class SetService {
             const set = await this.createSet(
                 {
                     name: setData.name,
-                    language: setData.language,
+                    language: setData.language
                 },
-                user,
-            )
+                user
+            );
             setData.tasks.forEach(async (task) => {
                 await this.createTask(
                     set._id,
                     {
                         type: task.type,
                         currentPlayerGender: task.currentPlayerGender,
-                        message: task.message,
+                        message: task.message
                     },
-                    user,
-                )
-            })
-        })
-        // TODO: This is a security breach due to the mock data and the need to clean it in testing
+                    user
+                );
+            });
+        });
+
+        // TODO: delete after envGuard implemented
         if (user.role == 'admin' && test === 'true') {
             //await this.setSchema.deleteMany({})
         }
         return {
             statusCode: 201,
-            message: 'Sample data created',
-        }
+            message: 'Sample data created'
+        };
     }
 }
