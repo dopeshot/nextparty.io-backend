@@ -147,7 +147,7 @@ export class SetService {
         if (deleteType === 'hard') {
             if (user.role !== Role.Admin) throw new ForbiddenException();
 
-            const set = await this.setSchema.findByIdAndDelete(id);
+            const set: SetDocument = await this.setSchema.findByIdAndDelete(id);
 
             if (!set) throw new NotFoundException();
 
@@ -159,9 +159,12 @@ export class SetService {
 
         if (user.role !== Role.Admin) queryMatch.createdBy = user.userId;
 
-        const set = await this.setSchema.findOneAndUpdate(queryMatch, {
-            status: Status.DELETED
-        });
+        const set: SetDocument = await this.setSchema.findOneAndUpdate(
+            queryMatch,
+            {
+                status: Status.DELETED
+            }
+        );
 
         if (!set) throw new NotFoundException();
 
@@ -223,7 +226,7 @@ export class SetService {
             'tasks.$.currentPlayerGender': updateTaskDto.currentPlayerGender
         };
 
-        const set = await this.setSchema.findOneAndUpdate(
+        const set: SetDocument = await this.setSchema.findOneAndUpdate(
             queryMatch,
             queryUpdate,
             { new: true }
@@ -231,7 +234,7 @@ export class SetService {
 
         if (!set) throw new NotFoundException();
 
-        const updatedResult = await this.updateCounts(setId);
+        const updatedResult: UpdatedCounts = await this.updateCounts(setId);
 
         return updatedResult;
     }
@@ -246,7 +249,7 @@ export class SetService {
         if (deleteType === 'hard') {
             if (user.role !== Role.Admin) throw new ForbiddenException();
 
-            const set = await this.setSchema.findOneAndUpdate(
+            const set: SetDocument = await this.setSchema.findOneAndUpdate(
                 { _id: setId, 'tasks._id': taskId },
                 { $pull: { tasks: { _id: taskId } } }
             );
@@ -268,13 +271,16 @@ export class SetService {
         } = { _id: setId, 'tasks._id': taskId };
         if (user.role !== Role.Admin) queryMatch.createdBy = user.userId;
 
-        const set = await this.setSchema.findOneAndUpdate(queryMatch, {
-            'tasks.$.status': Status.DELETED
-        });
+        const set: SetDocument = await this.setSchema.findOneAndUpdate(
+            queryMatch,
+            {
+                'tasks.$.status': Status.DELETED
+            }
+        );
 
         if (!set) throw new NotFoundException();
 
-        const updatedResult = await this.updateCounts(setId);
+        const updatedResult: UpdatedCounts = await this.updateCounts(setId);
 
         return updatedResult;
     }
@@ -374,19 +380,19 @@ export class SetService {
         ]);
 
         // Since the aggregation has no return value, We have to make another call to get the updated data
-        const result = await this.setSchema.findById(setId, {
+        const set: UpdatedCounts = await this.setSchema.findById(setId, {
             _id: 1,
             truthCount: 1,
             dareCount: 1
         });
 
         /* istanbul ignore next */ // Unable to test Internal server error here
-        if (!result) throw new InternalServerErrorException();
+        if (!set) throw new InternalServerErrorException();
 
         return {
-            _id: result._id,
-            truthCount: result.truthCount,
-            dareCount: result.dareCount
+            _id: set._id,
+            truthCount: set.truthCount,
+            dareCount: set.dareCount
         };
     }
 
