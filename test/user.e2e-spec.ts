@@ -193,17 +193,8 @@ describe('UserModule (e2e)', () => {
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
                     )
-                    .expect(HttpStatus.OK);
+                    .expect(HttpStatus.NO_CONTENT);
                 expect((await userModel.find()).length).toBe(0);
-
-                expect(res.body).toEqual(
-                    expect.objectContaining({
-                        _id: expect.stringMatching(user._id.toString()),
-                        username: expect.stringMatching(user.username),
-                        role: expect.stringMatching(user.role)
-                    })
-                );
-                expect(res.body).not.toHaveProperty('password');
             });
 
             it('/user/:id (DELETE) should fail when deleting other user', async () => {
