@@ -1,13 +1,19 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString, Length, validate } from "class-validator"
-import { Language } from "../../shared/enums/language.enum"
+import {
+    IsEnum,
+    IsNotEmpty,
+    IsOptional,
+    IsString,
+    Length
+} from 'class-validator';
+import { Language } from '../../shared/enums/language.enum';
 
-export class CreateSetDto  {
+export class CreateSetDto {
     @IsString()
-    @IsNotEmpty()
+    @IsNotEmpty() // MC: can get removed due Length
     @Length(3, 32)
-    name: string
+    name: string;
 
     @IsOptional()
     @IsEnum(Language)
-    language: Language = Language.DE
+    language: Language = Language.DE;
 }
