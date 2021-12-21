@@ -45,7 +45,7 @@ export class SetService {
 
             return {
                 _id: set.id,
-                daresCount: set.daresCount,
+                dareCount: set.dareCount,
                 truthCount: set.truthCount,
                 language: set.language,
                 name: set.name,
@@ -68,7 +68,7 @@ export class SetService {
                 { status: Status.ACTIVE },
                 {
                     _id: 1,
-                    daresCount: 1,
+                    dareCount: 1,
                     truthCount: 1,
                     name: 1,
                     language: 1,
@@ -89,7 +89,7 @@ export class SetService {
                     { _id: id, status: Status.ACTIVE },
                     {
                         _id: 1,
-                        daresCount: 1,
+                        dareCount: 1,
                         truthCount: 1,
                         name: 1,
                         language: 1,
@@ -129,7 +129,7 @@ export class SetService {
             updateSetDto,
             {
                 new: true,
-                select: '_id daresCount truthCount language name createdBy'
+                select: '_id dareCount truthCount language name createdBy'
             }
         );
 
@@ -185,7 +185,7 @@ export class SetService {
         const incrementType =
             createTaskDto.type == TaskType.TRUTH
                 ? { $push: { tasks: task }, $inc: { truthCount: 1 } }
-                : { $push: { tasks: task }, $inc: { daresCount: 1 } };
+                : { $push: { tasks: task }, $inc: { dareCount: 1 } };
 
         const set: SetDocument = await this.setSchema.findOneAndUpdate(
             queryMatch,
@@ -309,9 +309,9 @@ export class SetService {
         // Recounts the active truths and dares, projects the new counts and merges them back into the existing document
         /*
         1. matches the desired set via id
-        2. Sets the field daresCount by getting the size of the array filtered from tasks being active and have the type dare
+        2. Sets the field dareCount by getting the size of the array filtered from tasks being active and have the type dare
         3. Does the same for truthCount
-        4. Projects only the desired fields daresCount truthCount and id
+        4. Projects only the desired fields dareCount truthCount and id
         5. Merges the aggregation pipeline result back into the sets collection on the set matching the _id
         */
         await this.setSchema.aggregate([
@@ -322,7 +322,7 @@ export class SetService {
             },
             {
                 $set: {
-                    daresCount: {
+                    dareCount: {
                         $size: {
                             $filter: {
                                 input: '$tasks',
@@ -361,7 +361,7 @@ export class SetService {
                 }
             },
             {
-                $project: { _id: 1, truthCount: 1, daresCount: 1 }
+                $project: { _id: 1, truthCount: 1, dareCount: 1 }
             },
             {
                 $merge: {
@@ -377,7 +377,7 @@ export class SetService {
         const result = await this.setSchema.findById(setId, {
             _id: 1,
             truthCount: 1,
-            daresCount: 1
+            dareCount: 1
         });
 
         /* istanbul ignore next */ // Unable to test Internal server error here
@@ -386,7 +386,7 @@ export class SetService {
         return {
             _id: result._id,
             truthCount: result.truthCount,
-            daresCount: result.daresCount
+            dareCount: result.dareCount
         };
     }
 

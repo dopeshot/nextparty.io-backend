@@ -12,7 +12,7 @@ export const getSetSetupData = () => {
         createdBy: 'aaaaaaaaaaaaaaaaaaaaaaac',
         previewImage: 'placeholder',
         bannerImage: 'placeHolder2',
-        daresCount: 0,
+        dareCount: 0,
         truthCount: 1,
         tasks: [
             {

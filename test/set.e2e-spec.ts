@@ -82,7 +82,7 @@ describe('Sets (e2e)', () => {
                 expect.objectContaining({
                     _id: expect.any(String),
                     language: expect.any(String),
-                    daresCount: expect.any(Number),
+                    dareCount: expect.any(Number),
                     truthCount: expect.any(Number),
                     createdBy: expect.any(Object),
                     name: expect.any(String),
@@ -168,7 +168,7 @@ describe('Sets (e2e)', () => {
                 expect.objectContaining({
                     _id: expect.any(String),
                     language: expect.any(String),
-                    daresCount: expect.any(Number),
+                    dareCount: expect.any(Number),
                     truthCount: expect.any(Number),
                     createdBy: null,
                     name: expect.any(String),
@@ -198,7 +198,7 @@ describe('Sets (e2e)', () => {
                 expect.objectContaining({
                     _id: expect.any(String),
                     language: expect.any(String),
-                    daresCount: expect.any(Number),
+                    dareCount: expect.any(Number),
                     truthCount: expect.any(Number),
                     createdBy: null,
                     name: expect.any(String),
@@ -266,7 +266,7 @@ describe('Sets (e2e)', () => {
             expect(set).toEqual(
                 expect.objectContaining({
                     _id: expect.any(String),
-                    daresCount: expect.any(Number),
+                    dareCount: expect.any(Number),
                     truthCount: expect.any(Number),
                     createdBy: expect.any(String),
                     language: expect.any(String),
@@ -572,7 +572,7 @@ describe('Sets (e2e)', () => {
 
             const set = await setModel.findById(getSetSetupData()._id).lean();
             expect(set.truthCount).toBe(0);
-            expect(set.daresCount).toBe(1);
+            expect(set.dareCount).toBe(1);
 
             const message = set.tasks[0].message;
             expect(message).toEqual(getMockTask().message);
@@ -583,7 +583,7 @@ describe('Sets (e2e)', () => {
                 expect.objectContaining({
                     _id: expect.any(String),
                     truthCount: expect.any(Number),
-                    daresCount: expect.any(Number)
+                    dareCount: expect.any(Number)
                 })
             );
             // It is unnecessary to tes what is not in the type
@@ -601,7 +601,7 @@ describe('Sets (e2e)', () => {
                 .expect(HttpStatus.OK);
             const set = await setModel.findById(getSetSetupData()._id).lean();
             expect(set.truthCount).toBe(0);
-            expect(set.daresCount).toBe(1);
+            expect(set.dareCount).toBe(1);
 
             const message = set.tasks[0].message;
             expect(message).toEqual(getMockTask().message);
@@ -612,7 +612,7 @@ describe('Sets (e2e)', () => {
                 expect.objectContaining({
                     _id: expect.any(String),
                     truthCount: expect.any(Number),
-                    daresCount: expect.any(Number)
+                    dareCount: expect.any(Number)
                 })
             );
             // It is unnecessary to tes what is not in the type
@@ -666,7 +666,7 @@ describe('Sets (e2e)', () => {
             const set = await setModel.findById(getSetSetupData()._id);
             expect(set.tasks[0].status).toBe(Status.DELETED);
             expect(set.truthCount).toBe(0);
-            expect(set.daresCount).toBe(0);
+            expect(set.dareCount).toBe(0);
         });
 
         it('/set/:id/task (DELETE) with admin', async () => {
@@ -681,7 +681,7 @@ describe('Sets (e2e)', () => {
             const set = await setModel.findById(getSetSetupData()._id);
             expect(set.tasks[0].status).toBe(Status.DELETED);
             expect(set.truthCount).toBe(0);
-            expect(set.daresCount).toBe(0);
+            expect(set.dareCount).toBe(0);
         });
 
         it('/set/:id/task (DELETE) hard with admin', async () => {
@@ -696,7 +696,7 @@ describe('Sets (e2e)', () => {
             const set = await setModel.findById(getSetSetupData()._id);
             expect(set.tasks.length).toBe(0);
             expect(set.truthCount).toBe(0);
-            expect(set.daresCount).toBe(0);
+            expect(set.dareCount).toBe(0);
         });
 
         // Negative test
