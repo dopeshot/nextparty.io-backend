@@ -145,7 +145,7 @@ export class SetService {
     ): Promise<void> {
         // Hard delete
         if (deleteType === 'hard') {
-            if (user.role != 'admin') throw new ForbiddenException();
+            if (user.role !== Role.Admin) throw new ForbiddenException();
 
             const set = await this.setSchema.findByIdAndDelete(id);
 
@@ -183,7 +183,7 @@ export class SetService {
         if (user.role !== Role.Admin) queryMatch.createdBy = user.userId;
 
         const incrementType =
-            createTaskDto.type == TaskType.TRUTH
+            createTaskDto.type === TaskType.TRUTH
                 ? { $push: { tasks: task }, $inc: { truthCount: 1 } }
                 : { $push: { tasks: task }, $inc: { dareCount: 1 } };
 
@@ -244,7 +244,7 @@ export class SetService {
     ): Promise<UpdatedCounts> {
         // Hard delete
         if (deleteType === 'hard') {
-            if (user.role != 'admin') throw new ForbiddenException();
+            if (user.role !== Role.Admin) throw new ForbiddenException();
 
             const set = await this.setSchema.findOneAndUpdate(
                 { _id: setId, 'tasks._id': taskId },
@@ -415,7 +415,7 @@ export class SetService {
         });
 
         // TODO: delete after envGuard implemented
-        if (user.role == 'admin' && test === 'true') {
+        if (user.role === Role.Admin && test === 'true') {
             //await this.setSchema.deleteMany({})
         }
         return {
