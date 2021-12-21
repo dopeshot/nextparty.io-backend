@@ -73,6 +73,6 @@ export const getMockTask = () => {
     };
 };
 export const getString = (length: number) => {
-    let string = new Array(length + 1).join('a');
+    const string = new Array(length + 1).join('a');
     return string;
 };
