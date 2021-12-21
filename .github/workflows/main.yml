@@ -36,18 +36,15 @@ jobs:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
     
-     #  Start MongoDB 
-     - name: Start MongoDB
-       uses: supercharge/mongodb-github-action@1.6.0
-       with:
-          mongodb-version: '5.0'
-    
      # setup env
      - name: create env
        run: 'echo "$ENV_VALUES" > .env'
        shell: bash
        env:
         ENV_VALUES: ${{secrets.PIPELINE_ENV}}
+        
+     - name: node modules
+       run: 'npm i'
     
      # run unit tests    
      - name: end 2 end tests
