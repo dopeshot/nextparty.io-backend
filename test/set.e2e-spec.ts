@@ -122,7 +122,18 @@ describe('Sets (e2e)', () => {
         it('/set (POST) with too short name', async () => {
             await request(app.getHttpServer())
                 .post('/set')
-                .send({ language: Language.DE, name: '12' })
+                .send({ language: Language.DE, name: getString(2) })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
+
+        // Negative test
+        it('/set (POST) with too long name', async () => {
+            await request(app.getHttpServer())
+                .post('/set')
+                .send({
+                    language: Language.DE,
+                    name: getString(33)
+                })
                 .expect(HttpStatus.BAD_REQUEST);
         });
 
@@ -139,17 +150,6 @@ describe('Sets (e2e)', () => {
             await request(app.getHttpServer())
                 .post('/set')
                 .send({ language: Language.DE, name: 2 })
-                .expect(HttpStatus.BAD_REQUEST);
-        });
-
-        // Negative test
-        it('/set (POST) with too long name', async () => {
-            await request(app.getHttpServer())
-                .post('/set')
-                .send({
-                    language: Language.DE,
-                    name: '123456789012345678901234567890123'
-                })
                 .expect(HttpStatus.BAD_REQUEST);
         });
     });
