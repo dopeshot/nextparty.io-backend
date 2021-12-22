@@ -28,7 +28,7 @@ import {
 describe('Sets (e2e)', () => {
     let app: INestApplication;
     let setModel: Model<SetDocument>;
-    let fakeAuthGuard = new FakeAuthGuardFactory();
+    const fakeAuthGuard = new FakeAuthGuardFactory();
     let connection: Connection;
 
     beforeAll(async () => {
@@ -60,7 +60,7 @@ describe('Sets (e2e)', () => {
 
     afterEach(async () => {
         await setModel.deleteMany();
-        fakeAuthGuard.setUser('');
+        fakeAuthGuard.setUser(null);
     });
 
     afterAll(async () => {
