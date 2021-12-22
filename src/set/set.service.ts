@@ -285,19 +285,15 @@ export class SetService {
     private onlyActiveTasks(
         set: ResponseSet & { tasks: ResponseTaskWithStatus[] }
     ): ResponseSetWithTasks {
-        const reducedTasks: ResponseTask[] = [];
-
         // Iterate over the tasks array and only push those that are active
-        set.tasks.forEach((task) => {
-            if (task.status === Status.ACTIVE) {
-                reducedTasks.push({
-                    currentPlayerGender: task.currentPlayerGender,
-                    _id: task._id,
-                    type: task.type,
-                    message: task.message
-                });
-            }
-        });
+        const reducedTasks: ResponseTask[] = set.tasks
+            .filter((task) => task.status === Status.ACTIVE)
+            .map((task) => ({
+                currentPlayerGender: task.currentPlayerGender,
+                _id: task._id,
+                type: task.type,
+                message: task.message
+            }));
 
         return {
             ...set,
