@@ -1,13 +1,13 @@
 import { Module } from '@nestjs/common';
-import { UserService } from './user.service';
-import { UserController } from './user.controller';
-import { MongooseModule } from '@nestjs/mongoose';
-import { User, UserSchema } from './entities/user.entity';
-import { MailService } from '../mail/mail.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
-import { JWTVerifyStrategy } from './guards/mailVerify-jwt.strategy';
+import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
+import { MailService } from '../mail/mail.service';
+import { User, UserSchema } from './entities/user.entity';
+import { JWTVerifyStrategy } from './guards/mail-verify-jwt.strategy';
+import { UserController } from './user.controller';
+import { UserService } from './user.service';
 
 @Module({
     imports: [

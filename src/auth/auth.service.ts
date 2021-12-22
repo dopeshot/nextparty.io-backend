@@ -1,20 +1,18 @@
 import {
-    BadRequestException,
     ConflictException,
-    ForbiddenException,
     Injectable,
     InternalServerErrorException,
     UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { User } from '../user/entities/user.entity';
-import { UserService } from '../user/user.service';
-import { RegisterDto } from './dto/register.dto';
 import * as bcrypt from 'bcrypt';
-import { AccessTokenDto } from './dto/jwt.dto';
-import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
 import { ObjectId } from 'mongoose';
+import { User } from '../user/entities/user.entity';
 import { UserStatus } from '../user/enums/status.enum';
+import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
+import { UserService } from '../user/user.service';
+import { AccessTokenDto } from './dto/jwt.dto';
+import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
@@ -29,12 +27,15 @@ export class AuthService {
      * @returns the new registered User
      */
     async registerUser(credentials: RegisterDto): Promise<AccessTokenDto> {
+        console.log('registering user');
+        console.log(credentials);
+
         // While this might seem unnecessary now, this way of implementing this allows us to add logic to register later without affecting the user create itself
         const user: User = await this.userService.create(credentials);
 
         /* istanbul ignore next */
         if (!user)
-            new InternalServerErrorException('User could not be created');
+            throw new InternalServerErrorException('User could not be created');
 
         // Generate and return JWT
         return await this.createLoginPayload(user);
@@ -51,23 +52,21 @@ export class AuthService {
         password: string
     ): Promise<User> {
         const user = await this.userService.findOneByEmail(email);
-        if (!user)
+
+        // Check if user exists and does not use third party auth
+        if (!user || user.provider)
             throw new UnauthorizedException(
                 `Login Failed due to invalid credentials`
             );
 
-        if (user.provider) {
+        // Check if password is correct
+        if (!(await bcrypt.compare(password, user.password))) {
             throw new UnauthorizedException(
-                `Login Failed due to invalid credentials. There might be a third party login with this email`
+                `Login Failed due to invalid credentials`
             );
         }
 
-        if (await bcrypt.compare(password, user.password)) {
-            return user;
-        }
-        throw new UnauthorizedException(
-            `Login Failed due to invalid credentials`
-        );
+        return user;
     }
 
     async handleProviderLogin(
@@ -107,7 +106,7 @@ export class AuthService {
         );
 
         // Create Payload and JWT
-        return await this.createLoginPayload(newUser);
+        return this.createLoginPayload(newUser);
     }
 
     /**
@@ -115,7 +114,7 @@ export class AuthService {
      * @param user logged in user
      * @returns access token
      */
-    async createLoginPayload(user: User): Promise<AccessTokenDto> {
+    createLoginPayload(user: User): AccessTokenDto {
         const payload = {
             username: user.username,
             sub: user._id,
@@ -127,7 +126,7 @@ export class AuthService {
         };
     }
 
-    async isValidJWT(userId: ObjectId): Promise<boolean> {
+    async isValidJWT(userId: ObjectId): Promise<User | false> {
         let user: User;
         try {
             user = await this.userService.findOneById(userId);
@@ -147,6 +146,6 @@ export class AuthService {
             return false;
         }
 
-        return true;
+        return user;
     }
 }

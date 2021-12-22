@@ -1,27 +1,25 @@
 import {
-    BadRequestException,
     ConflictException,
     Injectable,
     InternalServerErrorException,
     NotFoundException,
-    Provider,
     ServiceUnavailableException,
     UnauthorizedException
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
+import * as bcyrpt from 'bcrypt';
 import { Model, ObjectId } from 'mongoose';
+import { JwtUserDto } from '../auth/dto/jwt.dto';
+import { MailVerifyDto } from '../mail/dto/mail-verify.dto';
+import { MailService } from '../mail/mail.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserDocument, UserSchema } from './entities/user.entity';
-import * as bcyrpt from 'bcrypt';
-import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
-import { UserStatus } from './enums/status.enum';
-import { MailService } from '../mail/mail.service';
-import { MailVerifyDto } from '../mail/dto/mail-verify.dto';
+import { User, UserDocument } from './entities/user.entity';
 import { Role } from './enums/role.enum';
-import { JwtUserDto } from '../auth/dto/jwt.dto';
-import { JwtService } from '@nestjs/jwt';
-import { returnUser } from './dto/return-user.dto';
+import { UserStatus } from './enums/status.enum';
+import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
+import { returnUser } from './types/return-user.type';
 
 @Injectable()
 export class UserService {
@@ -44,18 +42,20 @@ export class UserService {
     async create(credentials: CreateUserDto): Promise<User> {
         try {
             const hash = await this.hashPassword(credentials.password);
+            console.log('password hash: ', hash);
             const user = new this.userSchema({
                 ...credentials,
                 status: UserStatus.UNVERIFIED,
                 password: hash
             });
 
-            await this.createVerification(user);
-
             const result = await user.save();
+
+            await this.createVerification(result);
 
             return result;
         } catch (error) {
+            console.log(error);
             if (error.code === 11000 && error.keyPattern.username)
                 throw new ConflictException('Username is already taken.');
             else if (error.code === 11000 && error.keyPattern.email)
@@ -94,13 +94,13 @@ export class UserService {
 
         //console.log(`${process.env.HOST}/api/user/verify/?code=${verifyCode}`);
 
-        await this.mailService.sendMail(
+        await this.mailService.sendMail<MailVerifyDto>(
             user.email,
             'MailVerify',
             {
                 name: user.username,
                 link: `${process.env.HOST}/user/verify/${verifyCode}`
-            } as MailVerifyDto,
+            },
             'Verify your email'
         );
 
@@ -135,8 +135,6 @@ export class UserService {
      */
     async findAll(): Promise<User[]> {
         const users = await this.userSchema.find();
-
-        if (!users) throw new NotFoundException();
 
         return users;
     }
@@ -198,7 +196,7 @@ export class UserService {
 
     async remove(id: ObjectId, requestingUser: JwtUserDto): Promise<User> {
         if (
-            requestingUser.role !== Role.Admin &&
+            requestingUser.role !== Role.ADMIN &&
             id !== requestingUser.userId
         ) {
             throw new UnauthorizedException();
@@ -211,7 +209,7 @@ export class UserService {
         return user;
     }
 
-    async validateVerifyCode(userId: ObjectId): Promise<boolean> {
+    async isValidVerifyCode(userId: ObjectId): Promise<boolean> {
         let user: User;
         try {
             user = await this.findOneById(userId);

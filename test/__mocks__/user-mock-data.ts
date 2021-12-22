@@ -1,11 +1,9 @@
+import { JwtService } from '@nestjs/jwt';
+import { AuthService } from '../../src/auth/auth.service';
 import { Role } from '../../src/user/enums/role.enum';
-
+import { UserStatus } from '../../src/user/enums/status.enum';
 // TODO: Is this the best way to do this?
 import { UserService } from '../../src/user/user.service';
-import { AuthService } from '../../src/auth/auth.service';
-
-import { JwtService } from '@nestjs/jwt';
-import { UserStatus } from '../../src/user/enums/status.enum';
 
 let jwtService: JwtService = new JwtService({
     secret: 'secretkey',
@@ -21,7 +19,7 @@ let user = {
     username: 'mock',
     email: 'mock@mock.mock',
     password: '',
-    role: Role.User,
+    role: Role.USER,
     status: UserStatus.ACTIVE,
     provider: ''
 };
@@ -31,7 +29,7 @@ let admin = {
     username: 'admin',
     email: 'discordmod@admin.mock',
     password: '',
-    role: Role.Admin,
+    role: Role.ADMIN,
     status: UserStatus.ACTIVE,
     provider: ''
 };

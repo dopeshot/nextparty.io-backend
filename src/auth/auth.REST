@@ -18,14 +18,8 @@ Content-Type: application/json
     "password": "12345678"
 }
 
-### Google Auth
-GET {{adress}}/google/redirect
-
-{
-        "username": "googleman",
-        " email": "googleuser@google.com",
-        " provider": "google"
-}
+### Facebook Auth
+GET {{adress}}/google
 
 ### Facebook Auth
 GET {{adress}}/facebook

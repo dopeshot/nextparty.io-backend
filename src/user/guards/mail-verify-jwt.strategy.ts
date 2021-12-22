@@ -1,15 +1,20 @@
 import { Inject, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import { ObjectId } from 'mongoose';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { AuthService } from '../../auth.service';
-import { JwtPayloadDto, JwtUserDto } from '../../dto/jwt.dto';
+import { MailVerifyJWTDto } from '../interfaces/verify-jwt.interface';
+import { UserService } from '../user.service';
 
-export class JwtStrategy extends PassportStrategy(Strategy) {
-    constructor(@Inject(AuthService) private authService: AuthService) {
+// Set verify-jwt as strategy name
+export class JWTVerifyStrategy extends PassportStrategy(
+    Strategy,
+    'verify-jwt'
+) {
+    constructor(@Inject(UserService) private userService: UserService) {
         super({
-            jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+            jwtFromRequest: ExtractJwt.fromUrlQueryParameter('code'),
             ignoreExpiration: false,
-            secretOrKey: process.env.JWT_SECRET
+            secretOrKey: process.env.VERIFY_JWT_SECRET
         });
     }
 
@@ -18,20 +23,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
      * @param payload from JWT tokem
      * @returns decoded payload from JWT token
      */
-    async validate(payload: JwtPayloadDto): Promise<JwtUserDto> {
-        const user = await this.authService.isValidJWT(payload.sub);
-
+    async validate(payload: MailVerifyJWTDto): Promise<ObjectId> {
         // Validate if user still exists. This keeps tokens from being valid for users that have been deleted
-        if (!user) {
+        if (!(await this.userService.isValidVerifyCode(payload.id))) {
             throw new UnauthorizedException(
                 'Your are not allowed to use this service.'
             );
         }
-
-        return {
-            userId: payload.sub,
-            username: payload.username,
-            role: user.role
-        };
+        return payload.id;
     }
 }

@@ -15,10 +15,10 @@ import { ObjectId } from 'mongoose';
 import { Roles } from '../auth/roles/roles.decorator';
 import { RolesGuard } from '../auth/roles/roles.guard';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
-import { returnUser } from './dto/return-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from './enums/role.enum';
-import { VerifyJWTGuard } from './guards/mailVerify-jwt.guard';
+import { VerifyJWTGuard } from './guards/mail-verify-jwt.guard';
+import { returnUser } from './types/return-user.type';
 import { UserService } from './user.service';
 
 @ApiTags('user')
@@ -28,9 +28,14 @@ export class UserController {
 
     @Get()
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(Role.Admin)
+    @Roles(Role.ADMIN)
     async findAll(): Promise<returnUser[]> {
-        return await this.userService.findAll();
+        const users = await this.userService.findAll();
+        users.forEach(async (user) => {
+            await this.userService.transformToReturn(user);
+        });
+
+        return users;
     }
 
     @Get('/verify')
