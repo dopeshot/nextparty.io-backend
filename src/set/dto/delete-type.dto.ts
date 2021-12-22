@@ -1,7 +1,8 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { DeleteType } from '../enums/delete-type.enum';
 
 export class DeleteTypeDto {
     @IsOptional()
-    @IsString()
-    type: string;
+    @IsEnum(DeleteType)
+    type: DeleteType;
 }

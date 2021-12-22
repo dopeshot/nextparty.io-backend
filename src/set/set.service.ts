@@ -15,6 +15,7 @@ import { UpdateSetDto } from './dto/update-set.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { SetDocument } from './entities/set.entity';
 import { Task, TaskDocument } from './entities/task.entity';
+import { DeleteType } from './enums/delete-type.enum';
 import { TaskType } from './enums/tasktype.enum';
 import { SetSampleData } from './set.data';
 import {
@@ -134,11 +135,11 @@ export class SetService {
 
     async deleteSet(
         id: ObjectId,
-        deleteType: string,
+        deleteType: DeleteType,
         user: JwtUserDto
     ): Promise<void> {
         // Hard delete
-        if (deleteType === 'hard') {
+        if (deleteType === DeleteType.HARD) {
             if (user.role !== Role.Admin) throw new ForbiddenException();
 
             const set: SetDocument = await this.setSchema.findByIdAndDelete(id);
@@ -236,11 +237,11 @@ export class SetService {
     async removeTask(
         setId: ObjectId,
         taskId: ObjectId,
-        deleteType: string,
+        deleteType: DeleteType,
         user: JwtUserDto
     ): Promise<UpdatedCounts> {
         // Hard delete
-        if (deleteType === 'hard') {
+        if (deleteType === DeleteType.HARD) {
             if (user.role !== Role.Admin) throw new ForbiddenException();
 
             const set: SetDocument = await this.setSchema.findOneAndUpdate(
