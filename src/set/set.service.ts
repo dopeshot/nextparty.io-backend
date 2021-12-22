@@ -56,7 +56,7 @@ export class SetService {
             };
         } catch (error) {
             /* istanbul ignore next */ // Unable to test Internal server error here
-            throw error;
+            throw new InternalServerErrorException();
         }
     }
 
