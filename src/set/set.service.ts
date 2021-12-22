@@ -13,7 +13,7 @@ import { CreateSetDto } from './dto/create-set.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { SetDocument } from './entities/set.entity';
+import { SetDocument, Set } from './entities/set.entity';
 import { Task, TaskDocument } from './entities/task.entity';
 import { DeleteType } from './enums/delete-type.enum';
 import { TaskType } from './enums/tasktype.enum';

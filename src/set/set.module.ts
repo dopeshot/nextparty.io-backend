@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Task, TaskSchema } from '../set/entities/task.entity';
-import { SetSchema } from './entities/set.entity';
+import { SetSchema, Set } from './entities/set.entity';
 import { SetController } from './set.controller';
 import { SetService } from './set.service';
 
