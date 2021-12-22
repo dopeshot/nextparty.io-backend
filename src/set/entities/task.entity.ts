@@ -12,7 +12,7 @@ export class Task {
     @Prop({ default: CurrentPlayerGender.ANYONE })
     currentPlayerGender: CurrentPlayerGender;
 
-    @Prop({ required: true, index: true })
+    @Prop({ required: true })
     message: string;
 
     @Prop({ default: Status.ACTIVE })
