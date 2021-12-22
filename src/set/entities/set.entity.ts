@@ -3,6 +3,7 @@ import { ObjectId, SchemaTypes, Document } from 'mongoose';
 import { Status } from '../../shared/enums/status.enum';
 import { Language } from '../../shared/enums/language.enum';
 import { Task, TaskSchema } from './task.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Schema({ timestamps: true, _id: true })
 export class Set {
@@ -15,7 +16,7 @@ export class Set {
     @Prop({ default: Status.ACTIVE })
     status: Status | Status.ACTIVE;
 
-    @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
+    @Prop({ type: SchemaTypes.ObjectId, ref: User.name, required: true })
     createdBy: ObjectId;
 
     @Prop({ required: true })
