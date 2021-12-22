@@ -1,25 +1,23 @@
 'use strict';
 //NestJS imports
-import { Test, TestingModule } from '@nestjs/testing';
-import { NestExpressApplication } from '@nestjs/platform-express';
-
-//node imports
-import * as request from 'supertest';
-
 //project imports
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
-import { getJWT, getTestUser } from './__mocks__/user-mock-data';
+import { ConfigModule } from '@nestjs/config';
+import { getConnectionToken } from '@nestjs/mongoose';
+import { NestExpressApplication } from '@nestjs/platform-express';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Connection, Model } from 'mongoose';
+//node imports
+import * as request from 'supertest';
+import { AuthModule } from '../src/auth/auth.module';
+import { MailModule } from '../src/mail/mail.module';
+import { UserDocument } from '../src/user/entities/user.entity';
+import { UserModule } from '../src/user/user.module';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
 } from './helpers/mongoMemoryHelpers';
-import { ConfigModule } from '@nestjs/config';
-import { Connection, Model } from 'mongoose';
-import { getConnectionToken } from '@nestjs/mongoose';
-import { UserDocument } from '../src/user/entities/user.entity';
-import { AuthModule } from '../src/auth/auth.module';
-import { MailModule } from '../src/mail/mail.module';
-import { UserModule } from '../src/user/user.module';
+import { getJWT, getTestUser } from './__mocks__/user-mock-data';
 
 const { mock } = require('nodemailer');
 
@@ -129,7 +127,7 @@ describe('MailModule', () => {
             it('/user/get-verify (POST) should send mail verification', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
-                    .get('/user/get-verify')
+                    .get('/user/resend-account-verification')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`

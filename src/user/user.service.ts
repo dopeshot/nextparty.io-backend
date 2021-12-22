@@ -1,10 +1,10 @@
 import {
     ConflictException,
+    ForbiddenException,
     Injectable,
     InternalServerErrorException,
     NotFoundException,
-    ServiceUnavailableException,
-    UnauthorizedException
+    ServiceUnavailableException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -42,12 +42,15 @@ export class UserService {
     async create(credentials: CreateUserDto): Promise<User> {
         try {
             const hash = await this.hashPassword(credentials.password);
-            console.log('password hash: ', hash);
             const user = new this.userSchema({
                 ...credentials,
                 status: UserStatus.UNVERIFIED,
                 password: hash
             });
+
+            // This order of operations is important
+            // The user is saved first, then the verification code is generated
+            // If the verification code generation fails, it can be rerequested later
 
             const result = await user.save();
 
@@ -55,7 +58,6 @@ export class UserService {
 
             return result;
         } catch (error) {
-            console.log(error);
             if (error.code === 11000 && error.keyPattern.username)
                 throw new ConflictException('Username is already taken.');
             else if (error.code === 11000 && error.keyPattern.email)
@@ -157,10 +159,10 @@ export class UserService {
      * @param email of the user
      * @returns User
      */
-    async findOneByEmail(email: string): Promise<User | null> {
+    async findOneByEmail(email: string): Promise<User> {
         const user = await this.userSchema.findOne({ email }).lean();
 
-        if (!user) return null;
+        if (!user) throw new NotFoundException();
 
         return user;
     }
@@ -173,8 +175,17 @@ export class UserService {
      */
     async updateUser(
         id: ObjectId,
-        updateUserDto: UpdateUserDto
+        updateUserDto: UpdateUserDto,
+        actingUser: JwtUserDto
     ): Promise<User> {
+        // User should only be able to update his own data (Admin can update all)
+        if (
+            id.toString() !== actingUser.userId.toString() &&
+            actingUser.role !== Role.ADMIN
+        ) {
+            throw new ForbiddenException();
+        }
+
         try {
             const updatedUser: User = await this.userSchema.findByIdAndUpdate(
                 id,
@@ -194,12 +205,13 @@ export class UserService {
         }
     }
 
-    async remove(id: ObjectId, requestingUser: JwtUserDto): Promise<User> {
+    async remove(id: ObjectId, actingUser: JwtUserDto): Promise<User> {
+        // User should only be able to delete own account (Admin can delete all)
         if (
-            requestingUser.role !== Role.ADMIN &&
-            id !== requestingUser.userId
+            id.toString() !== actingUser.userId.toString() &&
+            actingUser.role !== Role.ADMIN
         ) {
-            throw new UnauthorizedException();
+            throw new ForbiddenException();
         }
 
         const user = await this.userSchema.findByIdAndDelete(id);

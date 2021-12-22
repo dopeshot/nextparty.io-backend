@@ -2,6 +2,7 @@ import {
     ConflictException,
     Injectable,
     InternalServerErrorException,
+    NotFoundException,
     UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -27,9 +28,6 @@ export class AuthService {
      * @returns the new registered User
      */
     async registerUser(credentials: RegisterDto): Promise<AccessTokenDto> {
-        console.log('registering user');
-        console.log(credentials);
-
         // While this might seem unnecessary now, this way of implementing this allows us to add logic to register later without affecting the user create itself
         const user: User = await this.userService.create(credentials);
 
@@ -51,7 +49,12 @@ export class AuthService {
         email: string,
         password: string
     ): Promise<User> {
-        const user = await this.userService.findOneByEmail(email);
+        let user: User = null;
+        try {
+            user = await this.userService.findOneByEmail(email);
+        } catch (error) {
+            // This is necessary as a not found exception would overwrite the guard response
+        }
 
         // Check if user exists and does not use third party auth
         if (!user || user.provider)
@@ -79,10 +82,19 @@ export class AuthService {
                 'Request does not have a user. Please contact the administrator'
             );
 
-        // Check if user already exits
-        const alreadyCreatedUser = await this.userService.findOneByEmail(
-            userDataFromProvider.email
-        );
+        let alreadyCreatedUser: User = null;
+        try {
+            // Check if user already exits
+            alreadyCreatedUser = await this.userService.findOneByEmail(
+                userDataFromProvider.email
+            );
+        } catch (error) {
+            // Catch not found exception to make user new user is created.
+            // If other exceptions occur, throw them
+            if (!(error instanceof NotFoundException)) {
+                throw error;
+            }
+        }
 
         // Check if provider is the same
         if (

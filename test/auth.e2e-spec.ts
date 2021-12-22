@@ -4,22 +4,19 @@ import { ConfigModule } from '@nestjs/config';
 import { getConnectionToken } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
-import { userInfo } from 'os';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
 import { AuthModule } from '../src/auth/auth.module';
 import { DiscordAuthGuard } from '../src/auth/strategies/discord/discord-auth.guard';
 import { FacebookAuthGuard } from '../src/auth/strategies/facebook/facebook-auth.guard';
 import { GoogleAuthGuard } from '../src/auth/strategies/google/google-auth.guard';
-import { Status } from '../src/shared/enums/status.enum';
 import { UserDocument } from '../src/user/entities/user.entity';
 import { UserStatus } from '../src/user/enums/status.enum';
 import { UserModule } from '../src/user/user.module';
 import { ThirdPartyGuardMock } from './helpers/fake-provider-strategy';
 import { ProviderGuardFaker } from './helpers/fake-third-party-guard';
 import {
-    rootMongooseTestModule,
-    closeInMongodConnection
+    closeInMongodConnection,
+    rootMongooseTestModule
 } from './helpers/mongoMemoryHelpers';
 import { getJWT, getTestUser } from './__mocks__/user-mock-data';
 const { mock } = require('nodemailer');
@@ -219,7 +216,7 @@ describe('AuthMdoule (e2e)', () => {
         describe('/auth/login (POST)', () => {
             it('/auth/login (POST)', async () => {
                 await userModel.create(await getTestUser());
-                return request(app.getHttpServer())
+                await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
                         email: 'mock@mock.mock',
@@ -230,7 +227,7 @@ describe('AuthMdoule (e2e)', () => {
 
             it('/auth/login (POST) Wrong Password', async () => {
                 await userModel.create(await getTestUser());
-                return request(app.getHttpServer())
+                await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
                         email: 'mock@mock.mock',
@@ -241,7 +238,7 @@ describe('AuthMdoule (e2e)', () => {
 
             it('/auth/login (POST) Wrong Email', async () => {
                 await userModel.create(await getTestUser());
-                return request(app.getHttpServer())
+                await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
                         email: 'peter@mock.mock',
@@ -256,7 +253,7 @@ describe('AuthMdoule (e2e)', () => {
                 user = { ...user, provider: 'google' };
                 await userModel.create(user);
 
-                return request(app.getHttpServer())
+                await request(app.getHttpServer())
                     .post('/auth/login')
                     .send({
                         email: 'mock@mock.mock',

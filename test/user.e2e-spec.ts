@@ -1,12 +1,15 @@
 import { MailerModule } from '@nestjs-modules/mailer';
-import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
+import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { getConnectionToken } from '@nestjs/mongoose';
+import { NestExpressApplication } from '@nestjs/platform-express';
 import { Test, TestingModule } from '@nestjs/testing';
-import * as request from 'supertest';
 import { Connection, Model } from 'mongoose';
+import { join } from 'path';
+import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { UserDocument } from '../src/user/entities/user.entity';
+import { UserStatus } from '../src/user/enums/status.enum';
 import { UserModule } from '../src/user/user.module';
 import { ThirdPartyGuardMock } from './helpers/fake-provider-strategy';
 import {
@@ -19,9 +22,6 @@ import {
     getTestUser,
     getUserVerify
 } from './__mocks__/user-mock-data';
-import { UserStatus } from '../src/user/enums/status.enum';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { join } from 'path';
 const { mock } = require('nodemailer');
 
 describe('UserModule (e2e)', () => {
@@ -123,7 +123,7 @@ describe('UserModule (e2e)', () => {
             it('/user/get-verify (GET) ', async () => {
                 await userModel.create(await getTestUser());
                 request(app.getHttpServer())
-                    .get('/user/get-verify')
+                    .get('/user/resend-account-verification')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -133,7 +133,7 @@ describe('UserModule (e2e)', () => {
 
             it('/user/get-verify (GET) should fail with invalid token', async () => {
                 await request(app.getHttpServer())
-                    .get('/user/get-verify')
+                    .get('/user/resend-account-verification')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -181,6 +181,18 @@ describe('UserModule (e2e)', () => {
                     })
                     .expect(HttpStatus.CONFLICT);
             });
+
+            it('/user/:id (PATCH) should fail when patching other user', async () => {
+                await userModel.create(await getTestUser());
+                await userModel.create(await getTestAdmin());
+                await request(app.getHttpServer())
+                    .patch('/user/61bb7c9883fdff2f24bf779d')
+                    .set(
+                        'Authorization',
+                        `Bearer ${await getJWT(await getTestUser())}`
+                    )
+                    .expect(HttpStatus.FORBIDDEN);
+            });
         });
 
         describe('/user/:id (DELETE)', () => {
@@ -206,7 +218,7 @@ describe('UserModule (e2e)', () => {
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
                     )
-                    .expect(HttpStatus.UNAUTHORIZED);
+                    .expect(HttpStatus.FORBIDDEN);
             });
         });
 
@@ -216,7 +228,11 @@ describe('UserModule (e2e)', () => {
                 user = { ...user, status: UserStatus.UNVERIFIED };
                 await userModel.create(user);
                 await request(app.getHttpServer())
-                    .get(`/user/verify/?code=${await getUserVerify(user)}`)
+                    .get(
+                        `/user/verify-account/?code=${await getUserVerify(
+                            user
+                        )}`
+                    )
                     .expect(HttpStatus.OK);
 
                 expect((await userModel.findOne()).status).toBe(
@@ -229,7 +245,11 @@ describe('UserModule (e2e)', () => {
                 user = { ...user, status: UserStatus.BANNED };
                 await userModel.create(user);
                 await request(app.getHttpServer())
-                    .get(`/user/verify/?code=${await getUserVerify(user)}`)
+                    .get(
+                        `/user/verify-account/?code=${await getUserVerify(
+                            user
+                        )}`
+                    )
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
@@ -239,7 +259,7 @@ describe('UserModule (e2e)', () => {
                 await userModel.create(user);
                 await request(app.getHttpServer())
                     .get(
-                        `/user/verify/?code=${await getUserVerify(
+                        `/user/verify-account/?code=${await getUserVerify(
                             await getTestAdmin()
                         )}`
                     )
@@ -319,7 +339,7 @@ describe('UserModule (e2e)', () => {
                 await userModel.create(user);
                 await request(app.getHttpServer())
                     .get(
-                        `/user/verify/?code=${await getUserVerify(
+                        `/user/verify-account/?code=${await getUserVerify(
                             await getTestAdmin()
                         )}`
                     )
