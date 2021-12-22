@@ -28,12 +28,6 @@ export class Set {
 
     @Prop({ default: 0 })
     dareCount: number;
-
-    @Prop({ default: 'placeholder' })
-    previewImage: string;
-
-    @Prop({ default: 'placeholder2' })
-    bannerImage: string;
 }
 
 export type SetDocument = Set & Document;

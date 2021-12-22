@@ -52,9 +52,7 @@ export class SetService {
                 createdBy: {
                     _id: user.userId,
                     username: user.username
-                },
-                previewImage: set.previewImage,
-                bannerImage: set.bannerImage
+                }
             };
         } catch (error) {
             /* istanbul ignore next */ // Unable to test Internal server error here
@@ -72,9 +70,7 @@ export class SetService {
                     truthCount: 1,
                     name: 1,
                     language: 1,
-                    createdBy: 1,
-                    previewImage: 1,
-                    bannerImage: 1
+                    createdBy: 1
                 }
             )
             .populate<ResponseSet[]>('createdBy', '_id username');
@@ -94,9 +90,7 @@ export class SetService {
                         name: 1,
                         language: 1,
                         createdBy: 1,
-                        tasks: 1,
-                        previewImage: 1,
-                        bannerImage: 1
+                        tasks: 1
                     }
                 )
                 .populate<ResponseSet & { tasks: ResponseTaskWithStatus[] }>(

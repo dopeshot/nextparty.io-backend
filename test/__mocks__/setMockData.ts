@@ -11,8 +11,6 @@ export const getSetSetupData = () => {
         language: Language.EN,
         name: 'User Set',
         createdBy: 'aaaaaaaaaaaaaaaaaaaaaaac',
-        previewImage: 'placeholder',
-        bannerImage: 'placeHolder2',
         dareCount: 0,
         truthCount: 1,
         tasks: [
