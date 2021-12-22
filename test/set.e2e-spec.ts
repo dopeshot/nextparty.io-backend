@@ -10,11 +10,11 @@ import { SetModule } from '../src/set/set.module';
 import { Language } from '../src/shared/enums/language.enum';
 import { Status } from '../src/shared/enums/status.enum';
 import { UserSchema } from '../src/user/entities/user.entity';
-import { FakeAuthGuardFactory } from './helpers/fakeAuthGuardFactory';
+import { FakeAuthGuardFactory } from './helpers/fake-auth-guard.factory';
 import {
     closeInMongodConnection,
     rootMongooseTestModule
-} from './helpers/mongoMemoryHelpers';
+} from './helpers/mongo-memory-helpers';
 import {
     getMockAuthAdmin,
     getMockAuthUser,
@@ -23,7 +23,7 @@ import {
     getSetSetupData,
     getString,
     getWrongId
-} from './__mocks__/setMockData';
+} from './__mocks__/set-mock-data';
 
 describe('Sets (e2e)', () => {
     let app: INestApplication;
