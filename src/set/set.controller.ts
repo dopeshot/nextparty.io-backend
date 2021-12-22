@@ -13,12 +13,13 @@ import {
     UseGuards
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { ObjectId } from 'mongoose';
 import { JwtUserDto } from 'src/auth/dto/jwt.dto';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { MongoIdDto } from '../shared/dto/mongoId.dto';
 import { CreateSetDto } from './dto/create-set.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
+import { DeleteTypeDto } from './dto/delete-type.dto';
+import { SetTaskMongoIdDto } from './dto/set-task-mongoid.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { SetService } from './set.service';
@@ -67,7 +68,7 @@ export class SetController {
     @ApiOperation({ summary: 'Delete Set by id' })
     deleteSet(
         @Param() { id }: MongoIdDto,
-        @Query('type') type: string,
+        @Query() { type }: DeleteTypeDto,
         @Request() { user }: ParameterDecorator & { user: JwtUserDto }
     ) {
         return this.setService.deleteSet(id, type, user);
@@ -86,26 +87,24 @@ export class SetController {
         return this.setService.createTask(id, createTaskDto, user);
     }
 
-    @Put(':id/task/:taskid')
+    @Put(':setId/task/:taskId')
     @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Update one Task via id and Json' })
     updateTask(
-        @Param('id') setId: ObjectId,
-        @Param('taskid') taskId: ObjectId,
+        @Param() { setId, taskId }: SetTaskMongoIdDto,
         @Body() updateTaskDto: UpdateTaskDto,
         @Request() { user }: ParameterDecorator & { user: JwtUserDto }
     ) {
         return this.setService.updateTask(setId, taskId, updateTaskDto, user);
     }
 
-    @Delete(':id/task/:taskid')
+    @Delete(':setId/task/:taskId')
     @UseGuards(JwtAuthGuard)
     @HttpCode(204)
     @ApiOperation({ summary: 'Remove one Task via id' })
     removeTask(
-        @Param('id') setId: ObjectId,
-        @Param('taskid') taskId: ObjectId,
-        @Query('type') type: string,
+        @Param() { setId, taskId }: SetTaskMongoIdDto,
+        @Query() { type }: DeleteTypeDto,
         @Request() { user }: ParameterDecorator & { user: JwtUserDto }
     ) {
         return this.setService.removeTask(setId, taskId, type, user);
