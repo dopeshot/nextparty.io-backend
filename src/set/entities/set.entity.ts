@@ -6,8 +6,6 @@ import { Task, TaskSchema } from './task.entity';
 
 @Schema({ timestamps: true, _id: true })
 export class Set {
-    _id: ObjectId;
-
     @Prop({ required: true, index: true })
     name: string;
 
