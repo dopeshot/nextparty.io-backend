@@ -1,42 +1,33 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose"
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ObjectId, SchemaTypes, Document } from 'mongoose';
-import { Status } from "../../shared/enums/status.enum";
-import { Language } from "../../shared/enums/language.enum";
-import { Task, TaskSchema } from "./task.entity";
+import { Status } from '../../shared/enums/status.enum';
+import { Language } from '../../shared/enums/language.enum';
+import { Task, TaskSchema } from './task.entity';
+import { User } from '../../user/entities/user.entity';
 
 @Schema({ timestamps: true, _id: true })
 export class Set {
-
-    _id: ObjectId
-    
     @Prop({ required: true, index: true })
-    name: string
+    name: string;
 
     @Prop({ required: false, type: [{ type: TaskSchema }] })
-    tasks: Task[]
+    tasks: Task[];
 
     @Prop({ default: Status.ACTIVE })
-    status: Status | Status.ACTIVE
+    status: Status | Status.ACTIVE;
 
-    @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
-    createdBy: ObjectId
+    @Prop({ type: SchemaTypes.ObjectId, ref: User.name, required: true })
+    createdBy: ObjectId;
 
     @Prop({ required: true })
-    language: Language
+    language: Language;
 
     @Prop({ default: 0 })
-    truthCount: number
+    truthCount: number;
 
     @Prop({ default: 0 })
-    daresCount: number
-
-    @Prop({default: "placeholder"})
-    previewImage: string
-
-    @Prop({default: "placeholder2"})
-    bannerImage: string
+    dareCount: number;
 }
 
-export type SetDocument = Set & Document
-export const SetSchema = SchemaFactory.createForClass(Set)
-
+export type SetDocument = Set & Document;
+export const SetSchema = SchemaFactory.createForClass(Set);

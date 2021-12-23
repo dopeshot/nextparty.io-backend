@@ -1,443 +1,761 @@
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
-import { getConnectionToken } from '@nestjs/mongoose';
+import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Connection, ObjectId, Schema } from 'mongoose';
+import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
-import { AppModule } from '../src/app.module';
+import { JwtAuthGuard } from '../src/auth/strategies/jwt/jwt-auth.guard';
+import { SetDocument } from '../src/set/entities/set.entity';
 import { TaskType } from '../src/set/enums/tasktype.enum';
-import { ResponseSet, ResponseTask } from '../src/set/types/set.response';
+import { SetModule } from '../src/set/set.module';
 import { Language } from '../src/shared/enums/language.enum';
+import { Status } from '../src/shared/enums/status.enum';
+import { UserSchema } from '../src/user/entities/user.entity';
+import { FakeAuthGuardFactory } from './helpers/fake-auth-guard.factory';
+import {
+    closeInMongodConnection,
+    rootMongooseTestModule
+} from './helpers/mongo-memory-helpers';
+import {
+    getMockAuthAdmin,
+    getMockAuthUser,
+    getMockSet,
+    getMockTask,
+    getSetSetupData,
+    getString,
+    getWrongId
+} from './__mocks__/set-mock-data';
 
-describe('SetController (e2e)', () => {
-  let app: INestApplication
-  let token: string
-  let otherToken: string
-  let otherUserId: string
-  let setId2: ObjectId
-  const wrongId = "111adda131fc65699861a118"
-  const exampleTask: ResponseTask = {
-    _id: new Schema.Types.ObjectId(""),
-    type: "truth",
-    currentPlayerGender: "@ca",
-    message: "Do you know this is a test?"
-  }
-  const exampleSet: ResponseSet = {
-    _id: new Schema.Types.ObjectId(""),
-    name: "Test set",
-    createdBy: { _id: new Schema.Types.ObjectId(""), username: "TestUserName" },
-    language: Language.DE,
-    truthCount: 0,
-    daresCount: 0,
-    previewImage: "placeholder",
-    bannerImage: "placeholder2"
-  }
-  let connection: Connection
+describe('Sets (e2e)', () => {
+    let app: INestApplication;
+    let setModel: Model<SetDocument>;
+    const fakeAuthGuard = new FakeAuthGuardFactory();
+    let connection: Connection;
 
-  beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AppModule],
-    }).compile();
-
-    app = moduleFixture.createNestApplication();
-    app.setGlobalPrefix('api')
-    app.useGlobalPipes(new ValidationPipe({ whitelist: true }))
-    await app.init();
-    connection = await moduleFixture.get(getConnectionToken());
-    await connection.dropDatabase()
-  });
-
-  afterAll(async () => {
-    await connection.dropDatabase()
-    await connection.close()
-    await app.close();
-  });
-
-  /*---------------------\ 
-  |      User Setup      |
-  \---------------------*/
-
-  describe('Login', () => {
-    it('/auth/register (POST)', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/api/auth/register')
-        .send({
-          username: "TestUserName",
-          email: "Hahaxd@gmail.com",
-          password: "12345678"
+    beforeAll(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            imports: [
+                rootMongooseTestModule(),
+                SetModule,
+                MongooseModule.forFeature([
+                    { name: 'User', schema: UserSchema }
+                ])
+            ]
         })
-        .expect(HttpStatus.CREATED)
+            .overrideGuard(JwtAuthGuard)
+            .useValue(fakeAuthGuard.getGuard())
+            .compile();
 
-      token = res.body.access_token
-    })
+        connection = await module.get(getConnectionToken());
+        setModel = connection.model('Set');
+        app = module.createNestApplication();
+        app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
+        await app.init();
+    });
 
-    it('/user/profile (GET)', async () => {
-      const res = await request(app.getHttpServer())
-        .get('/api/user/profile')
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.OK)
+    beforeEach(async () => {
+        await setModel.insertMany(getSetSetupData());
+        fakeAuthGuard.setActive(true);
+        fakeAuthGuard.setUser(getMockAuthUser());
+    });
 
-      exampleSet.createdBy._id = res.body.userId
+    afterEach(async () => {
+        await setModel.deleteMany();
+        fakeAuthGuard.setUser(null);
+    });
 
-    })
+    afterAll(async () => {
+        await connection.close();
+        closeInMongodConnection();
+    });
 
-    it('/auth/register (POST)', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/api/auth/register')
-        .send({
-          username: "Hahaxd2",
-          email: "Hahaxd2@gmail.com",
-          password: "12345678"
-        })
-        .expect(HttpStatus.CREATED)
+    describe('Set POST', () => {
+        it('/set (POST) one set', async () => {
+            const res = await request(app.getHttpServer())
+                .post('/set')
+                .send(getMockSet())
+                .expect(HttpStatus.CREATED);
+            expect((await setModel.find()).length).toBe(2);
 
-      otherToken = res.body.access_token
-    })
+            // Testing type ResponseSet
+            const set = res.body;
+            expect(set).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    language: expect.any(String),
+                    dareCount: expect.any(Number),
+                    truthCount: expect.any(Number),
+                    createdBy: expect.any(Object),
+                    name: expect.any(String)
+                })
+            );
+            expect(set).toEqual(
+                expect.not.objectContaining({
+                    status: expect.any(String),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                    __v: expect.any(String),
+                    tasks: expect.any(Array)
+                })
+            );
+        });
 
-    it('/user/profile (GET)', async () => {
-      const res = await request(app.getHttpServer())
-        .get('/api/user/profile')
-        .set('Authorization', `Bearer ${otherToken}`)
-        .expect(HttpStatus.OK)
+        // Negative test
+        it('/set (POST) without auth', async () => {
+            fakeAuthGuard.setActive(false);
+            await request(app.getHttpServer())
+                .post('/set')
+                .send(getMockSet())
+                .expect(HttpStatus.FORBIDDEN);
+        });
 
-      otherUserId = res.body.userId
-    })
-  })
+        // Negative test
+        it('/set (POST) wrong language', async () => {
+            await request(app.getHttpServer())
+                .post('/set')
+                .send({ language: 'wrong', name: "Doesn't matter" })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
 
-  /*----------------------\ 
-  |      Create Data      |
-  \----------------------*/
+        // Negative test
+        it('/set (POST) with too short name', async () => {
+            await request(app.getHttpServer())
+                .post('/set')
+                .send({ language: Language.DE, name: getString(2) })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
 
-  describe('Create data', () => {
-    it('/set (POST)', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/api/set')
-        .set('Authorization', `Bearer ${token}`)
-        .send({ language: exampleSet.language, name: exampleSet.name })
-        .expect(HttpStatus.CREATED)
-      expect(res.body.language).toEqual(exampleSet.language)
-      expect(res.body.name).toEqual(exampleSet.name)
-      // Expect to have the format of ResponseSet
-      expect([res.body._id, res.body.daresCount, res.body.truthCount, res.body.language, res.body.name, res.body.createdBy._id, res.body.createdBy.username, res.body.previewImage, res.body.bannerImage]).toBeDefined()
-      expect(res.body.status).toBeUndefined()
-      // Update example set
-      exampleSet._id = res.body._id
-    })
+        // Negative test
+        it('/set (POST) with too long name', async () => {
+            await request(app.getHttpServer())
+                .post('/set')
+                .send({
+                    language: Language.DE,
+                    name: getString(33)
+                })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
 
-    it('/set (POST)', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/api/set')
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          language: "de",
-          name: "super cool set"
-        })
-        .expect(HttpStatus.CREATED)
-      setId2 = (res.body._id)
-      expect(setId2 == exampleSet._id).toBeFalsy()
-    })
+        // Negative test
+        it('/set (POST) with no name', async () => {
+            await request(app.getHttpServer())
+                .post('/set')
+                .send({ language: Language.DE })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
 
-    // Negative test
-    it('/set (POST)', async () => {
-      await request(app.getHttpServer())
-        .post('/api/set')
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          language: "wrong",
-          name: "Doesn't matter"
-        })
-        .expect(HttpStatus.BAD_REQUEST)
-    })
+        // Negative test
+        it('/set (POST) with number name', async () => {
+            await request(app.getHttpServer())
+                .post('/set')
+                .send({ language: Language.DE, name: 2 })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
+    });
 
-  })
+    describe('Set GET', () => {
+        it('/set (GET) all sets', async () => {
+            const res = await request(app.getHttpServer())
+                .get('/set')
+                .expect(HttpStatus.OK);
+            const sets = res.body;
+            expect(sets.length === 1).toBeTruthy();
 
-  /*---------------------\ 
-  |         Sets         |
-  \---------------------*/
+            // Testing type ResponseSet
+            const set = sets[0];
+            expect(set).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    language: expect.any(String),
+                    dareCount: expect.any(Number),
+                    truthCount: expect.any(Number),
+                    createdBy: null,
+                    name: expect.any(String)
+                })
+            );
+            expect(set).toEqual(
+                expect.not.objectContaining({
+                    status: expect.any(String),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                    __v: expect.any(String),
+                    tasks: expect.any(Array)
+                })
+            );
+        });
 
-  describe('Sets', () => {
-    it('/set (GET)', async () => {
-      const res = await request(app.getHttpServer())
-        .get('/api/set')
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.OK)
-      expect(res.body.length === 2).toBeTruthy()
-    })
+        it('/set/:id (GET) by id', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`/set/${getSetSetupData()._id}`)
+                .expect(HttpStatus.OK);
 
-    it('/set/:id (GET)', async () => {
-      const res = await request(app.getHttpServer())
-        .get(`/api/set/${exampleSet._id}`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.OK)
-      expect(res.body).toEqual({ ...exampleSet, tasks: [] })
-    })
+            // Testing type ResponseSet
+            const set = res.body;
+            expect(set).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    language: expect.any(String),
+                    dareCount: expect.any(Number),
+                    truthCount: expect.any(Number),
+                    createdBy: null,
+                    name: expect.any(String),
+                    tasks: expect.any(Array)
+                })
+            );
+            expect(set).toEqual(
+                expect.not.objectContaining({
+                    status: expect.any(String),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                    __v: expect.any(String)
+                })
+            );
 
-    it('/set/:id (PATCH)', async () => {
-      const res = await request(app.getHttpServer())
-        .patch(`/api/set/${exampleSet._id}`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          language: Language.EN,
-          name: "English Set"
-        })
-        .expect(HttpStatus.OK)
+            // Testing type ResponseTask
+            const task = set.tasks[0];
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    type: expect.any(String),
+                    message: expect.any(String),
+                    currentPlayerGender: expect.any(String)
+                })
+            );
+            expect(task).toEqual(
+                expect.not.objectContaining({
+                    __v: expect.any(String),
+                    status: expect.any(String),
+                    createdAt: expect.any(Date),
+                    createdBy: expect.any(Date)
+                })
+            );
 
-      expect(res.body.language).toEqual(Language.EN)
-      expect(res.body.name).toEqual("English Set")
-      exampleSet.language = res.body.language
-      exampleSet.name = res.body.name
+            // Testing content
+            task['status'] = Status.ACTIVE;
+            expect({
+                ...set,
+                createdBy: getSetSetupData().createdBy,
+                status: Status.ACTIVE
+            }).toEqual({ ...getSetSetupData() });
+        });
 
-    })
+        // Negative test
+        it('/set/:id (GET) by wrong id', async () => {
+            await request(app.getHttpServer())
+                .get(`/set/${getWrongId()}`)
+                .expect(HttpStatus.NOT_FOUND);
+        });
+    });
 
-    // Negative test
-    it('/set/:id (PATCH)', async () => {
-      await request(app.getHttpServer())
-        .patch(`/api/set/${exampleSet._id}`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          language: "adsa"
-        })
-        .expect(HttpStatus.BAD_REQUEST)
-    })
+    describe('Set PATCH', () => {
+        it('/set/:id (PATCH) by id by user', async () => {
+            const res = await request(app.getHttpServer())
+                .patch(`/set/${getSetSetupData()._id}`)
+                .send({ language: Language.DE })
+                .expect(HttpStatus.OK);
 
-    // Negative test
-    it('/set/:id (GET)', async () => {
-      await request(app.getHttpServer())
-        .get(`/api/set/${wrongId}`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.NOT_FOUND)
-    })
+            const set = res.body;
+            expect(set.language).toEqual(Language.DE);
 
-    // Negative test
-    it('/set/:id (PATCH)', async () => {
-      await request(app.getHttpServer())
-        .patch(`/api/set/${wrongId}`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.NOT_FOUND)
-    })
+            // Testing type ResponseSetMetadata
+            expect(set).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    dareCount: expect.any(Number),
+                    truthCount: expect.any(Number),
+                    createdBy: expect.any(String),
+                    language: expect.any(String),
+                    name: expect.any(String)
+                })
+            );
+            expect(set).toEqual(
+                expect.not.objectContaining({
+                    status: expect.any(String),
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                    __v: expect.any(String),
+                    tasks: expect.any(Array)
+                })
+            );
+        });
 
-    /*----------------------\ 
-    |         Tasks         |
-    \----------------------*/
+        it('/set/:id (PATCH) by id by user', async () => {
+            const res = await request(app.getHttpServer())
+                .patch(`/set/${getSetSetupData()._id}`)
+                .send({ name: 'New name' })
+                .expect(HttpStatus.OK);
+            expect(res.body.language).toEqual(getSetSetupData().language);
+            expect(res.body.name).toEqual('New name');
 
-    it('/set/:id/task (POST)', async () => {
-      const res = await request(app.getHttpServer())
-        .post(`/api/set/${exampleSet._id}/task`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          type: exampleTask.type,
-          currentPlayerGender: exampleTask.currentPlayerGender,
-          message: exampleTask.message
-        })
-        .expect(HttpStatus.CREATED)
-      exampleTask._id = res.body._id
+            const set = await setModel.findById(getSetSetupData()._id);
+            expect(set.name).toBe('New name');
+            expect(set.language).toBe(getSetSetupData().language);
+        });
 
-      // Check if the count has been updated
-      const res2 = await request(app.getHttpServer())
-        .get(`/api/set/${exampleSet._id}`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.OK)
-      expect(res2.body.truthCount === 1).toBeTruthy()
-      expect(exampleTask).toEqual(res.body)
-    })
+        it('/set/:id (PATCH) by id by admin', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            const res = await request(app.getHttpServer())
+                .patch(`/set/${getSetSetupData()._id}`)
+                .send({ language: Language.DE })
+                .expect(HttpStatus.OK);
+            expect(res.body.language).toEqual(Language.DE);
+        });
 
-    // Negative test
-    it('/set/:id/task (POST)', async () => {
-      await request(app.getHttpServer())
-        .post(`/api/set/${wrongId}/task`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.BAD_REQUEST)
-    })
+        // Negative test
+        it('/set/:id (PATCH) by id by user with wrong language', async () => {
+            await request(app.getHttpServer())
+                .patch(`/set/${getSetSetupData()._id}`)
+                .send({ language: 'Some string' })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
 
-    it('/set/:id/task/:taskid (PUT)', async () => {
-      const res = await request(app.getHttpServer())
-        .put(`/api/set/${exampleSet._id}/task/${exampleTask._id}`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          type: TaskType.DARE,
-          currentPlayerGender: exampleTask.currentPlayerGender,
-          message: exampleTask.message
-        })
-        .expect(HttpStatus.OK)
-      expect(res.body.daresCount === 1).toBeTruthy()
-      expect(res.body.truthCount === 0).toBeTruthy()
-    })
+        // Negative test
+        it('/set/:id (PATCH) by id by user with wrong param', async () => {
+            const res = await request(app.getHttpServer())
+                .patch(`/set/${getSetSetupData()._id}`)
+                .send({ somethingWrong: 'Some string' })
+                .expect(HttpStatus.OK);
+            expect(res.body.somethingWrong).toBeUndefined();
+        });
 
-    // Negative test
-    it('/set/:id/task/:taskid (PUT)', async () => {
-      await request(app.getHttpServer())
-        .put(`/api/set/${exampleSet._id}/task/${wrongId}`)
-        .set('Authorization', `Bearer ${token}`)
-        .send({
-          type: "dare",
-          currentPlayerGender: exampleTask.currentPlayerGender,
-          message: exampleTask.message
-        })
-        .expect(HttpStatus.NOT_FOUND)
-    })
+        // Negative test
+        it('/set/:id (PATCH) by id by wrong user', async () => {
+            fakeAuthGuard.setUser({
+                ...getMockAuthUser(),
+                userId: getWrongId()
+            });
+            await request(app.getHttpServer())
+                .patch(`/set/${getSetSetupData()._id}`)
+                .send({ language: Language.DE })
+                .expect(HttpStatus.NOT_FOUND);
+        });
 
-    /*----------------------\ 
-    |        Deletes        |
-    \----------------------*/
+        // Negative test
+        it('/set/:id (PATCH) by wrong id', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            await request(app.getHttpServer())
+                .patch(`/set/${getWrongId()}`)
+                .send({ language: Language.DE })
+                .expect(HttpStatus.NOT_FOUND);
+        });
+    });
 
-    // Negativ test
-    it('/set/:id/task/:taskid (DELETE) type=soft other User', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/set/${exampleSet._id}/task/${exampleTask._id}`)
-        .set('Authorization', `Bearer ${otherToken}`)
-        .expect(HttpStatus.NOT_FOUND)
-    })
+    describe('Set DELETE', () => {
+        it('/set/:id (DELETE) by id by user', async () => {
+            await request(app.getHttpServer())
+                .delete(`/set/${getSetSetupData()._id}`)
+                .expect(HttpStatus.NO_CONTENT);
+            expect(
+                (await setModel.findById(getSetSetupData()._id)).status
+            ).toEqual(Status.DELETED);
+        });
 
-    // Negativ test
-    it('/set/:id/task/:taskid (DELETE) type=soft other User', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/set/${exampleSet._id}/task/${exampleTask._id}?type=hard`)
-        .set('Authorization', `Bearer ${otherToken}`)
-        .expect(HttpStatus.FORBIDDEN)
-    })
+        it('/set/:id (DELETE) by id by admin', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            await request(app.getHttpServer())
+                .delete(`/set/${getSetSetupData()._id}`)
+                .expect(HttpStatus.NO_CONTENT);
+            expect(
+                (await setModel.findById(getSetSetupData()._id)).status
+            ).toEqual(Status.DELETED);
+        });
 
-    // Negativ test
-    it('/set/:id/task/:taskid (DELETE) type=soft other User', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/set/${exampleSet._id}/task/${wrongId}`)
-        .set('Authorization', `Bearer ${otherToken}`)
-        .expect(HttpStatus.NOT_FOUND)
-    })
+        it('/set/:id (DELETE) by id with hard delete by admin', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            await request(app.getHttpServer())
+                .delete(`/set/${getSetSetupData()._id}?type=hard`)
+                .expect(HttpStatus.NO_CONTENT);
+            expect((await setModel.find()).length).toBe(0);
+        });
 
-    it('/set/:id/task/:taskid (DELETE) type=soft own User', async () => {
-      const res = await request(app.getHttpServer())
-        .delete(`/api/set/${exampleSet._id}/task/${exampleTask._id}`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.OK)
+        // Negative test
+        it('/set/:id (DELETE) by id by wrong user', async () => {
+            fakeAuthGuard.setUser({
+                ...getMockAuthUser(),
+                userId: getWrongId()
+            });
+            await request(app.getHttpServer())
+                .delete(`/set/${getSetSetupData()._id}`)
+                .expect(HttpStatus.NOT_FOUND);
+        });
 
-      expect(res.body.daresCount === 0).toBeTruthy()
-      expect(res.body.truthCount === 0).toBeTruthy()
-    })
+        // Negative test
+        it('/set/:id (DELETE) by wrong id', async () => {
+            await request(app.getHttpServer())
+                .delete(`/set/${getWrongId()}`)
+                .expect(HttpStatus.NOT_FOUND);
+        });
 
-    // Negative test
-    it('/set/:id/task/:taskid (DELETE) type=soft wrongId', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/set/${exampleSet._id}/task/${wrongId}`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.NOT_FOUND)
-    })
+        // Negative test
+        it('/set/:id (DELETE) by wrong id with hard delete by admin', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            await request(app.getHttpServer())
+                .delete(`/set/${getWrongId()}?type=hard`)
+                .expect(HttpStatus.NOT_FOUND);
+        });
 
-    it('/set/:id (DELETE) type=soft own User', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/set/${exampleSet._id}`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.NO_CONTENT)
-    })
+        // Negative test
+        it('/set/:id (DELETE) by id with hard delete by user', async () => {
+            await request(app.getHttpServer())
+                .delete(`/set/${getSetSetupData()._id}?type=hard`)
+                .expect(HttpStatus.FORBIDDEN);
+        });
+    });
 
-    // Negative test
-    it('/set/:id (DELETE) type=soft own User', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/set/${wrongId}`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.NOT_FOUND)
-    })
+    describe('Task POST', () => {
+        it('/set/:id/task (POST)', async () => {
+            const res = await request(app.getHttpServer())
+                .post(`/set/${getSetSetupData()._id}/task`)
+                .send(getMockTask())
+                .expect(HttpStatus.CREATED);
+            const set = await setModel.findById(getSetSetupData()._id);
+            expect(set.tasks.length).toBe(2);
+            expect(set.truthCount).toBe(2);
 
-    // Test cancel because error gets thrown in console
-    it('/set/:id (DELETE) type=soft other User', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/set/${setId2}`)
-        .set('Authorization', `Bearer ${otherToken}`)
-        .expect(HttpStatus.NOT_FOUND)
-    })
+            // Testing type responseTask
+            const task = res.body;
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    type: expect.any(String),
+                    message: expect.any(String),
+                    currentPlayerGender: expect.any(String)
+                })
+            );
+            expect(task).toEqual(
+                expect.not.objectContaining({
+                    __v: expect.any(String),
+                    status: expect.any(String),
+                    createdAt: expect.any(Date),
+                    createdBy: expect.any(Date)
+                })
+            );
+        });
 
-    // Test cancel because error gets thrown in console
-    it('/set/:id (DELETE) type=hard user', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/set/${exampleSet._id}?type=hard`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.FORBIDDEN)
-    })
+        it('/set/:id/task (POST) without CurrentPlayerGender', async () => {
+            const { currentPlayerGender, ...obj } = getMockTask();
+            const res = await request(app.getHttpServer())
+                .post(`/set/${getSetSetupData()._id}/task`)
+                .send(obj)
+                .expect(HttpStatus.CREATED);
+            expect(
+                (await setModel.findById(getSetSetupData()._id)).tasks.length
+            ).toBe(2);
 
-    // TODO: This is a security breach (November 14th 2021)
-    it('/user/testing (PATCH) Change to Admin', async () => {
-      await request(app.getHttpServer())
-        .patch(`/api/user/testing/${exampleSet.createdBy._id}`)
-        .send({
-          role: "admin"
-        })
-        .expect(HttpStatus.OK)
-    })
+            // Testing type ResponseTask
+            const task = res.body;
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    type: expect.any(String),
+                    message: expect.any(String),
+                    currentPlayerGender: expect.any(String)
+                })
+            );
+            expect(task).toEqual(
+                expect.not.objectContaining({
+                    __v: expect.any(String),
+                    status: expect.any(String),
+                    createdAt: expect.any(Date),
+                    createdBy: expect.any(Date)
+                })
+            );
+        });
 
-    it('/auth/login (POST)', async () => {
-      const res = await request(app.getHttpServer())
-        .post('/api/auth/login')
-        .send({
-          email: "Hahaxd@gmail.com",
-          password: "12345678"
-        })
-        .expect(HttpStatus.CREATED)
+        it('/set/:id/task (POST) with extra parameter', async () => {
+            const res = await request(app.getHttpServer())
+                .post(`/set/${getSetSetupData()._id}/task`)
+                .send({ ...getMockTask(), more: 'Some more' })
+                .expect(HttpStatus.CREATED);
+            expect(
+                (await setModel.findById(getSetSetupData()._id)).tasks.length
+            ).toBe(2);
 
-      // Admin token
-      token = res.body.access_token
-    })
+            // Testing type ResponseTask
+            const task = res.body;
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    type: expect.any(String),
+                    message: expect.any(String),
+                    currentPlayerGender: expect.any(String)
+                })
+            );
+            expect(task).toEqual(
+                expect.not.objectContaining({
+                    __v: expect.any(String),
+                    status: expect.any(String),
+                    createdAt: expect.any(Date),
+                    createdBy: expect.any(Date),
+                    // The extra parameter send
+                    more: expect.any(String)
+                })
+            );
+        });
 
-    it('/set/:id (DELETE) type=soft admin', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/set/${setId2}`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.NO_CONTENT)
-    })
-  })
+        // Negative test
+        it('/set/:id/task (POST) with wrong setId', async () => {
+            await request(app.getHttpServer())
+                .post(`/set/${getWrongId()}/task`)
+                .send(getMockTask())
+                .expect(HttpStatus.NOT_FOUND);
+        });
 
-  /*----------------------\ 
-  |        Cleanup        |
-  \----------------------*/
+        // Negative test
+        it('/set/:id/task (POST) with wrong TaskType', async () => {
+            await request(app.getHttpServer())
+                .post(`/set/${getSetSetupData()._id}/task`)
+                .send({ ...getMockTask(), type: 'wrong' })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
 
-  describe('Cleanup', () => {
-    it('/set/:id/task/:taskid (DELETE) type=hard admin', async () => {
-      const res = await request(app.getHttpServer())
-        .delete(`/api/set/${exampleSet._id}/task/${exampleTask._id}?type=hard`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.OK)
-      expect(res.body.truthCount == 0).toBeTruthy()
-      expect(res.body.daresCount == 0).toBeTruthy()
+        // Negative test
+        it('/set/:id/task (POST) with wrong CurrentPlayerGender', async () => {
+            await request(app.getHttpServer())
+                .post(`/set/${getSetSetupData()._id}/task`)
+                .send({ ...getMockTask(), currentPlayerGender: 'wrong' })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
 
-    })
+        // Negative test
+        it('/set/:id/task (POST) with too short message', async () => {
+            await request(app.getHttpServer())
+                .post(`/set/${getSetSetupData()._id}/task`)
+                .send({ ...getMockTask(), message: getString(9) })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
 
-    it('/set/:id (DELETE) type=hard', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/set/${exampleSet._id}?type=hard`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.NO_CONTENT)
-    })
+        // Negative test
+        it('/set/:id/task (POST) with too long message', async () => {
+            await request(app.getHttpServer())
+                .post(`/set/${getSetSetupData()._id}/task`)
+                .send({ ...getMockTask(), message: getString(281) })
+                .expect(HttpStatus.BAD_REQUEST);
+        });
 
-    it('/set/:id (DELETE) type=hard', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/set/${setId2}?type=hard`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.NO_CONTENT)
-    })
+        // Negative test
+        it('/set/:id/task (POST) without type', async () => {
+            const { type, ...obj } = getMockTask();
+            await request(app.getHttpServer())
+                .post(`/set/${getSetSetupData()._id}/task`)
+                .send(obj)
+                .expect(HttpStatus.BAD_REQUEST);
+        });
 
-    /*---------------------\ 
-    |       MockData       |
-    \---------------------*/
+        // Negative test
+        it('/set/:id/task (POST) without message', async () => {
+            const { message, ...obj } = getMockTask();
+            await request(app.getHttpServer())
+                .post(`/set/${getSetSetupData()._id}/task`)
+                .send(obj)
+                .expect(HttpStatus.BAD_REQUEST);
+        });
+    });
 
-    it('/migrate (POST)', async () => {
-      await request(app.getHttpServer())
-        .post(`/api/set/migrate?test=true`)
-        .set('Authorization', `Bearer ${token}`)
-        .expect(HttpStatus.CREATED)
-    })
+    describe('Task PUT', () => {
+        it('/set/:id/task (PUT) changing type for counts check', async () => {
+            const res = await request(app.getHttpServer())
+                .put(
+                    `/set/${getSetSetupData()._id}/task/${
+                        getSetSetupData().tasks[0]._id
+                    }`
+                )
+                .send({ ...getMockTask(), type: TaskType.DARE })
+                .expect(HttpStatus.OK);
 
-    // Delete Admin user
-    it('/user/:id (DELETE)', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/user/${exampleSet.createdBy._id}`)
-        .expect(HttpStatus.OK)
-    })
+            const set = await setModel.findById(getSetSetupData()._id).lean();
+            expect(set.truthCount).toBe(0);
+            expect(set.dareCount).toBe(1);
 
-    // Delete other user
-    it('/user/:id (DELETE)', async () => {
-      await request(app.getHttpServer())
-        .delete(`/api/user/${otherUserId}`)
-        .expect(HttpStatus.OK)
-    })
+            const message = set.tasks[0].message;
+            expect(message).toEqual(getMockTask().message);
 
-  })
+            // Testing type UpdatedCounts
+            const task = res.body;
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    truthCount: expect.any(Number),
+                    dareCount: expect.any(Number)
+                })
+            );
+            // It is unnecessary to tes what is not in the type
+        });
 
+        it('/set/:id/task (PUT) with Admin changing type for counts check', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            const res = await request(app.getHttpServer())
+                .put(
+                    `/set/${getSetSetupData()._id}/task/${
+                        getSetSetupData().tasks[0]._id
+                    }`
+                )
+                .send({ ...getMockTask(), type: TaskType.DARE })
+                .expect(HttpStatus.OK);
+            const set = await setModel.findById(getSetSetupData()._id).lean();
+            expect(set.truthCount).toBe(0);
+            expect(set.dareCount).toBe(1);
+
+            const message = set.tasks[0].message;
+            expect(message).toEqual(getMockTask().message);
+
+            // Testing type UpdatedCounts
+            const task = res.body;
+            expect(task).toEqual(
+                expect.objectContaining({
+                    _id: expect.any(String),
+                    truthCount: expect.any(Number),
+                    dareCount: expect.any(Number)
+                })
+            );
+            // It is unnecessary to tes what is not in the type
+        });
+
+        // Omitting dto tests since they duplicate with task POST tests
+
+        // Negative test
+        it('/set/:id/task (PUT) with wrong set id', async () => {
+            await request(app.getHttpServer())
+                .put(
+                    `/set/${getWrongId()}/task/${
+                        getSetSetupData().tasks[0]._id
+                    }`
+                )
+                .send(getMockTask())
+                .expect(HttpStatus.NOT_FOUND);
+        });
+
+        // Negative test
+        it('/set/:id/task (PUT) with wrong task id', async () => {
+            await request(app.getHttpServer())
+                .put(`/set/${getSetSetupData()._id}/task/${getWrongId()}`)
+                .send(getMockTask())
+                .expect(HttpStatus.NOT_FOUND);
+        });
+
+        // Negative test
+        it('/set/:id/task (PUT) with wrong user', async () => {
+            fakeAuthGuard.setUser('');
+            await request(app.getHttpServer())
+                .put(
+                    `/set/${getSetSetupData()._id}/task/${
+                        getSetSetupData().tasks[0]._id
+                    }`
+                )
+                .send(getMockTask())
+                .expect(HttpStatus.NOT_FOUND);
+        });
+    });
+
+    describe('Task DELETE', () => {
+        it('/set/:id/task (DELETE) with user', async () => {
+            await request(app.getHttpServer())
+                .delete(
+                    `/set/${getSetSetupData()._id}/task/${
+                        getSetSetupData().tasks[0]._id
+                    }`
+                )
+                .expect(HttpStatus.NO_CONTENT);
+            const set = await setModel.findById(getSetSetupData()._id);
+            expect(set.tasks[0].status).toBe(Status.DELETED);
+            expect(set.truthCount).toBe(0);
+            expect(set.dareCount).toBe(0);
+        });
+
+        it('/set/:id/task (DELETE) with admin', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            await request(app.getHttpServer())
+                .delete(
+                    `/set/${getSetSetupData()._id}/task/${
+                        getSetSetupData().tasks[0]._id
+                    }`
+                )
+                .expect(HttpStatus.NO_CONTENT);
+            const set = await setModel.findById(getSetSetupData()._id);
+            expect(set.tasks[0].status).toBe(Status.DELETED);
+            expect(set.truthCount).toBe(0);
+            expect(set.dareCount).toBe(0);
+        });
+
+        it('/set/:id/task (DELETE) hard with admin', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            await request(app.getHttpServer())
+                .delete(
+                    `/set/${getSetSetupData()._id}/task/${
+                        getSetSetupData().tasks[0]._id
+                    }?type=hard`
+                )
+                .expect(HttpStatus.NO_CONTENT);
+            const set = await setModel.findById(getSetSetupData()._id);
+            expect(set.tasks.length).toBe(0);
+            expect(set.truthCount).toBe(0);
+            expect(set.dareCount).toBe(0);
+        });
+
+        // Negative test
+        it('/set/:id/task (DELETE) hard with user', async () => {
+            await request(app.getHttpServer())
+                .delete(
+                    `/set/${getSetSetupData()._id}/task/${
+                        getSetSetupData().tasks[0]._id
+                    }?type=hard`
+                )
+                .expect(HttpStatus.FORBIDDEN);
+        });
+
+        // Negative test
+        it('/set/:id/task (DELETE) hard, with admin with wrong setId', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            await request(app.getHttpServer())
+                .delete(
+                    `/set/${getWrongId()}/task/${
+                        getSetSetupData().tasks[0]._id
+                    }?type=hard`
+                )
+                .expect(HttpStatus.NOT_FOUND);
+        });
+
+        // Negative test
+        it('/set/:id/task (DELETE) hard, with admin with wrong taskId', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            await request(app.getHttpServer())
+                .delete(
+                    `/set/${
+                        getSetSetupData()._id
+                    }/task/${getWrongId()}?type=hard`
+                )
+                .expect(HttpStatus.NOT_FOUND);
+            const set = await setModel.findById(getSetSetupData()._id);
+            expect(set.tasks.length).toBe(1);
+        });
+
+        // Negative task
+        it('/set/:id/task (DELETE) with wrong set id', async () => {
+            await request(app.getHttpServer())
+                .delete(
+                    `/set/${getWrongId()}/task/${
+                        getSetSetupData().tasks[0]._id
+                    }`
+                )
+                .expect(HttpStatus.NOT_FOUND);
+        });
+
+        // Negative task
+        it('/set/:id/task (DELETE) with wrong task id', async () => {
+            await request(app.getHttpServer())
+                .delete(`/set/${getSetSetupData()._id}/task/${getWrongId()}`)
+                .expect(HttpStatus.NOT_FOUND);
+        });
+
+        // Negative task
+        it('/set/:id/task (DELETE) with wrong user', async () => {
+            fakeAuthGuard.setUser('');
+            await request(app.getHttpServer())
+                .delete(
+                    `/set/${getSetSetupData()._id}/task/${
+                        getSetSetupData().tasks[0]._id
+                    }`
+                )
+                .expect(HttpStatus.NOT_FOUND);
+        });
+    });
 });
-
