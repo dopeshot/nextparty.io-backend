@@ -56,7 +56,7 @@ export class UserController {
     @Get('/get-verify')
     @UseGuards(JwtAuthGuard)
     async regenerateVerify(@Request() req): Promise<void> {
-        const userData = await this.userService.parseJWTtOUsable(req.user);
+        const userData = await this.userService.findOneById(req.user.userId);
         await this.userService.createVerification(userData);
     }
 

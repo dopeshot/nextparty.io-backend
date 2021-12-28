@@ -27,9 +27,6 @@ export class AuthService {
      * @returns the new registered User
      */
     async registerUser(credentials: RegisterDto): Promise<AccessTokenDto> {
-        console.log('registering user');
-        console.log(credentials);
-
         // While this might seem unnecessary now, this way of implementing this allows us to add logic to register later without affecting the user create itself
         const user: User = await this.userService.create(credentials);
 

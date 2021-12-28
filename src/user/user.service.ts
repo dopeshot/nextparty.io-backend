@@ -42,7 +42,6 @@ export class UserService {
     async create(credentials: CreateUserDto): Promise<User> {
         try {
             const hash = await this.hashPassword(credentials.password);
-            console.log('password hash: ', hash);
             const user = new this.userSchema({
                 ...credentials,
                 status: UserStatus.UNVERIFIED,
@@ -55,7 +54,6 @@ export class UserService {
 
             return result;
         } catch (error) {
-            console.log(error);
             if (error.code === 11000 && error.keyPattern.username)
                 throw new ConflictException('Username is already taken.');
             else if (error.code === 11000 && error.keyPattern.email)
@@ -64,18 +62,6 @@ export class UserService {
             /* istanbul ignore next */
             throw new InternalServerErrorException('User Create failed');
         }
-    }
-
-    async parseJWTtOUsable(JWTuser): Promise<UserDocument> {
-        const user = await this.userSchema.findById(JWTuser.userId);
-
-        // this should be unreachable if the guard works correctly
-        /* istanbul ignore next */
-        if (!user) {
-            throw new NotFoundException();
-        }
-
-        return user;
     }
 
     async generateVerifyCode(user: User): Promise<string> {
@@ -92,14 +78,12 @@ export class UserService {
     async createVerification(user: User): Promise<string> {
         const verifyCode = await this.generateVerifyCode(user);
 
-        //console.log(`${process.env.HOST}/api/user/verify/?code=${verifyCode}`);
-
         await this.mailService.sendMail<MailVerifyDto>(
             user.email,
             'MailVerify',
             {
                 name: user.username,
-                link: `${process.env.HOST}/user/verify/${verifyCode}`
+                link: `${process.env.HOST}/api/user/verify/?code=${verifyCode}`
             },
             'Verify your email'
         );
@@ -168,7 +152,7 @@ export class UserService {
     /**
      * Update the user
      * @param id ObjectId
-     * @param updateUserDto Dto for updates
+     * @param updateUserDto Dto for updatesparseJWTtOUsable
      * @returns updated user (with changed fields)
      */
     async updateUser(
