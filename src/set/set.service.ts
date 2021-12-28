@@ -115,7 +115,7 @@ export class SetService {
     ): Promise<ResponseSetMetadata> {
         const queryMatch: { _id: ObjectId; createdBy?: ObjectId } = { _id: id };
 
-        if (user.role !== Role.Admin) {
+        if (user.role !== Role.ADMIN) {
             queryMatch.createdBy = user.userId;
         }
 
@@ -140,7 +140,7 @@ export class SetService {
     ): Promise<void> {
         // Hard delete
         if (deleteType === DeleteType.HARD) {
-            if (user.role !== Role.Admin) throw new ForbiddenException();
+            if (user.role !== Role.ADMIN) throw new ForbiddenException();
 
             const set: SetDocument = await this.setSchema.findByIdAndDelete(id);
 
@@ -152,7 +152,7 @@ export class SetService {
         // Soft delete
         const queryMatch: { _id: ObjectId; createdBy?: ObjectId } = { _id: id };
 
-        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId;
+        if (user.role !== Role.ADMIN) queryMatch.createdBy = user.userId;
 
         const set: SetDocument = await this.setSchema.findOneAndUpdate(
             queryMatch,
@@ -178,7 +178,7 @@ export class SetService {
             _id: setId
         };
 
-        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId;
+        if (user.role !== Role.ADMIN) queryMatch.createdBy = user.userId;
 
         const incrementType =
             createTaskDto.type === TaskType.TRUTH
@@ -213,7 +213,7 @@ export class SetService {
             'tasks._id': ObjectId;
             createdBy?: ObjectId;
         } = { _id: setId, 'tasks._id': taskId };
-        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId;
+        if (user.role !== Role.ADMIN) queryMatch.createdBy = user.userId;
 
         const queryUpdate = {
             'tasks.$.type': updateTaskDto.type,
@@ -242,7 +242,7 @@ export class SetService {
     ): Promise<UpdatedCounts> {
         // Hard delete
         if (deleteType === DeleteType.HARD) {
-            if (user.role !== Role.Admin) throw new ForbiddenException();
+            if (user.role !== Role.ADMIN) throw new ForbiddenException();
 
             const set: SetDocument = await this.setSchema.findOneAndUpdate(
                 { _id: setId, 'tasks._id': taskId },
@@ -264,7 +264,7 @@ export class SetService {
             'tasks._id': ObjectId;
             createdBy?: ObjectId;
         } = { _id: setId, 'tasks._id': taskId };
-        if (user.role !== Role.Admin) queryMatch.createdBy = user.userId;
+        if (user.role !== Role.ADMIN) queryMatch.createdBy = user.userId;
 
         const set: SetDocument = await this.setSchema.findOneAndUpdate(
             queryMatch,
@@ -412,7 +412,7 @@ export class SetService {
         });
 
         // TODO: delete after envGuard implemented
-        if (user.role === Role.Admin && test === 'true') {
+        if (user.role === Role.ADMIN && test === 'true') {
             //await this.setSchema.deleteMany({})
         }
         return {

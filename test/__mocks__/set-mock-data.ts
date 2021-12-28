@@ -1,8 +1,8 @@
-import { Role } from '../../src/user/enums/role.enum';
 import { CurrentPlayerGender } from '../../src/set/enums/currentplayergender.enum';
 import { TaskType } from '../../src/set/enums/tasktype.enum';
 import { Language } from '../../src/shared/enums/language.enum';
 import { Status } from '../../src/shared/enums/status.enum';
+import { Role } from '../../src/user/enums/role.enum';
 
 export const getSetSetupData = () => ({
     _id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
@@ -30,13 +30,13 @@ export const getMockSet = () => ({
 export const getMockAuthUser = () => ({
     userId: 'aaaaaaaaaaaaaaaaaaaaaaac',
     username: 'User',
-    role: Role.User
+    role: Role.USER
 });
 
 export const getMockAuthAdmin = () => ({
     userId: 'aaaaaaaaaaaaaaaaaaaaaaad',
     username: 'Admin',
-    role: Role.Admin
+    role: Role.ADMIN
 });
 
 export const getWrongId = () => 'aaaaaaaaaaaaaaaaaaaaaaae';
