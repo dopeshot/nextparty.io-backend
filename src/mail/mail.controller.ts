@@ -1,7 +1,7 @@
 import { Body, Controller, Post, UseGuards } from '@nestjs/common';
 import { ENVGuard } from '../shared/guards/environment.guard';
-import { MailTestDto } from './dto/mail-test.dto';
 import { MailService } from './mail.service';
+import { MailTestDto } from './types/mail-test.type';
 
 @Controller('mail')
 export class MailController {
