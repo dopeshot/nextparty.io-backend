@@ -38,7 +38,7 @@ export class UserController {
         return users;
     }
 
-    @Get('/verify')
+    @Get('/verify-account')
     @UseGuards(VerifyJWTGuard)
     @Render('MailVerify')
     async verifyMail(@Request() req): Promise<returnUser> {
@@ -53,7 +53,7 @@ export class UserController {
         return await this.userService.transformToReturn(user);
     }
 
-    @Get('/get-verify')
+    @Get('/resend-account-verification')
     @UseGuards(JwtAuthGuard)
     async regenerateVerify(@Request() req): Promise<void> {
         const userData = await this.userService.findOneById(req.user.userId);
@@ -64,9 +64,14 @@ export class UserController {
     @UseGuards(JwtAuthGuard)
     async update(
         @Param('id') id: ObjectId,
-        @Body() updateUserDto: UpdateUserDto
+        @Body() updateUserDto: UpdateUserDto,
+        @Request() req
     ): Promise<returnUser> {
-        const user = await this.userService.updateUser(id, updateUserDto);
+        const user = await this.userService.updateUser(
+            id,
+            updateUserDto,
+            req.user
+        );
         return await this.userService.transformToReturn(user);
     }
 
