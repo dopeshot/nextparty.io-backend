@@ -20,6 +20,10 @@ GET {{adress}}
 GET {{adress}}/user/{{user}}
 Authorization: Bearer {{token}}
 
+### Get all sets by self
+GET {{adress}}/user
+Authorization: Bearer {{token}}
+
 ### Get one set only active tasks
 GET {{adress}}/{{set}}
 
