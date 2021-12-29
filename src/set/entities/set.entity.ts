@@ -31,6 +31,9 @@ export class Set {
 
     @Prop({ default: 0 })
     dareCount: number;
+
+    @Prop({ default: 0 })
+    played: number;
 }
 
 export type SetDocument = Set & Document;

@@ -51,6 +51,7 @@ export class SetService {
                 language: set.language,
                 name: set.name,
                 category: set.category,
+                played: set.played,
                 createdBy: {
                     _id: user.userId,
                     username: user.username
@@ -73,7 +74,8 @@ export class SetService {
                     name: 1,
                     language: 1,
                     createdBy: 1,
-                    category: 1
+                    category: 1,
+                    played: 1
                 }
             )
             .populate('createdBy', '_id username');
@@ -94,7 +96,8 @@ export class SetService {
                         language: 1,
                         createdBy: 1,
                         tasks: 1,
-                        category: 1
+                        category: 1,
+                        played: 1
                     }
                 )
                 .populate<ResponseSet & { tasks: ResponseTaskWithStatus[] }>(
@@ -127,13 +130,27 @@ export class SetService {
             updateSetDto,
             {
                 new: true,
-                select: '_id dareCount truthCount language name createdBy category'
+                select: '_id dareCount truthCount language name createdBy category played'
             }
         );
 
         if (!set) throw new NotFoundException();
 
         return set;
+    }
+
+    async updateSetPlayed(id: ObjectId) {
+        const set: SetDocument = await this.setSchema.findByIdAndUpdate(
+            id,
+            {
+                $inc: { played: 1 }
+            },
+            { new: true }
+        );
+
+        if (!set) throw new NotFoundException();
+
+        return { played: set.played };
     }
 
     async deleteSet(

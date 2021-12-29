@@ -62,6 +62,12 @@ export class SetController {
         return this.setService.updateSetMetadata(id, updateSetDto, user);
     }
 
+    @Patch(':id/played')
+    @ApiOperation({ summary: 'Update Set by id' })
+    updatePlayed(@Param() { id }: MongoIdDto) {
+        return this.setService.updateSetPlayed(id);
+    }
+
     @Delete(':id')
     @UseGuards(JwtAuthGuard)
     @HttpCode(204)

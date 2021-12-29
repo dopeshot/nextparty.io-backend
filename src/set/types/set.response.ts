@@ -13,6 +13,7 @@ export type ResponseSet = {
     language: string;
     name: string;
     category: SetCategory;
+    played: number;
 };
 
 export type ResponseTask = {
@@ -29,6 +30,7 @@ export type ResponseSetMetadata = {
     createdBy: ObjectId;
     language: string;
     category: SetCategory;
+    played: number;
     name: string;
 };
 
@@ -37,6 +39,11 @@ export type UpdatedCounts = {
     truthCount: number;
     dareCount: number;
 };
+
+export type UpdatedPlayed = {
+    played: number;
+};
+
 export type ResponseSetWithTasks = ResponseSet & { tasks: ResponseTask[] };
 
 // Only for Backend
