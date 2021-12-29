@@ -1,6 +1,6 @@
 FROM node:16 as dev
 
-EXPOSE 300
+EXPOSE 3000
 
 FROM dev as full
 # Create app directory
@@ -14,3 +14,5 @@ RUN npm install
 
 #copy source
 COPY . .
+
+CMD ["npm", "run", "start"]
