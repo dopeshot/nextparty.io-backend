@@ -1,5 +1,8 @@
 @token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjFjMjI1NTdlMDM4NTc3NGNjODVhOTVlIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2NDA3ODk1MTIsImV4cCI6MTY0MDgyNTUxMn0.Z_ouVxNNQpCrmznbBCHJQQ4sO2m-qC4Y2J8MEteIu-k
-@set = 61cc7674ed3bcf0ada5849ab
+@set = 61cc9d9660167e815d6f3cf3
+
+@user = 61c22557e0385774cc85a95e
+
 @adress = http://localhost:3000/api/set
 
 ###Create Set
@@ -14,6 +17,10 @@ Authorization: Bearer {{token}}
 
 ### Get all sets
 GET {{adress}}
+
+### Get all sets by user
+GET {{adress}}/user/{{user}}
+Authorization: Bearer {{token}}
 
 ### Get one set only active tasks
 GET {{adress}}/{{set}}

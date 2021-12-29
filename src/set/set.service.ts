@@ -25,7 +25,8 @@ import {
     ResponseSetWithTasks,
     ResponseTask,
     ResponseTaskWithStatus,
-    UpdatedCounts
+    UpdatedCounts,
+    UpdatedPlayed
 } from './types/set.response';
 
 @Injectable()
@@ -80,6 +81,39 @@ export class SetService {
                 }
             )
             .populate('createdBy', '_id username');
+
+        return sets;
+    }
+
+    async getSetsFromUser(
+        userId: ObjectId,
+        user: JwtUserDto
+    ): Promise<ResponseSet[]> {
+        if (user.role === Role.USER && user.userId !== userId)
+            throw new ForbiddenException();
+
+        const sets: ResponseSet[] = await this.setSchema
+            .find(
+                {
+                    status: Status.ACTIVE,
+                    createdBy: userId
+                },
+                {
+                    _id: 1,
+                    dareCount: 1,
+                    truthCount: 1,
+                    name: 1,
+                    language: 1,
+                    createdBy: 1,
+                    category: 1,
+                    played: 1
+                }
+            )
+            .populate<ResponseSet & { tasks: ResponseTaskWithStatus[] }>(
+                'createdBy',
+                '_id username'
+            )
+            .lean();
 
         return sets;
     }
@@ -142,7 +176,7 @@ export class SetService {
         return set;
     }
 
-    async updateSetPlayed(id: ObjectId) {
+    async updateSetPlayed(id: ObjectId): Promise<UpdatedPlayed> {
         const set: SetDocument = await this.setSchema.findByIdAndUpdate(
             id,
             {
