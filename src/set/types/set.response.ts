@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
 import { Status } from '../../shared/enums/status.enum';
+import { SetCategory } from '../enums/setcategory';
 
 export type ResponseSet = {
     _id: ObjectId;
@@ -11,6 +12,7 @@ export type ResponseSet = {
     };
     language: string;
     name: string;
+    category: SetCategory;
 };
 
 export type ResponseTask = {
@@ -26,6 +28,7 @@ export type ResponseSetMetadata = {
     truthCount: number;
     createdBy: ObjectId;
     language: string;
+    category: SetCategory;
     name: string;
 };
 

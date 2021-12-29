@@ -85,7 +85,8 @@ describe('Sets (e2e)', () => {
                     dareCount: expect.any(Number),
                     truthCount: expect.any(Number),
                     createdBy: expect.any(Object),
-                    name: expect.any(String)
+                    name: expect.any(String),
+                    category: expect.any(String)
                 })
             );
             expect(set).toEqual(
@@ -169,7 +170,8 @@ describe('Sets (e2e)', () => {
                     dareCount: expect.any(Number),
                     truthCount: expect.any(Number),
                     createdBy: null,
-                    name: expect.any(String)
+                    name: expect.any(String),
+                    category: expect.any(String)
                 })
             );
             expect(set).toEqual(
@@ -198,7 +200,8 @@ describe('Sets (e2e)', () => {
                     truthCount: expect.any(Number),
                     createdBy: null,
                     name: expect.any(String),
-                    tasks: expect.any(Array)
+                    tasks: expect.any(Array),
+                    category: expect.any(String)
                 })
             );
             expect(set).toEqual(
@@ -264,7 +267,8 @@ describe('Sets (e2e)', () => {
                     truthCount: expect.any(Number),
                     createdBy: expect.any(String),
                     language: expect.any(String),
-                    name: expect.any(String)
+                    name: expect.any(String),
+                    category: expect.any(String)
                 })
             );
             expect(set).toEqual(
