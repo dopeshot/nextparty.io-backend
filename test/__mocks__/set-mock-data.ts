@@ -10,6 +10,7 @@ export const getSetSetupData = () => ({
     status: Status.ACTIVE,
     language: Language.EN,
     category: SetCategory.CLASSIC,
+    played: 0,
     name: 'User Set',
     createdBy: 'aaaaaaaaaaaaaaaaaaaaaaac',
     dareCount: 0,
