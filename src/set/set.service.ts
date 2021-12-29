@@ -50,6 +50,8 @@ export class SetService {
                 truthCount: set.truthCount,
                 language: set.language,
                 name: set.name,
+                category: set.category,
+                played: set.played,
                 createdBy: {
                     _id: user.userId,
                     username: user.username
@@ -71,10 +73,12 @@ export class SetService {
                     truthCount: 1,
                     name: 1,
                     language: 1,
-                    createdBy: 1
+                    createdBy: 1,
+                    category: 1,
+                    played: 1
                 }
             )
-            .populate<ResponseSet[]>('createdBy', '_id username');
+            .populate('createdBy', '_id username');
 
         return sets;
     }
@@ -91,7 +95,9 @@ export class SetService {
                         name: 1,
                         language: 1,
                         createdBy: 1,
-                        tasks: 1
+                        tasks: 1,
+                        category: 1,
+                        played: 1
                     }
                 )
                 .populate<ResponseSet & { tasks: ResponseTaskWithStatus[] }>(
@@ -124,13 +130,27 @@ export class SetService {
             updateSetDto,
             {
                 new: true,
-                select: '_id dareCount truthCount language name createdBy'
+                select: '_id dareCount truthCount language name createdBy category played'
             }
         );
 
         if (!set) throw new NotFoundException();
 
         return set;
+    }
+
+    async updateSetPlayed(id: ObjectId) {
+        const set: SetDocument = await this.setSchema.findByIdAndUpdate(
+            id,
+            {
+                $inc: { played: 1 }
+            },
+            { new: true }
+        );
+
+        if (!set) throw new NotFoundException();
+
+        return { played: set.played };
     }
 
     async deleteSet(
@@ -391,10 +411,11 @@ export class SetService {
     /* istanbul ignore next */ // This is development only
     public async createExampleSets(user: JwtUserDto, test: string) {
         SetSampleData.forEach(async (setData) => {
-            const set = await this.createSet(
+            const set: ResponseSet = await this.createSet(
                 {
                     name: setData.name,
-                    language: setData.language
+                    language: setData.language,
+                    category: setData.category
                 },
                 user
             );

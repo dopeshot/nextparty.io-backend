@@ -1,5 +1,6 @@
 import { ObjectId } from 'mongoose';
 import { Status } from '../../shared/enums/status.enum';
+import { SetCategory } from '../enums/setcategory';
 
 export type ResponseSet = {
     _id: ObjectId;
@@ -11,6 +12,8 @@ export type ResponseSet = {
     };
     language: string;
     name: string;
+    category: SetCategory;
+    played: number;
 };
 
 export type ResponseTask = {
@@ -26,6 +29,8 @@ export type ResponseSetMetadata = {
     truthCount: number;
     createdBy: ObjectId;
     language: string;
+    category: SetCategory;
+    played: number;
     name: string;
 };
 
@@ -34,6 +39,11 @@ export type UpdatedCounts = {
     truthCount: number;
     dareCount: number;
 };
+
+export type UpdatedPlayed = {
+    played: number;
+};
+
 export type ResponseSetWithTasks = ResponseSet & { tasks: ResponseTask[] };
 
 // Only for Backend

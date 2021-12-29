@@ -85,7 +85,9 @@ describe('Sets (e2e)', () => {
                     dareCount: expect.any(Number),
                     truthCount: expect.any(Number),
                     createdBy: expect.any(Object),
-                    name: expect.any(String)
+                    name: expect.any(String),
+                    category: expect.any(String),
+                    played: expect.any(Number)
                 })
             );
             expect(set).toEqual(
@@ -169,7 +171,9 @@ describe('Sets (e2e)', () => {
                     dareCount: expect.any(Number),
                     truthCount: expect.any(Number),
                     createdBy: null,
-                    name: expect.any(String)
+                    name: expect.any(String),
+                    category: expect.any(String),
+                    played: expect.any(Number)
                 })
             );
             expect(set).toEqual(
@@ -198,7 +202,9 @@ describe('Sets (e2e)', () => {
                     truthCount: expect.any(Number),
                     createdBy: null,
                     name: expect.any(String),
-                    tasks: expect.any(Array)
+                    tasks: expect.any(Array),
+                    category: expect.any(String),
+                    played: expect.any(Number)
                 })
             );
             expect(set).toEqual(
@@ -264,7 +270,9 @@ describe('Sets (e2e)', () => {
                     truthCount: expect.any(Number),
                     createdBy: expect.any(String),
                     language: expect.any(String),
-                    name: expect.any(String)
+                    name: expect.any(String),
+                    category: expect.any(String),
+                    played: expect.any(Number)
                 })
             );
             expect(set).toEqual(
@@ -298,6 +306,22 @@ describe('Sets (e2e)', () => {
                 .send({ language: Language.DE })
                 .expect(HttpStatus.OK);
             expect(res.body.language).toEqual(Language.DE);
+        });
+
+        it('/set/:id (PATCH) by id by admin', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            const res = await request(app.getHttpServer())
+                .patch(`/set/${getSetSetupData()._id}/played`)
+                .expect(HttpStatus.OK);
+            expect(res.body.played).toBe(1);
+        });
+
+        // Negative test
+        it('/set/:id (PATCH) by id by admin', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            const res = await request(app.getHttpServer())
+                .patch(`/set/${getWrongId()}/played`)
+                .expect(HttpStatus.NOT_FOUND);
         });
 
         // Negative test

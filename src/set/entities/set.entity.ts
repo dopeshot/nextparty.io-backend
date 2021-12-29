@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ObjectId, SchemaTypes, Document } from 'mongoose';
-import { Status } from '../../shared/enums/status.enum';
+import { Document, ObjectId, SchemaTypes } from 'mongoose';
 import { Language } from '../../shared/enums/language.enum';
-import { Task, TaskSchema } from './task.entity';
+import { Status } from '../../shared/enums/status.enum';
 import { User } from '../../user/entities/user.entity';
+import { SetCategory } from '../enums/setcategory';
+import { Task, TaskSchema } from './task.entity';
 
 @Schema({ timestamps: true, _id: true })
 export class Set {
@@ -12,6 +13,9 @@ export class Set {
 
     @Prop({ required: false, type: [{ type: TaskSchema }] })
     tasks: Task[];
+
+    @Prop({ required: true })
+    category: SetCategory;
 
     @Prop({ default: Status.ACTIVE })
     status: Status | Status.ACTIVE;
@@ -27,6 +31,9 @@ export class Set {
 
     @Prop({ default: 0 })
     dareCount: number;
+
+    @Prop({ default: 0 })
+    played: number;
 }
 
 export type SetDocument = Set & Document;

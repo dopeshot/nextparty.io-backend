@@ -1,5 +1,6 @@
 import { IsEnum, IsOptional, IsString, Length } from 'class-validator';
 import { Language } from '../../shared/enums/language.enum';
+import { SetCategory } from '../enums/setcategory';
 
 export class CreateSetDto {
     @IsString()
@@ -9,4 +10,7 @@ export class CreateSetDto {
     @IsOptional()
     @IsEnum(Language)
     language: Language = Language.DE;
+
+    @IsEnum(SetCategory)
+    category: SetCategory;
 }

@@ -1,4 +1,5 @@
 import { CurrentPlayerGender } from '../../src/set/enums/currentplayergender.enum';
+import { SetCategory } from '../../src/set/enums/setcategory';
 import { TaskType } from '../../src/set/enums/tasktype.enum';
 import { Language } from '../../src/shared/enums/language.enum';
 import { Status } from '../../src/shared/enums/status.enum';
@@ -8,6 +9,8 @@ export const getSetSetupData = () => ({
     _id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
     status: Status.ACTIVE,
     language: Language.EN,
+    category: SetCategory.CLASSIC,
+    played: 0,
     name: 'User Set',
     createdBy: 'aaaaaaaaaaaaaaaaaaaaaaac',
     dareCount: 0,
@@ -24,7 +27,8 @@ export const getSetSetupData = () => ({
 });
 export const getMockSet = () => ({
     language: Language.DE,
-    name: 'Set number 0'
+    name: 'Set number 0',
+    category: SetCategory.CLASSIC
 });
 
 export const getMockAuthUser = () => ({
