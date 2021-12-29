@@ -1,6 +1,7 @@
 import { ObjectId } from 'mongoose';
 import { Status } from '../../shared/enums/status.enum';
-import { SetCategory } from '../enums/setcategory';
+import { SetCategory } from '../enums/setcategory.enum';
+import { Visibility } from '../enums/visibility.enum';
 
 export type ResponseSet = {
     _id: ObjectId;
@@ -32,6 +33,7 @@ export type ResponseSetMetadata = {
     category: SetCategory;
     played: number;
     name: string;
+    visibility: Visibility;
 };
 
 export type UpdatedCounts = {

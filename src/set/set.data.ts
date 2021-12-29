@@ -1,7 +1,8 @@
 import { Language } from '../shared/enums/language.enum';
 import { CurrentPlayerGender } from './enums/currentplayergender.enum';
-import { SetCategory } from './enums/setcategory';
+import { SetCategory } from './enums/setcategory.enum';
 import { TaskType } from './enums/tasktype.enum';
+import { Visibility } from './enums/visibility.enum';
 
 // MC: This file is for sample data ONLY
 export const SetSampleData = [
@@ -9,6 +10,7 @@ export const SetSampleData = [
         name: 'Klassisch',
         language: Language.DE,
         category: SetCategory.CLASSIC,
+        visibility: Visibility.PUBLIC,
         tasks: [
             {
                 type: TaskType.DARE,
@@ -124,6 +126,7 @@ export const SetSampleData = [
         name: 'Versaut',
         language: Language.DE,
         category: SetCategory.HOT,
+        visibility: Visibility.PUBLIC,
         tasks: [
             {
                 type: TaskType.DARE,
@@ -246,6 +249,7 @@ export const SetSampleData = [
         name: 'HdM Stuttgart Edition',
         language: Language.DE,
         category: SetCategory.CLASSIC,
+        visibility: Visibility.PUBLIC,
         tasks: [
             {
                 type: TaskType.TRUTH,
@@ -276,6 +280,7 @@ export const SetSampleData = [
         name: 'Sex',
         language: Language.DE,
         category: SetCategory.SEXY,
+        visibility: Visibility.PUBLIC,
         tasks: [
             {
                 type: TaskType.TRUTH,
