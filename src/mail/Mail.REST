@@ -1,4 +1,4 @@
-@adress = http://localhost:3000/api/mail
+@adress = http://localhost:3001/api/mail
 
 
 ###Create Set
