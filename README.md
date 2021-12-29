@@ -1,3 +1,5 @@
+[![codecov](https://codecov.io/gh/dopeshot/truth-or-dare-backend/branch/main/graph/badge.svg?token=4L5JEEIZEP?)](https://codecov.io/gh/dopeshot/truth-or-dare-backend)
+
 ## Installation
 
 ```bash

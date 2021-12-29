@@ -12,17 +12,28 @@ import { FacebookStrategy } from './strategies/facebook/facebook.strategy';
 import { DiscordStrategy } from './strategies/discord/discord.strategy';
 
 @Module({
-  controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy, GoogleStrategy, FacebookStrategy, DiscordStrategy],
-  imports: [UserModule, PassportModule, JwtModule.registerAsync({
-    imports: [ConfigModule],
-    useFactory: (configService: ConfigService) => ({
-      secret: configService.get<string>('JWT_SECRET'),
-      signOptions: { 
-        expiresIn: configService.get<string>('JWT_EXPIRESIN')
-      }
-    }),
-    inject: [ConfigService]
-  })]
+    controllers: [AuthController],
+    providers: [
+        AuthService,
+        LocalStrategy,
+        JwtStrategy,
+        GoogleStrategy,
+        FacebookStrategy,
+        DiscordStrategy
+    ],
+    imports: [
+        UserModule,
+        PassportModule,
+        JwtModule.registerAsync({
+            imports: [ConfigModule],
+            useFactory: (configService: ConfigService) => ({
+                secret: configService.get<string>('JWT_SECRET'),
+                signOptions: {
+                    expiresIn: configService.get<string>('JWT_EXPIRESIN')
+                }
+            }),
+            inject: [ConfigService]
+        })
+    ]
 })
 export class AuthModule {}

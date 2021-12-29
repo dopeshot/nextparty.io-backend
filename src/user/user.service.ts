@@ -1,298 +1,250 @@
-import { BadRequestException, ConflictException, Injectable, InternalServerErrorException, NotFoundException, Provider } from '@nestjs/common';
+import {
+    ConflictException,
+    ForbiddenException,
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException,
+    ServiceUnavailableException
+} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
+import * as bcyrpt from 'bcrypt';
 import { Model, ObjectId } from 'mongoose';
+import { JwtUserDto } from '../auth/dto/jwt.dto';
+import { MailService } from '../mail/mail.service';
+import { MailVerifyDto } from '../mail/types/mail-verify.type';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
-import * as bcyrpt from 'bcrypt'
-import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
+import { Role } from './enums/role.enum';
 import { UserStatus } from './enums/status.enum';
-import { MailService } from '../mail/mail.service';
-import { EmailVerify, VerifyDocument } from './entities/verify.entity';
-import * as crypto from 'crypto'
+import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
+import { returnUser } from './types/return-user.type';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('User') private userSchema: Model<UserDocument>,
-    @InjectModel('Verify') private verifySchema: Model<VerifyDocument>,
-    @InjectModel('Reset') private resetSchema: Model<VerifyDocument>,
-    private readonly mailService: MailService) { }
+    constructor(
+        @InjectModel(User.name) private userSchema: Model<UserDocument>,
+        private readonly jwtService: JwtService,
+        private readonly mailService: MailService
+    ) {}
 
-  /**
-   * Create new user with credentials
-   * @param credentials of the user
-   * @returns User
-   */
-  async create(credentials: CreateUserDto): Promise<User> {
-    try {
-      const hash = await bcyrpt.hash(credentials.password, 12)
-      const user = new this.userSchema({
-        ...credentials,
-        status: UserStatus.UNVERIFIED,
-        password: hash
-      })
-      const result = await user.save()
-
-      await this.createVerification(result)
-
-      return result
-    } catch (error) {
-      if (error.code === 11000 && error.keyPattern.username)
-        throw new ConflictException('Username is already taken.')
-      else if (error.code === 11000 && error.keyPattern.email)
-        throw new ConflictException('Email is already taken.')
-      throw new InternalServerErrorException("User Create failed")
-    }
-  }
-
-  async parseJWTtOUsable(JWTuser): Promise<UserDocument> {
-    let user = await this.userSchema.findById(JWTuser.userId)
-
-    if (!user) {
-      throw new NotFoundException()
+    // Allows for changing the hashing algo without breaking tests and other linked functionality
+    async hashPassword(plaintext: string) {
+        return await bcyrpt.hash(plaintext, 12);
     }
 
-    return user
-  }
+    /**
+     * Create new user with credentials
+     * @param credentials of the user
+     * @returns User
+     */
+    async create(credentials: CreateUserDto): Promise<User> {
+        try {
+            const hash = await this.hashPassword(credentials.password);
+            const user = new this.userSchema({
+                ...credentials,
+                status: UserStatus.UNVERIFIED,
+                password: hash
+            });
 
-  async createVerification(user: User) {
-    const verifyCode = crypto.randomBytes(64).toString('hex');
-    const verifyObject = new this.verifySchema({
-      userId: user._id,
-      verificationCode: verifyCode
-    })
-    await verifyObject.save()
+            // This order of operations is important
+            // The user is saved first, then the verification code is generated
+            // If the verification code generation fails, it can be rerequested later
 
-    await this.mailService.generateVerifyMail(user.username, user.email, verifyCode)
-  }
+            const result = await user.save();
 
-  /**
-   * Create new User for auth without password
-   * @param credentials user data
-   * @returns user
-   */
-  async createUserFromProvider(userDataFromProvider: userDataFromProvider): Promise<User> {
-    try {
-      const user: UserDocument = new this.userSchema(userDataFromProvider)
-      const result = await user.save()
+            await this.createVerification(result);
 
-      return result
-    } catch (error) {
-      throw new InternalServerErrorException('Error occured while saving user from provider.')
-    }
-  }
-
-  /**
-   * Find all user
-   * @returns Array aus allen User 
-   */
-  async findAll(): Promise<User[]> {
-    return await this.userSchema.find()
-  }
-
-  /**
-   * Find user by id
-   * @param id of the user
-   * @returns User
-   */
-  async findOneById(id: ObjectId): Promise<User> {
-    let user = await this.userSchema.findById(id).lean()
-
-    if (!user)
-      throw new NotFoundException()
-
-    return user
-  }
-
-  /**
-   * Find user by username
-   * @param username of the user
-   * @returns User
-   */
-  async findOneByUsername(username: string): Promise<User> {
-    let user = await this.userSchema.findOne({ username }).lean()
-
-    if (!user)
-      throw new NotFoundException()
-
-    return user
-  }
-
-  /**
-   * Find user by email
-   * @param email of the user
-   * @returns User
-   */
-  async findOneByEmail(email: string): Promise<User | null> {
-    let user = await this.userSchema.findOne({ email }).lean()
-
-    if (!user)
-      return null
-
-    return user
-  }
-
-  /**
-   * FOR TESTING update role
-   * @param id object id
-   * @param role 
-   * @returns User
-   */
-  async patchRole(id: ObjectId, role: any): Promise<User> {
-    try {
-      const updatedUser: User = await this.userSchema.findByIdAndUpdate(id, {
-        role: role.role
-      }, {
-        new: true
-      })
-
-      return updatedUser
-    } catch (error) {
-      throw new InternalServerErrorException("Update Role failed")
-    }
-  }
-
-  /**
-   * Update the user
-   * @param id ObjectId
-   * @param updateUserDto Dto for updates 
-   * @returns updated user (with changed fields)
-   */
-  async updateUser(id: ObjectId, updateUserDto: UpdateUserDto): Promise<User> {
-    try {
-      const updatedUser: User = await this.userSchema.findByIdAndUpdate(id, {
-        ...updateUserDto
-      }, {
-        new: true
-      })
-
-      return updatedUser
-    } catch (error) {
-      if (error.code === 11000)
-        throw new ConflictException('Username is already taken.')
-      else
-        throw new InternalServerErrorException("Update User failed")
-    }
-  }
-
-
-  /**
-   * Remove User by Id
-   * @param id User id
-   * @returns Removed User
-   */
-  async remove(id: ObjectId): Promise<User> {
-    let user = await this.userSchema.findByIdAndDelete(id)
-
-    if (!user)
-      throw new NotFoundException()
-
-    return user
-  }
-
-  async findVerify(userId: ObjectId): Promise<EmailVerify> {
-    const verifyObject = await this.verifySchema.findOne({
-      'userId': userId
-    }).lean()
-    if (!verifyObject) {
-      throw new NotFoundException()
-    }
-    return verifyObject
-  }
-
-  async veryfiyUser(code: string) {
-
-    const verifyObject = await this.verifySchema.findOne({
-      'verificationCode': code
-    }).lean()
-
-    if (!verifyObject) {
-      throw new NotFoundException()
+            return result;
+        } catch (error) {
+            if (error.code === 11000 && error.keyPattern.username)
+                throw new ConflictException('Username is already taken.');
+            else if (error.code === 11000 && error.keyPattern.email)
+                throw new ConflictException('Email is already taken.');
+            else if (error instanceof ServiceUnavailableException) throw error;
+            /* istanbul ignore next */
+            throw new InternalServerErrorException('User Create failed');
+        }
     }
 
-    if (Date.now() - verifyObject._id.getTimestamp() > +process.env.VERIFY_TTL) {
-      return { "error": "Expired" }
+    async generateVerifyCode(user: User): Promise<string> {
+        const payload = {
+            mail: user.email,
+            name: user.username,
+            id: user._id,
+            create_time: Date.now()
+        };
+
+        return this.jwtService.sign(payload);
     }
 
-    const user = await this.userSchema.findById(verifyObject.userId)
+    async createVerification(user: User): Promise<string> {
+        const verifyCode = await this.generateVerifyCode(user);
 
-    if (!user) {
-      throw new NotFoundException()
+        await this.mailService.sendMail<MailVerifyDto>(
+            user.email,
+            'MailVerify',
+            {
+                name: user.username,
+                link: `${process.env.HOST}/api/user/verify/?code=${verifyCode}`
+            },
+            'Verify your email'
+        );
+
+        return verifyCode;
     }
 
-    user.status = UserStatus.ACTIVE
+    /**
+     * Create new User for auth without password
+     * @param credentials user data
+     * @returns user
+     */
+    async createUserFromProvider(
+        userDataFromProvider: userDataFromProvider
+    ): Promise<User> {
+        try {
+            const user: UserDocument = new this.userSchema(
+                userDataFromProvider
+            );
+            const result = await user.save();
 
-    const result = await user.save()
-
-
-    return result
-  }
-
-  /**
-   * Sends the code for a password reset to the mail adress
-   * @param mail - usermail
-   */
-  async requestResetPassword(mail: string) {
-    const user = await this.userSchema.findOne({
-      'email': mail
-    }).lean()
-
-    if (!user) {
-      throw new NotFoundException()
+            return result;
+        } catch (error) {
+            throw new InternalServerErrorException(
+                'Error occured while saving user from provider.'
+            );
+        }
     }
 
-    const resetCode = crypto.randomBytes(64).toString('hex');
-    const resetObject = new this.resetSchema({
-      userId: user._id,
-      verificationCode: resetCode
-    })
-    const result = await resetObject.save()
+    /**
+     * Find all user
+     * @returns Array aus allen User
+     */
+    async findAll(): Promise<User[]> {
+        const users = await this.userSchema.find();
 
-    await this.mailService.sendPasswordReset(user.username, user.email, resetCode)
-
-  }
-
-  async findReset(userId: ObjectId): Promise<EmailVerify> {
-    const verifyObject = await this.resetSchema.findOne({
-      'userId': userId
-    }).lean()
-    if (!verifyObject) {
-      throw new NotFoundException()
-    }
-    return verifyObject
-  }
-
-  /**
-   * Overwrites the password with the new one
-   * @param code - resetcode as passed in url
-   * @param password new password
-   * @returns 
-   */
-  async validatePasswordReset(code: string, password: string) {
-    const resetObject = await this.resetSchema.findOneAndDelete({
-      'verificationCode': code
-    })
-
-    if (!resetObject) {
-      throw new NotFoundException()
+        return users;
     }
 
-    if (Date.now() - resetObject._id.getTimestamp() > +process.env.RESET_TTL) {
-      throw new BadRequestException('Token expired.')
+    /**
+     * Find user by id
+     * @param id of the user
+     * @returns User
+     */
+    async findOneById(id: ObjectId): Promise<User> {
+        const user = await this.userSchema.findById(id).lean();
+
+        if (!user) throw new NotFoundException();
+
+        return user;
     }
 
-    const hash = await bcyrpt.hash(password, 12)
+    /**
+     * Find user by email
+     * @param email of the user
+     * @returns User
+     */
+    async findOneByEmail(email: string): Promise<User> {
+        const user = await this.userSchema.findOne({ email }).lean();
 
-    const updatedUser: User = await this.userSchema.findByIdAndUpdate(resetObject.userId, {
-        password: hash
-      }, {
-        new: true
-    })
+        if (!user) throw new NotFoundException();
 
-    if (!updatedUser) {
-      throw new NotFoundException()
+        return user;
     }
 
-    return updatedUser
-  }
+    /**
+     * Update the user
+     * @param id ObjectId
+     * @param updateUserDto Dto for updatesparseJWTtOUsable
+     * @returns updated user (with changed fields)
+     */
+    async updateUser(
+        id: ObjectId,
+        updateUserDto: UpdateUserDto,
+        actingUser: JwtUserDto
+    ): Promise<User> {
+        // User should only be able to update his own data (Admin can update all)
+        if (
+            id.toString() !== actingUser.userId.toString() &&
+            actingUser.role !== Role.ADMIN
+        ) {
+            throw new ForbiddenException();
+        }
+
+        try {
+            const updatedUser: User = await this.userSchema.findByIdAndUpdate(
+                id,
+                {
+                    ...updateUserDto
+                },
+                {
+                    new: true
+                }
+            );
+
+            return updatedUser;
+        } catch (error) {
+            if (error.code === 11000)
+                throw new ConflictException('Username is already taken.');
+            else throw new InternalServerErrorException('Update User failed');
+        }
+    }
+
+    async remove(id: ObjectId, actingUser: JwtUserDto): Promise<User> {
+        // User should only be able to delete own account (Admin can delete all)
+        if (
+            id.toString() !== actingUser.userId.toString() &&
+            actingUser.role !== Role.ADMIN
+        ) {
+            throw new ForbiddenException();
+        }
+
+        const user = await this.userSchema.findByIdAndDelete(id);
+
+        if (!user) throw new NotFoundException();
+
+        return user;
+    }
+
+    async isValidVerifyCode(userId: ObjectId): Promise<boolean> {
+        let user: User;
+        try {
+            user = await this.findOneById(userId);
+        } catch (error) {
+            // This is necessary as a not found exception would overwrite the guard response
+            return false;
+        }
+        if (!user) return false; // This should never happen but just in case
+        if (user.status !== UserStatus.UNVERIFIED) {
+            return false;
+        }
+        return true;
+    }
+
+    async veryfiyUser(userId: ObjectId): Promise<User> {
+        const user = await this.userSchema.findByIdAndUpdate(userId, {
+            status: UserStatus.ACTIVE
+        });
+
+        //failsave that should never occur so istanbul ignore\
+        /* istanbul ignore next */
+        if (!user) {
+            throw new NotFoundException();
+        }
+
+        return user;
+    }
+
+    async transformToReturn(user: User): Promise<returnUser> {
+        const strip = {
+            _id: user._id,
+            username: user.username,
+            email: user.email,
+            status: user.status,
+            role: user.role,
+            provider: user.provider
+        };
+        return strip;
+    }
 }

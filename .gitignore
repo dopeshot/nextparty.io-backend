@@ -42,3 +42,7 @@ README.md
 .github/workflows
 
 coverage-e2e
+
+.eslintcache
+
+data

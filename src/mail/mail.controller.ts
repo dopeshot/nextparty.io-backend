@@ -1,15 +1,20 @@
-import { Body, Controller, Get, Post, Render } from '@nestjs/common';
+import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { ENVGuard } from '../shared/guards/environment.guard';
 import { MailService } from './mail.service';
+import { MailTestDto } from './types/mail-test.type';
 
 @Controller('mail')
 export class MailController {
-  constructor(private readonly mailService: MailService) {}
+    constructor(private readonly mailService: MailService) {}
 
-  // This is an endpoint sorely meant to be used for testing purposes. 
-  // Disable this once done testing or delete the controller enturely
-  @Post()
-  async sendMail(@Body('recipient') recipient: string) {
-    return await this.mailService.mailTest(recipient, "this is a dummy endpoint");
-  }
-
+    @Post()
+    @UseGuards(ENVGuard)
+    async sendMail(@Body('recipient') recipient: string) {
+        return await this.mailService.sendMail<MailTestDto>(
+            recipient,
+            'test',
+            { data: 'this is a dummy endpoint' },
+            'test'
+        );
+    }
 }
