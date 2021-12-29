@@ -22,6 +22,7 @@ import {
     getMockAuthUser,
     getMockSet,
     getMockTask,
+    getOtherMockAuthUser,
     getSetSetupData,
     getString,
     getWrongId
@@ -270,6 +271,38 @@ describe('Sets (e2e)', () => {
                 status: getSetSetupData()[0].status,
                 visibility: getSetSetupData()[0].visibility
             }).toEqual({ ...getSetSetupData()[0] });
+        });
+
+        it('/set/user/:id (GET) usersets by user', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`/set/user/${getSetSetupData()[0].createdBy}`)
+                .expect(HttpStatus.OK);
+            const sets = res.body;
+            expect(sets.length).toBe(1);
+
+            // Testing type ResponseSet omitted due to above test
+        });
+
+        it('/set/user/:id (GET) usersets by admin', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            const res = await request(app.getHttpServer())
+                .get(`/set/user/${getSetSetupData()[0].createdBy}`)
+                .expect(HttpStatus.OK);
+            const sets = res.body;
+            expect(sets.length).toBe(1);
+
+            // Testing type ResponseSet omitted due to above test
+        });
+
+        // Negative test
+        it('/set/user/:id (GET) usersets by wrong user', async () => {
+            fakeAuthGuard.setUser(getOtherMockAuthUser());
+            const res = await request(app.getHttpServer())
+                .get(`/set/user/${getSetSetupData()[0].createdBy}`)
+                .expect(HttpStatus.FORBIDDEN);
+            const sets = res.body;
+
+            // Testing type ResponseSet omitted due to above test
         });
 
         // Negative test

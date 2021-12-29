@@ -83,6 +83,12 @@ export const getMockAuthUser = () => ({
     role: Role.USER
 });
 
+export const getOtherMockAuthUser = () => ({
+    userId: 'aaaaaaaaaaaaaaaaaaaaaabb',
+    username: 'User',
+    role: Role.USER
+});
+
 export const getMockAuthAdmin = () => ({
     userId: 'aaaaaaaaaaaaaaaaaaaaaaad',
     username: 'Admin',
