@@ -76,7 +76,7 @@ export class SetService {
                     category: 1
                 }
             )
-            .populate<ResponseSet[]>('createdBy', '_id username');
+            .populate('createdBy', '_id username');
 
         return sets;
     }
