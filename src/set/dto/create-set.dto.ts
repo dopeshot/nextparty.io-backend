@@ -1,6 +1,7 @@
 import { IsEnum, IsOptional, IsString, Length } from 'class-validator';
 import { Language } from '../../shared/enums/language.enum';
-import { SetCategory } from '../enums/setcategory';
+import { SetCategory } from '../enums/setcategory.enum';
+import { Visibility } from '../enums/visibility.enum';
 
 export class CreateSetDto {
     @IsString()
@@ -9,8 +10,12 @@ export class CreateSetDto {
 
     @IsOptional()
     @IsEnum(Language)
-    language: Language = Language.DE;
+    language: Language;
 
     @IsEnum(SetCategory)
     category: SetCategory;
+
+    @IsOptional()
+    @IsEnum(Visibility)
+    visibility: Visibility;
 }

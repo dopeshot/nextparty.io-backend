@@ -17,6 +17,7 @@ import { Set, SetDocument } from './entities/set.entity';
 import { Task, TaskDocument } from './entities/task.entity';
 import { DeleteType } from './enums/delete-type.enum';
 import { TaskType } from './enums/tasktype.enum';
+import { Visibility } from './enums/visibility.enum';
 import { SetSampleData } from './set.data';
 import {
     ResponseSet,
@@ -24,7 +25,8 @@ import {
     ResponseSetWithTasks,
     ResponseTask,
     ResponseTaskWithStatus,
-    UpdatedCounts
+    UpdatedCounts,
+    UpdatedPlayed
 } from './types/set.response';
 
 @Injectable()
@@ -66,7 +68,7 @@ export class SetService {
     async getAllSets(): Promise<ResponseSet[]> {
         const sets: ResponseSet[] = await this.setSchema
             .find(
-                { status: Status.ACTIVE },
+                { status: Status.ACTIVE, visibility: Visibility.PUBLIC },
                 {
                     _id: 1,
                     dareCount: 1,
@@ -83,11 +85,48 @@ export class SetService {
         return sets;
     }
 
+    async getSetsFromUser(
+        userId: ObjectId,
+        user: JwtUserDto
+    ): Promise<ResponseSet[]> {
+        if (user.role === Role.USER && user.userId !== userId)
+            throw new ForbiddenException();
+
+        const sets: ResponseSet[] = await this.setSchema
+            .find(
+                {
+                    status: Status.ACTIVE,
+                    createdBy: userId
+                },
+                {
+                    _id: 1,
+                    dareCount: 1,
+                    truthCount: 1,
+                    name: 1,
+                    language: 1,
+                    createdBy: 1,
+                    category: 1,
+                    played: 1
+                }
+            )
+            .populate<ResponseSet & { tasks: ResponseTaskWithStatus[] }>(
+                'createdBy',
+                '_id username'
+            )
+            .lean();
+
+        return sets;
+    }
+
     async getOneSet(id: ObjectId): Promise<ResponseSetWithTasks> {
         const set: ResponseSet & { tasks: ResponseTaskWithStatus[] } =
             await this.setSchema
                 .findOne(
-                    { _id: id, status: Status.ACTIVE },
+                    {
+                        _id: id,
+                        status: Status.ACTIVE,
+                        visibility: Visibility.PUBLIC
+                    },
                     {
                         _id: 1,
                         dareCount: 1,
@@ -121,16 +160,14 @@ export class SetService {
     ): Promise<ResponseSetMetadata> {
         const queryMatch: { _id: ObjectId; createdBy?: ObjectId } = { _id: id };
 
-        if (user.role !== Role.ADMIN) {
-            queryMatch.createdBy = user.userId;
-        }
+        if (user.role !== Role.ADMIN) queryMatch.createdBy = user.userId;
 
         const set: ResponseSetMetadata = await this.setSchema.findOneAndUpdate(
             queryMatch,
             updateSetDto,
             {
                 new: true,
-                select: '_id dareCount truthCount language name createdBy category played'
+                select: '_id dareCount truthCount language name createdBy category played visibility'
             }
         );
 
@@ -139,7 +176,7 @@ export class SetService {
         return set;
     }
 
-    async updateSetPlayed(id: ObjectId) {
+    async updateSetPlayed(id: ObjectId): Promise<UpdatedPlayed> {
         const set: SetDocument = await this.setSchema.findByIdAndUpdate(
             id,
             {
@@ -415,7 +452,8 @@ export class SetService {
                 {
                     name: setData.name,
                     language: setData.language,
-                    category: setData.category
+                    category: setData.category,
+                    visibility: setData.visibility
                 },
                 user
             );

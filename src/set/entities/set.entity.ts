@@ -3,7 +3,8 @@ import { Document, ObjectId, SchemaTypes } from 'mongoose';
 import { Language } from '../../shared/enums/language.enum';
 import { Status } from '../../shared/enums/status.enum';
 import { User } from '../../user/entities/user.entity';
-import { SetCategory } from '../enums/setcategory';
+import { SetCategory } from '../enums/setcategory.enum';
+import { Visibility } from '../enums/visibility.enum';
 import { Task, TaskSchema } from './task.entity';
 
 @Schema({ timestamps: true, _id: true })
@@ -23,7 +24,7 @@ export class Set {
     @Prop({ type: SchemaTypes.ObjectId, ref: User.name, required: true })
     createdBy: ObjectId;
 
-    @Prop({ required: true })
+    @Prop({ required: true, default: Language.DE })
     language: Language;
 
     @Prop({ default: 0 })
@@ -34,6 +35,9 @@ export class Set {
 
     @Prop({ default: 0 })
     played: number;
+
+    @Prop({ default: Visibility.PUBLIC })
+    visibility: Visibility;
 }
 
 export type SetDocument = Set & Document;
