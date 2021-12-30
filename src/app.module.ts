@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
-import { AuthModule } from './auth/auth.module';
-import { UserModule } from './user/user.module';
-import { SetModule } from './set/set.module';
-import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
+import { SetModule } from './set/set.module';
+import { UserModule } from './user/user.module';
 
 @Module({
     imports: [
@@ -15,7 +15,9 @@ import { MailModule } from './mail/mail.module';
         MongooseModule.forRootAsync({
             imports: [ConfigModule],
             useFactory: (configService: ConfigService) => ({
-                uri: configService.get<string>('DB_URI')
+                uri: configService.get<string>('DB_URI'),
+                user: configService.get<string>('DB_USER'),
+                pass: configService.get<string>('DB_PASS')
             }),
             inject: [ConfigService]
         }),

@@ -15,12 +15,14 @@ services:
     image: mongo:5
     restart: always
     volumes:
+      - ./home/mongodb:/home/mongodb
       - ./data:/data/db
     ports:
       - "27017:27017"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=
-      - MONGO_INITDB_ROOT_PASSWORD=
+      - MONGO_INITDB_ROOT_USERNAME=nextparty
+      - MONGO_INITDB_ROOT_PASSWORD=5VSHcAVBhFw
+      - MONGO_INITDB_DATABASE=wop
     logging:
       driver: "none"
 
