@@ -94,14 +94,12 @@ export class SetService {
             status: Status;
             createdBy: ObjectId;
             visibility?: Visibility;
-        } = { status: Status.ACTIVE, createdBy: user.userId };
+        } = { status: Status.ACTIVE, createdBy: userId };
 
         // Requesting others sets
-        if (userId !== user.userId) {
-            queryMatch.createdBy = userId;
-            if (user.role === Role.USER)
-                // Only admins can see others private sets
-                queryMatch.visibility = Visibility.PUBLIC;
+        if (userId !== user.userId && user.role !== Role.ADMIN) {
+            // Only admins can see others private sets
+            queryMatch.visibility = Visibility.PUBLIC;
         }
 
         const sets: ResponseSet[] = await this.setSchema
