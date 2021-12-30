@@ -2,8 +2,10 @@ version: "3.7"
 services:
   backend:
     container_name: wop-backend
-    image: coffeemakingtoaster/wop-backend
+    image: coffeemakingtoaster/wop-backend:latest
     restart: always
+    ports:
+      - "3001:3000"
     links:
       - mongo
     depends_on:
@@ -11,6 +13,7 @@ services:
     
   mongo:
     image: mongo:5
+    restart: always
     volumes:
       - ./data:/data/db
     ports:
