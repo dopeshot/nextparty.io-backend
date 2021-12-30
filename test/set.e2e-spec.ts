@@ -277,9 +277,9 @@ describe('Sets (e2e)', () => {
             }).toEqual({ ...getSetSetupData()[0] });
         });
 
-        it('/set/user (GET) usersets by user', async () => {
+        it('/set/user/:id (GET) usersets by self', async () => {
             const res = await request(app.getHttpServer())
-                .get(`/set/user`)
+                .get(`/set/user/${getMockAuthUser().userId}`)
                 .expect(HttpStatus.OK);
             const sets = res.body;
             expect(sets.length).toBe(2);

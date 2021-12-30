@@ -45,14 +45,14 @@ export class SetController {
         return this.setService.getAllSets();
     }
 
-    @Get('/user/:id?')
+    @Get('/user/:id')
     @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Get one Set by author id' })
     getSetsFromUser(
         @Param() { id }: MongoIdDto,
         @Request() { user }: ParameterDecorator & { user: JwtUserDto }
     ) {
-        return this.setService.getSetsFromUser(user, id);
+        return this.setService.getSetsFromUser(id, user);
     }
 
     @Get(':id')

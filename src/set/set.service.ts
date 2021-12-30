@@ -86,8 +86,8 @@ export class SetService {
     }
 
     async getSetsFromUser(
-        user: JwtUserDto,
-        userId?: ObjectId
+        userId: ObjectId,
+        user: JwtUserDto
     ): Promise<ResponseSet[]> {
         // The standard query
         const queryMatch: {
@@ -97,7 +97,7 @@ export class SetService {
         } = { status: Status.ACTIVE, createdBy: user.userId };
 
         // Requesting others sets
-        if (userId) {
+        if (userId !== user.userId) {
             queryMatch.createdBy = userId;
             if (user.role === Role.USER)
                 // Only admins can see others private sets
