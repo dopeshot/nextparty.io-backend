@@ -10,7 +10,7 @@ Authorization: Bearer {{token}}
 
 {
     "name": "Jibba",
-    "category": "Classic"
+    "category": "classic"
 }
 
 ### Get all sets
