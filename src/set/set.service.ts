@@ -89,26 +89,30 @@ export class SetService {
         userId: ObjectId,
         user: JwtUserDto
     ): Promise<ResponseSet[]> {
-        if (user.role === Role.USER && user.userId !== userId)
-            throw new ForbiddenException();
+        // The standard query
+        const queryMatch: {
+            status: Status;
+            createdBy: ObjectId;
+            visibility?: Visibility;
+        } = { status: Status.ACTIVE, createdBy: userId };
+
+        // Requesting others sets
+        if (userId !== user.userId && user.role !== Role.ADMIN) {
+            // Only admins can see others private sets
+            queryMatch.visibility = Visibility.PUBLIC;
+        }
 
         const sets: ResponseSet[] = await this.setSchema
-            .find(
-                {
-                    status: Status.ACTIVE,
-                    createdBy: userId
-                },
-                {
-                    _id: 1,
-                    dareCount: 1,
-                    truthCount: 1,
-                    name: 1,
-                    language: 1,
-                    createdBy: 1,
-                    category: 1,
-                    played: 1
-                }
-            )
+            .find(queryMatch, {
+                _id: 1,
+                dareCount: 1,
+                truthCount: 1,
+                name: 1,
+                language: 1,
+                createdBy: 1,
+                category: 1,
+                played: 1
+            })
             .populate<ResponseSet & { tasks: ResponseTaskWithStatus[] }>(
                 'createdBy',
                 '_id username'
