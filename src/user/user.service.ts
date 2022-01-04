@@ -76,7 +76,10 @@ export class UserService {
             create_time: Date.now()
         };
 
-        return this.jwtService.sign(payload);
+        return this.jwtService.sign(payload, {
+            secret: process.env.VERIFY_JWT_SECRET,
+            expiresIn: process.env.VERIFY_JWT_EXPIRESIN
+        });
     }
 
     async createVerification(user: User): Promise<string> {
@@ -87,7 +90,7 @@ export class UserService {
             'MailVerify',
             {
                 name: user.username,
-                link: `${process.env.HOST}/api/user/verify/?code=${verifyCode}`
+                link: `${process.env.HOST}/api/user/verify-account/?code=${verifyCode}`
             },
             'Verify your email'
         );
