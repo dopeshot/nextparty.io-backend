@@ -67,18 +67,9 @@ export class SetService {
 
     async getAllSets(): Promise<ResponseSet[]> {
         const sets: ResponseSet[] = await this.setSchema
-            .find(
-                { status: Status.ACTIVE, visibility: Visibility.PUBLIC },
-                {
-                    _id: 1,
-                    dareCount: 1,
-                    truthCount: 1,
-                    name: 1,
-                    language: 1,
-                    createdBy: 1,
-                    category: 1,
-                    played: 1
-                }
+            .find({ status: Status.ACTIVE, visibility: Visibility.PUBLIC })
+            .select(
+                '_id dareCount truthCount name language createdBy category played'
             )
             .populate('createdBy', '_id username');
 
@@ -103,16 +94,10 @@ export class SetService {
         }
 
         const sets: ResponseSet[] = await this.setSchema
-            .find(queryMatch, {
-                _id: 1,
-                dareCount: 1,
-                truthCount: 1,
-                name: 1,
-                language: 1,
-                createdBy: 1,
-                category: 1,
-                played: 1
-            })
+            .find(queryMatch)
+            .select(
+                '_id dareCount truthCount name language createdBy category played'
+            )
             .populate<ResponseSet & { tasks: ResponseTaskWithStatus[] }>(
                 'createdBy',
                 '_id username'
@@ -125,28 +110,15 @@ export class SetService {
     async getOneSet(id: ObjectId): Promise<ResponseSetWithTasks> {
         const set: ResponseSet & { tasks: ResponseTaskWithStatus[] } =
             await this.setSchema
-                .findOne(
-                    {
-                        _id: id,
-                        status: Status.ACTIVE,
-                        visibility: Visibility.PUBLIC
-                    },
-                    {
-                        _id: 1,
-                        dareCount: 1,
-                        truthCount: 1,
-                        name: 1,
-                        language: 1,
-                        createdBy: 1,
-                        tasks: 1,
-                        category: 1,
-                        played: 1
-                    }
+                .findOne({
+                    _id: id,
+                    status: Status.ACTIVE,
+                    visibility: Visibility.PUBLIC
+                })
+                .select(
+                    '_id dareCount truthCount name language createdBy tasks category played'
                 )
-                .populate<ResponseSet & { tasks: ResponseTaskWithStatus[] }>(
-                    'createdBy',
-                    '_id username'
-                )
+                .populate<ResponseTaskWithStatus[]>('createdBy', '_id username')
                 .lean();
 
         if (!set) throw new NotFoundException();
@@ -166,14 +138,13 @@ export class SetService {
 
         if (user.role !== Role.ADMIN) queryMatch.createdBy = user.userId;
 
-        const set: ResponseSetMetadata = await this.setSchema.findOneAndUpdate(
-            queryMatch,
-            updateSetDto,
-            {
-                new: true,
-                select: '_id dareCount truthCount language name createdBy category played visibility'
-            }
-        );
+        const set: ResponseSetMetadata = await this.setSchema
+            .findOneAndUpdate(queryMatch, updateSetDto, {
+                new: true
+            })
+            .select(
+                '_id dareCount truthCount name language createdBy category played visibility'
+            );
 
         if (!set) throw new NotFoundException();
 
