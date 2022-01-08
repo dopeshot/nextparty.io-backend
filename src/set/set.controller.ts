@@ -24,8 +24,8 @@ import { UpdateSetDto } from './dto/update-set.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { SetService } from './set.service';
 
-@ApiTags('set')
-@Controller('set')
+@ApiTags('sets')
+@Controller('sets')
 export class SetController {
     constructor(private readonly setService: SetService) {}
 

@@ -71,12 +71,12 @@ describe('UserModule (e2e)', () => {
     });
 
     describe('User basics', () => {
-        describe('/user (GET)', () => {
-            it('/user (GET) should return array', async () => {
+        describe('/users (GET)', () => {
+            it('/users (GET) should return array', async () => {
                 let user = await getTestAdmin();
                 await userModel.insertMany([user]);
                 const res = await request(app.getHttpServer())
-                    .get('/user')
+                    .get('/users')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestAdmin())}`
@@ -96,12 +96,12 @@ describe('UserModule (e2e)', () => {
             });
         });
 
-        describe('/user/profile (GET)', () => {
-            it('/user/profile (GET) ', async () => {
+        describe('/users/profile (GET)', () => {
+            it('/users/profile (GET) ', async () => {
                 let user = await getTestUser();
                 await userModel.create(user);
                 const res = await request(app.getHttpServer())
-                    .get('/user/profile')
+                    .get('/users/profile')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -119,11 +119,11 @@ describe('UserModule (e2e)', () => {
             });
         });
 
-        describe('/user/get-verify (GET)', () => {
-            it('/user/get-verify (GET) ', async () => {
+        describe('/users/get-verify (GET)', () => {
+            it('/users/get-verify (GET) ', async () => {
                 await userModel.create(await getTestUser());
                 request(app.getHttpServer())
-                    .get('/user/resend-account-verification')
+                    .get('/users/resend-account-verification')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -131,9 +131,9 @@ describe('UserModule (e2e)', () => {
                     .expect(HttpStatus.OK);
             });
 
-            it('/user/get-verify (GET) should fail with invalid token', async () => {
+            it('/users/get-verify (GET) should fail with invalid token', async () => {
                 await request(app.getHttpServer())
-                    .get('/user/resend-account-verification')
+                    .get('/users/resend-account-verification')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -142,11 +142,11 @@ describe('UserModule (e2e)', () => {
             });
         });
 
-        describe('/user/:id (PATCH)', () => {
-            it('/user/:id (PATCH) should patch user', async () => {
+        describe('/users/:id (PATCH)', () => {
+            it('/users/:id (PATCH) should patch user', async () => {
                 await userModel.create(await getTestUser());
                 const res = await request(app.getHttpServer())
-                    .patch('/user/61bb7c9983fdff2f24bf77a8')
+                    .patch('/users/61bb7c9983fdff2f24bf77a8')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -167,11 +167,11 @@ describe('UserModule (e2e)', () => {
                 expect(res.body).not.toHaveProperty('password');
             });
 
-            it('/user/:id (PATCH) should fail with duplicate', async () => {
+            it('/users/:id (PATCH) should fail with duplicate', async () => {
                 await userModel.create(await getTestUser());
                 await userModel.create(await getTestAdmin());
                 await request(app.getHttpServer())
-                    .patch('/user/61bb7c9983fdff2f24bf77a8')
+                    .patch('/users/61bb7c9983fdff2f24bf77a8')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -182,11 +182,11 @@ describe('UserModule (e2e)', () => {
                     .expect(HttpStatus.CONFLICT);
             });
 
-            it('/user/:id (PATCH) should fail when patching other user', async () => {
+            it('/users/:id (PATCH) should fail when patching other user', async () => {
                 await userModel.create(await getTestUser());
                 await userModel.create(await getTestAdmin());
                 await request(app.getHttpServer())
-                    .patch('/user/61bb7c9883fdff2f24bf779d')
+                    .patch('/users/61bb7c9883fdff2f24bf779d')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -195,12 +195,12 @@ describe('UserModule (e2e)', () => {
             });
         });
 
-        describe('/user/:id (DELETE)', () => {
-            it('/user/:id (DELETE) should delete user', async () => {
+        describe('/users/:id (DELETE)', () => {
+            it('/users/:id (DELETE) should delete user', async () => {
                 let user = await getTestUser();
                 await userModel.create(user);
                 const res = await request(app.getHttpServer())
-                    .delete('/user/61bb7c9983fdff2f24bf77a8')
+                    .delete('/users/61bb7c9983fdff2f24bf77a8')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -209,11 +209,11 @@ describe('UserModule (e2e)', () => {
                 expect((await userModel.find()).length).toBe(0);
             });
 
-            it('/user/:id (DELETE) should fail when deleting other user', async () => {
+            it('/users/:id (DELETE) should fail when deleting other user', async () => {
                 await userModel.create(await getTestUser());
                 await userModel.create(await getTestAdmin());
                 await request(app.getHttpServer())
-                    .delete('/user/61bb7c9883fdff2f24bf779d')
+                    .delete('/users/61bb7c9883fdff2f24bf779d')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -222,14 +222,14 @@ describe('UserModule (e2e)', () => {
             });
         });
 
-        describe('/user/verify (GET)', () => {
-            it('/user/verify (GET) should validate', async () => {
+        describe('/users/verify (GET)', () => {
+            it('/users/verify (GET) should validate', async () => {
                 let user = await getTestUser();
                 user = { ...user, status: UserStatus.UNVERIFIED };
                 await userModel.create(user);
                 await request(app.getHttpServer())
                     .get(
-                        `/user/verify-account/?code=${await getUserVerify(
+                        `/users/verify-account/?code=${await getUserVerify(
                             user
                         )}`
                     )
@@ -240,26 +240,26 @@ describe('UserModule (e2e)', () => {
                 );
             });
 
-            it('/user/verify (GET) should fail with user that is not unverified', async () => {
+            it('/users/verify (GET) should fail with user that is not unverified', async () => {
                 let user = await getTestUser();
                 user = { ...user, status: UserStatus.BANNED };
                 await userModel.create(user);
                 await request(app.getHttpServer())
                     .get(
-                        `/user/verify-account/?code=${await getUserVerify(
+                        `/users/verify-account/?code=${await getUserVerify(
                             user
                         )}`
                     )
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
-            it('/user/verify (GET) should fail with invalid user', async () => {
+            it('/users/verify (GET) should fail with invalid user', async () => {
                 let user = await getTestUser();
                 user = { ...user, status: UserStatus.BANNED };
                 await userModel.create(user);
                 await request(app.getHttpServer())
                     .get(
-                        `/user/verify-account/?code=${await getUserVerify(
+                        `/users/verify-account/?code=${await getUserVerify(
                             await getTestAdmin()
                         )}`
                     )
@@ -270,10 +270,10 @@ describe('UserModule (e2e)', () => {
 
     describe('Roles', () => {
         describe('Admin Role', () => {
-            it('/user (GET) Protected Route: No Admin Role', async () => {
+            it('/users (GET) Protected Route: No Admin Role', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
-                    .get('/user')
+                    .get('/users')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -281,13 +281,13 @@ describe('UserModule (e2e)', () => {
                     .expect(HttpStatus.FORBIDDEN);
             });
 
-            it('/user (GET) using Admin', async () => {
+            it('/users (GET) using Admin', async () => {
                 await userModel.insertMany([
                     await getTestUser(),
                     await getTestAdmin()
                 ]);
                 const res = request(app.getHttpServer())
-                    .get('/user')
+                    .get('/users')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestAdmin())}`
@@ -301,9 +301,9 @@ describe('UserModule (e2e)', () => {
 
     describe('Guard', () => {
         describe('JWTGuard', () => {
-            it('/user/:id (DELETE) should fail with invalid token', async () => {
+            it('/users/:id (DELETE) should fail with invalid token', async () => {
                 await request(app.getHttpServer())
-                    .delete('/user/61bb7c9983fdff2f24bf77a8')
+                    .delete('/users/61bb7c9983fdff2f24bf77a8')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -311,9 +311,9 @@ describe('UserModule (e2e)', () => {
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
-            it('/user/profile (GET) should fail with invalid token', async () => {
+            it('/users/profile (GET) should fail with invalid token', async () => {
                 await request(app.getHttpServer())
-                    .get('/user/profile')
+                    .get('/users/profile')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -321,9 +321,9 @@ describe('UserModule (e2e)', () => {
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
-            it('/user/:id (PATCH) should fail with invalid token', async () => {
+            it('/users/:id (PATCH) should fail with invalid token', async () => {
                 await request(app.getHttpServer())
-                    .patch('/user/61bb7c9983fdff2f24bf77a8')
+                    .patch('/users/61bb7c9983fdff2f24bf77a8')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -333,13 +333,13 @@ describe('UserModule (e2e)', () => {
         });
 
         describe('VerifyJWTGuard', () => {
-            it('/user/verify (GET) should fail with invalid token', async () => {
+            it('/users/verify (GET) should fail with invalid token', async () => {
                 let user = await getTestUser();
                 user = { ...user, status: UserStatus.UNVERIFIED };
                 await userModel.create(user);
                 await request(app.getHttpServer())
                     .get(
-                        `/user/verify-account/?code=${await getUserVerify(
+                        `/users/verify-account/?code=${await getUserVerify(
                             await getTestAdmin()
                         )}`
                     )

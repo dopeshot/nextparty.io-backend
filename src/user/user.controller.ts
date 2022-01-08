@@ -21,8 +21,8 @@ import { VerifyJWTGuard } from './guards/mail-verify-jwt.guard';
 import { returnUser } from './types/return-user.type';
 import { UserService } from './user.service';
 
-@ApiTags('user')
-@Controller('user')
+@ApiTags('users')
+@Controller('users')
 export class UserController {
     constructor(private readonly userService: UserService) {}
 

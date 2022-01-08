@@ -124,10 +124,10 @@ describe('MailModule', () => {
                 expect(sendMails[0].to).toBe('dummy@unit.test');
             });
 
-            it('/user/get-verify (POST) should send mail verification', async () => {
+            it('/users/get-verify (POST) should send mail verification', async () => {
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
-                    .get('/user/resend-account-verification')
+                    .get('/users/resend-account-verification')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
