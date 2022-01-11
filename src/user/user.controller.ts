@@ -41,8 +41,13 @@ export class UserController {
     @Get('/verify-account')
     @ApiOperation({ summary: 'Verify user mail adress with JWT' })
     @UseGuards(VerifyJWTGuard)
-    async verifyMail(@Request() req): Promise<void> {
+    async verifyMail(@Request() req): Promise<{
+        status: 'OK';
+    }> {
         await this.userService.veryfiyUser(req.user);
+        return {
+            status: 'OK'
+        };
     }
 
     @Get('/profile')
