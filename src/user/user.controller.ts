@@ -6,7 +6,6 @@ import {
     HttpCode,
     Param,
     Patch,
-    Render,
     Request,
     UseGuards
 } from '@nestjs/common';
@@ -42,10 +41,8 @@ export class UserController {
     @Get('/verify-account')
     @ApiOperation({ summary: 'Verify user mail adress with JWT' })
     @UseGuards(VerifyJWTGuard)
-    @Render('MailVerify')
-    async verifyMail(@Request() req): Promise<returnUser> {
-        const user = await this.userService.veryfiyUser(req.user);
-        return await this.userService.transformToReturn(user);
+    async verifyMail(@Request() req): Promise<void> {
+        await this.userService.veryfiyUser(req.user);
     }
 
     @Get('/profile')
