@@ -1,7 +1,7 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjFjMjI1NTdlMDM4NTc3NGNjODVhOTVlIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2NDAyMDgxMTksImV4cCI6MTY0MDU2ODExOX0.hcSR4OZj5cDChUVMeShhEC4Dl_HARBH0CVkFPhJWByw
-@set = 618fb6d30fcab4672f47133b
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjFjMjI1NTdlMDM4NTc3NGNjODVhOTVlIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2NDE5MjU5MzksImV4cCI6MTY0MTk2MTkzOX0.1EtvuSJ8orJrNA_U9tDAvN5YKL7fvCXCbuJZVV0D8ug
+@set = 61db2daf67d6f719a06bac6c
 @task = 618fb74b0fcab4672f471341
-@adress = http://localhost:3001/api/set/
+@adress = http://localhost:3001/api/sets/
 ###Create Task
 POST {{adress}}{{set}}/task
 Content-Type: application/json
