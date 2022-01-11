@@ -41,4 +41,5 @@ export class Set {
 }
 
 export type SetDocument = Set & Document;
+export type SetDocumentPopulated = SetDocument & { createdBy: User };
 export const SetSchema = SchemaFactory.createForClass(Set);

@@ -8,6 +8,12 @@ import { SetDocument } from '../src/set/entities/set.entity';
 import { SetCategory } from '../src/set/enums/setcategory.enum';
 import { TaskType } from '../src/set/enums/tasktype.enum';
 import { Visibility } from '../src/set/enums/visibility.enum';
+import {
+    SetMetadataResponse,
+    SetResponse,
+    TaskResponse,
+    UpdatedCounts
+} from '../src/set/responses/set-response';
 import { SetModule } from '../src/set/set.module';
 import { Language } from '../src/shared/enums/language.enum';
 import { Status } from '../src/shared/enums/status.enum';
@@ -81,30 +87,9 @@ describe('Sets (e2e)', () => {
                 getSetSetupData().length + 1
             );
 
-            // Testing type ResponseSet
-            const set = res.body;
-            expect(set).toEqual(
-                expect.objectContaining({
-                    _id: expect.any(String),
-                    language: expect.any(String),
-                    dareCount: expect.any(Number),
-                    truthCount: expect.any(Number),
-                    createdBy: expect.any(Object),
-                    name: expect.any(String),
-                    category: expect.any(String),
-                    played: expect.any(Number)
-                })
-            );
-            expect(set).toEqual(
-                expect.not.objectContaining({
-                    status: expect.any(String),
-                    createdAt: expect.any(String),
-                    updatedAt: expect.any(String),
-                    __v: expect.any(String),
-                    tasks: expect.any(Array),
-                    visibility: expect.any(String)
-                })
-            );
+            // Testing class SetResponse
+            const set = new SetResponse(res.body);
+            expect(res.body).toMatchObject(set);
         });
 
         it('/sets (POST) one private set', async () => {
@@ -116,7 +101,7 @@ describe('Sets (e2e)', () => {
                 getSetSetupData().length + 1
             );
 
-            // Testing type ResponseSet omitted due to above test
+            // Testing class SetResponse omitted due to above test
 
             expect((await setModel.findById(res.body._id)).visibility).toBe(
                 Visibility.PRIVATE
@@ -192,30 +177,9 @@ describe('Sets (e2e)', () => {
             const sets = res.body;
             expect(sets.length === 1).toBeTruthy();
 
-            // Testing type ResponseSet
-            const set = sets[0];
-            expect(set).toEqual(
-                expect.objectContaining({
-                    _id: expect.any(String),
-                    language: expect.any(String),
-                    dareCount: expect.any(Number),
-                    truthCount: expect.any(Number),
-                    createdBy: null,
-                    name: expect.any(String),
-                    category: expect.any(String),
-                    played: expect.any(Number)
-                })
-            );
-            expect(set).toEqual(
-                expect.not.objectContaining({
-                    status: expect.any(String),
-                    createdAt: expect.any(String),
-                    updatedAt: expect.any(String),
-                    __v: expect.any(String),
-                    tasks: expect.any(Array),
-                    visibility: expect.any(String)
-                })
-            );
+            // Testing class SetResponse
+            const set = new SetResponse(res.body);
+            expect(res.body).toMatchObject(set);
         });
 
         it('/sets/:id (GET) by id', async () => {
@@ -223,52 +187,17 @@ describe('Sets (e2e)', () => {
                 .get(`/sets/${getSetSetupData()[0]._id}`)
                 .expect(HttpStatus.OK);
 
-            // Testing type ResponseSet
-            const set = res.body;
-            expect(set).toEqual(
-                expect.objectContaining({
-                    _id: expect.any(String),
-                    language: expect.any(String),
-                    dareCount: expect.any(Number),
-                    truthCount: expect.any(Number),
-                    createdBy: null,
-                    name: expect.any(String),
-                    tasks: expect.any(Array),
-                    category: expect.any(String),
-                    played: expect.any(Number)
-                })
-            );
-            expect(set).toEqual(
-                expect.not.objectContaining({
-                    status: expect.any(String),
-                    createdAt: expect.any(String),
-                    updatedAt: expect.any(String),
-                    __v: expect.any(String),
-                    visibility: expect.any(String)
-                })
-            );
+            // Testing class SetResponse
+            const set = new SetResponse(res.body);
+            expect(res.body).toMatchObject(set);
 
-            // Testing type ResponseTask
-            const task = set.tasks[0];
-            expect(task).toEqual(
-                expect.objectContaining({
-                    _id: expect.any(String),
-                    type: expect.any(String),
-                    message: expect.any(String),
-                    currentPlayerGender: expect.any(String)
-                })
-            );
-            expect(task).toEqual(
-                expect.not.objectContaining({
-                    __v: expect.any(String),
-                    status: expect.any(String),
-                    createdAt: expect.any(Date),
-                    createdBy: expect.any(Date)
-                })
-            );
+            // Testing class TaskResponse
+            const task = new TaskResponse(res.body.tasks[0]);
+            expect(res.body.tasks[0]).toMatchObject(task);
 
             // Testing content
-            task['status'] = Status.ACTIVE;
+            // Adding property status since it is in the SetupData
+            res.body.tasks[0]['status'] = Status.ACTIVE;
             expect({
                 ...set,
                 createdBy: getSetSetupData()[0].createdBy,
@@ -284,7 +213,7 @@ describe('Sets (e2e)', () => {
             const sets = res.body;
             expect(sets.length).toBe(2);
 
-            // Testing type ResponseSet omitted due to above test
+            // Testing class SetResponse omitted due to above test
         });
 
         it('/sets/user/:id (GET) usersets by other user', async () => {
@@ -295,7 +224,7 @@ describe('Sets (e2e)', () => {
             const sets = res.body;
             expect(sets.length).toBe(1);
 
-            // Testing type ResponseSet omitted due to above test
+            // Testing class SetResponse omitted due to above test
         });
 
         it('/sets/user/:id (GET) usersets by admin', async () => {
@@ -306,7 +235,7 @@ describe('Sets (e2e)', () => {
             const sets = res.body;
             expect(sets.length).toBe(2);
 
-            // Testing type ResponseSet omitted due to above test
+            // Testing class SetResponse omitted due to above test
         });
 
         // Negative test
@@ -352,30 +281,9 @@ describe('Sets (e2e)', () => {
             expect(setDB.category).toBe(getSetSetupData()[0].category);
             expect(setDB.name).toBe(getSetSetupData()[0].name);
 
-            // Testing type ResponseSetMetadata
-            expect(set).toEqual(
-                expect.objectContaining({
-                    _id: expect.any(String),
-                    dareCount: expect.any(Number),
-                    truthCount: expect.any(Number),
-                    createdBy: expect.any(String),
-                    language: expect.any(String),
-                    name: expect.any(String),
-                    category: expect.any(String),
-                    played: expect.any(Number),
-                    visibility: expect.any(String)
-                })
-            );
-            expect(set).toEqual(
-                expect.not.objectContaining({
-                    status: expect.any(String),
-                    createdAt: expect.any(String),
-                    updatedAt: expect.any(String),
-                    __v: expect.any(String),
-                    tasks: expect.any(Array),
-                    visibility: expect.any(String)
-                })
-            );
+            // Testing class SetMetadataResponse
+            const setClass = new SetMetadataResponse(set);
+            expect(set).toMatchObject(setClass);
         });
 
         it('/sets/:id (PATCH) by id by user (name)', async () => {
@@ -398,7 +306,7 @@ describe('Sets (e2e)', () => {
             expect(setDB.category).toBe(getSetSetupData()[0].category);
             expect(setDB.name).toBe('New name');
 
-            // Testing type ResponseSetMetadata omitted due to above test
+            // Testing class ResponseSetMetadata omitted due to above test
         });
 
         it('/sets/:id (PATCH) by id by user (category)', async () => {
@@ -421,7 +329,7 @@ describe('Sets (e2e)', () => {
             expect(setDB.category).toBe(SetCategory.CRAZY);
             expect(setDB.name).toBe(getSetSetupData()[0].name);
 
-            // Testing type ResponseSetMetadata omitted due to above test
+            // Testing class SetMetadataResponse omitted due to above test
         });
 
         it('/sets/:id (PATCH) by id by user (visibility)', async () => {
@@ -444,7 +352,7 @@ describe('Sets (e2e)', () => {
             expect(setDB.category).toBe(getSetSetupData()[0].category);
             expect(setDB.name).toBe(getSetSetupData()[0].name);
 
-            // Testing type ResponseSetMetadata omitted due to above test
+            // Testing class ResponseSetMetadata omitted due to above test
         });
 
         it('/sets/:id (PATCH) by id by admin', async () => {
@@ -455,13 +363,14 @@ describe('Sets (e2e)', () => {
                 .expect(HttpStatus.OK);
             expect(res.body.language).toEqual(Language.DE);
 
-            // Testing type ResponseSetMetadata omitted due to above test
+            // Testing class ResponseSetMetadata omitted due to above test
         });
 
-        it('/sets/:id (PATCH) played', async () => {
+        it('/sets/:id/played (PATCH) played', async () => {
             const res = await request(app.getHttpServer())
                 .patch(`/sets/${getSetSetupData()[0]._id}/played`)
                 .expect(HttpStatus.OK);
+            console.log(res.body);
             expect(res.body.played).toBe(1);
         });
 
@@ -595,24 +504,9 @@ describe('Sets (e2e)', () => {
             expect(set.tasks.length).toBe(2);
             expect(set.truthCount).toBe(2);
 
-            // Testing type responseTask
-            const task = res.body;
-            expect(task).toEqual(
-                expect.objectContaining({
-                    _id: expect.any(String),
-                    type: expect.any(String),
-                    message: expect.any(String),
-                    currentPlayerGender: expect.any(String)
-                })
-            );
-            expect(task).toEqual(
-                expect.not.objectContaining({
-                    __v: expect.any(String),
-                    status: expect.any(String),
-                    createdAt: expect.any(Date),
-                    createdBy: expect.any(Date)
-                })
-            );
+            // Testing class TaskResponse
+            const task = new TaskResponse(res.body);
+            expect(res.body).toMatchObject(task);
         });
 
         it('/sets/:id/task (POST) without CurrentPlayerGender', async () => {
@@ -625,24 +519,9 @@ describe('Sets (e2e)', () => {
                 (await setModel.findById(getSetSetupData()[0]._id)).tasks.length
             ).toBe(2);
 
-            // Testing type ResponseTask
-            const task = res.body;
-            expect(task).toEqual(
-                expect.objectContaining({
-                    _id: expect.any(String),
-                    type: expect.any(String),
-                    message: expect.any(String),
-                    currentPlayerGender: expect.any(String)
-                })
-            );
-            expect(task).toEqual(
-                expect.not.objectContaining({
-                    __v: expect.any(String),
-                    status: expect.any(String),
-                    createdAt: expect.any(Date),
-                    createdBy: expect.any(Date)
-                })
-            );
+            // Testing class TaskResponse
+            const task = new TaskResponse(res.body);
+            expect(res.body).toMatchObject(task);
         });
 
         it('/sets/:id/task (POST) with extra parameter', async () => {
@@ -654,26 +533,9 @@ describe('Sets (e2e)', () => {
                 (await setModel.findById(getSetSetupData()[0]._id)).tasks.length
             ).toBe(2);
 
-            // Testing type ResponseTask
-            const task = res.body;
-            expect(task).toEqual(
-                expect.objectContaining({
-                    _id: expect.any(String),
-                    type: expect.any(String),
-                    message: expect.any(String),
-                    currentPlayerGender: expect.any(String)
-                })
-            );
-            expect(task).toEqual(
-                expect.not.objectContaining({
-                    __v: expect.any(String),
-                    status: expect.any(String),
-                    createdAt: expect.any(Date),
-                    createdBy: expect.any(Date),
-                    // The extra parameter send
-                    more: expect.any(String)
-                })
-            );
+            // Testing class TaskResponse
+            const task = new TaskResponse(res.body);
+            expect(res.body).toMatchObject(task);
         });
 
         // Negative test
@@ -755,16 +617,9 @@ describe('Sets (e2e)', () => {
             const message = set.tasks[0].message;
             expect(message).toEqual(getMockTask().message);
 
-            // Testing type UpdatedCounts
-            const task = res.body;
-            expect(task).toEqual(
-                expect.objectContaining({
-                    _id: expect.any(String),
-                    truthCount: expect.any(Number),
-                    dareCount: expect.any(Number)
-                })
-            );
-            // It is unnecessary to tes what is not in the type
+            // Testing class UpdatedCounts
+            const counts = new UpdatedCounts(res.body);
+            expect(res.body).toMatchObject(counts);
         });
 
         it('/sets/:id/task (PUT) with Admin changing type for counts check', async () => {
@@ -786,16 +641,9 @@ describe('Sets (e2e)', () => {
             const message = set.tasks[0].message;
             expect(message).toEqual(getMockTask().message);
 
-            // Testing type UpdatedCounts
-            const task = res.body;
-            expect(task).toEqual(
-                expect.objectContaining({
-                    _id: expect.any(String),
-                    truthCount: expect.any(Number),
-                    dareCount: expect.any(Number)
-                })
-            );
-            // It is unnecessary to tes what is not in the type
+            // Testing class UpdatedCounts
+            const counts = new UpdatedCounts(res.body);
+            expect(res.body).toMatchObject(counts);
         });
 
         // Omitting dto tests since they duplicate with task POST tests
