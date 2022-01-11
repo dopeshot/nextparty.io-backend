@@ -14,7 +14,7 @@ import { CreateSetDto } from './dto/create-set.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { Set, SetDocument, SetDocumentPopulated } from './entities/set.entity';
+import { Set, SetDocument, SetDocumentWithUser } from './entities/set.entity';
 import { Task, TaskDocument } from './entities/task.entity';
 import { DeleteType } from './enums/delete-type.enum';
 import { TaskType } from './enums/tasktype.enum';
@@ -31,7 +31,7 @@ export class SetService {
     async createSet(
         createSetDto: CreateSetDto,
         user: JwtUserDto
-    ): Promise<SetDocumentPopulated> {
+    ): Promise<SetDocumentWithUser> {
         try {
             const set = (
                 await this.setModel.create({
@@ -51,7 +51,7 @@ export class SetService {
         }
     }
 
-    async getAllSets(): Promise<SetDocumentPopulated[]> {
+    async getAllSets(): Promise<SetDocumentWithUser[]> {
         return await this.setModel
             .find({ status: Status.ACTIVE, visibility: Visibility.PUBLIC })
             .populate<{ createdBy: User }>('createdBy')
@@ -61,7 +61,7 @@ export class SetService {
     async getSetsFromUser(
         userId: ObjectId,
         user: JwtUserDto
-    ): Promise<SetDocumentPopulated[]> {
+    ): Promise<SetDocumentWithUser[]> {
         // The standard query
         const queryMatch: {
             status: Status;
@@ -75,7 +75,7 @@ export class SetService {
             queryMatch.visibility = Visibility.PUBLIC;
         }
 
-        const sets: SetDocumentPopulated[] = await this.setModel
+        const sets: SetDocumentWithUser[] = await this.setModel
             .find(queryMatch)
             .populate<{ createdBy: User }>('createdBy')
             .lean();
@@ -92,8 +92,8 @@ export class SetService {
         return sets;
     }
 
-    async getOneSet(id: ObjectId): Promise<SetDocumentPopulated> {
-        const set: SetDocumentPopulated = await this.setModel
+    async getOneSet(id: ObjectId): Promise<SetDocumentWithUser> {
+        const set: SetDocumentWithUser = await this.setModel
             .findOne({
                 _id: id,
                 status: Status.ACTIVE,

@@ -1,6 +1,6 @@
 import { OmitType, PickType } from '@nestjs/mapped-types';
 import { Expose, Transform, Type } from 'class-transformer';
-import { SetDocument, SetDocumentPopulated } from '../entities/set.entity';
+import { SetDocument, SetDocumentWithUser } from '../entities/set.entity';
 import { TaskDocument } from '../entities/task.entity';
 import { SetCategory } from '../enums/setcategory.enum';
 import { Visibility } from '../enums/visibility.enum';
@@ -49,7 +49,7 @@ export class SetResponse {
     @Expose()
     played: number;
 
-    constructor(partial: Partial<SetDocumentPopulated>) {
+    constructor(partial: Partial<SetDocumentWithUser>) {
         Object.assign(this, partial);
     }
 }
