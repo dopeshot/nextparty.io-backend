@@ -90,9 +90,11 @@ export class UserService {
             'MailVerify',
             {
                 name: user.username,
-                link: `${process.env.HOST}/api/user/verify-account/?code=${verifyCode}`
+                link: `${
+                    process.env.FRONTEND_DOMAIN || 'https://app.nextparty.io'
+                }/account/verify-account/${verifyCode}`
             },
-            'Verify your email'
+            'Confirm your email address'
         );
 
         return verifyCode;
