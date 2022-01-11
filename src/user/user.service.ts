@@ -227,7 +227,7 @@ export class UserService {
         return true;
     }
 
-    async veryfiyUser(userId: ObjectId): Promise<User> {
+    async verifyMail(userId: ObjectId): Promise<User> {
         const user = await this.userSchema.findByIdAndUpdate(userId, {
             status: UserStatus.ACTIVE
         });
