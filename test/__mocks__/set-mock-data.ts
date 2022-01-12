@@ -103,4 +103,29 @@ export const getMockTask = () => ({
     message: 'new long enough Task'
 });
 
+export const getMockFullSet = () => ({
+    name: 'Tornardo',
+    language: 'de',
+    category: 'classic',
+    visibility: 'public',
+    tasks: [
+        {
+            type: 'truth',
+            currentPlayerGender: '@ca',
+            message: 'wann hattest Du dein erstes Mal?'
+        },
+        {
+            type: 'truth',
+            currentPlayerGender: '@cf',
+            message: 'hast Du schon einmal einen Schwulen-Porno angeschaut?'
+        },
+        {
+            type: 'truth',
+            currentPlayerGender: '@cm',
+            message:
+                'hattest Du schon etwas mit jemanden aus der Runde? Wenn nein, mit wem könntest Du dir etwas vorstellen?'
+        }
+    ]
+});
+
 export const getString = (length: number) => new Array(length + 1).join('a');

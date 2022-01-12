@@ -20,6 +20,7 @@ import { JwtUserDto } from 'src/auth/dto/jwt.dto';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { OptionalJWTGuard } from '../auth/strategies/optionalJWT/optionalJWT.guard';
 import { MongoIdDto } from '../shared/dto/mongoId.dto';
+import { CreateFullSetDto } from './dto/create-full-set.dto';
 import { CreateSetDto } from './dto/create-set.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { DeleteTypeDto } from './dto/delete-type.dto';
@@ -177,5 +178,19 @@ export class SetController {
         @Query('test') test: string
     ) {
         return this.setService.createExampleSets(user, test);
+    }
+
+    @Post('createfullset')
+    @UseGuards(JwtAuthGuard)
+    @ApiOperation({ summary: 'Create example data sets' })
+    @UseInterceptors(ClassSerializerInterceptor)
+    @SerializeOptions({ strategy: 'excludeAll' })
+    async createDataFromFullSet(
+        @Request() { user }: ParameterDecorator & { user: JwtUserDto },
+        @Body() fullSet: CreateFullSetDto
+    ): Promise<SetWithTasksResponse> {
+        return new SetWithTasksResponse(
+            await this.setService.createDataFromFullSet(user, fullSet)
+        );
     }
 }

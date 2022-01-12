@@ -48,6 +48,8 @@ export class SetResponse {
     category: SetCategory;
     @Expose()
     played: number;
+    @Expose()
+    visibility: Visibility;
 
     constructor(partial: Partial<SetDocumentWithUser>) {
         Object.assign(this, partial);
@@ -78,9 +80,6 @@ export class UpdatedPlayed {
 }
 
 export class SetMetadataResponse extends OmitType(SetResponse, ['createdBy']) {
-    @Expose()
-    visibility: Visibility;
-
     @Expose()
     @Transform((params) => params.obj.createdBy._id.toString())
     createdBy: string;
