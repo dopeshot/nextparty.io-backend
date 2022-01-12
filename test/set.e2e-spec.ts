@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { JwtAuthGuard } from '../src/auth/strategies/jwt/jwt-auth.guard';
+import { OptionalJWTGuard } from '../src/auth/strategies/optionalJWT/optionalJWT.guard';
 import { SetDocument } from '../src/set/entities/set.entity';
 import { SetCategory } from '../src/set/enums/setcategory.enum';
 import { TaskType } from '../src/set/enums/tasktype.enum';
@@ -51,6 +52,8 @@ describe('Sets (e2e)', () => {
             ]
         })
             .overrideGuard(JwtAuthGuard)
+            .useValue(fakeAuthGuard.getGuard())
+            .overrideGuard(OptionalJWTGuard)
             .useValue(fakeAuthGuard.getGuard())
             .compile();
 
@@ -204,6 +207,18 @@ describe('Sets (e2e)', () => {
                 status: getSetSetupData()[0].status,
                 visibility: getSetSetupData()[0].visibility
             }).toEqual({ ...getSetSetupData()[0] });
+        });
+
+        it('/sets/user/:id (GET) usersets without auth', async () => {
+            fakeAuthGuard.setUser(null);
+            const res = await request(app.getHttpServer())
+                .get(`/sets/user/${getMockAuthUser().userId}`)
+                .expect(HttpStatus.OK);
+            const sets = res.body;
+            console.log(sets);
+            expect(sets.length).toBe(1);
+
+            // Testing class SetResponse omitted due to above test
         });
 
         it('/sets/user/:id (GET) usersets by self', async () => {
@@ -370,7 +385,6 @@ describe('Sets (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .patch(`/sets/${getSetSetupData()[0]._id}/played`)
                 .expect(HttpStatus.OK);
-            console.log(res.body);
             expect(res.body.played).toBe(1);
         });
 

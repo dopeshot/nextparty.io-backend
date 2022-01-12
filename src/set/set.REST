@@ -18,6 +18,10 @@ GET {{adress}}
 
 ### Get all sets by user
 GET {{adress}}/user/{{user}}
+#Authorization: Bearer {{token}}
+
+### Get all sets by user logged in
+GET {{adress}}/user/{{user}}
 Authorization: Bearer {{token}}
 
 ### Get one set only active tasks
