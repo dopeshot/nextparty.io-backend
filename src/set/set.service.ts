@@ -10,6 +10,7 @@ import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { Status } from '../shared/enums/status.enum';
 import { User } from '../user/entities/user.entity';
 import { Role } from '../user/enums/role.enum';
+import { CreateFullSetDto } from './dto/create-full-set.dto';
 import { CreateSetDto } from './dto/create-set.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
@@ -405,5 +406,24 @@ export class SetService {
             statusCode: 201,
             message: 'Sample data created'
         };
+    }
+
+    async createDataFromFullSet(
+        user: JwtUserDto,
+        sampleSets: CreateFullSetDto
+    ): Promise<SetDocumentWithUser> {
+        if (user.role !== Role.ADMIN) throw new ForbiddenException();
+
+        const { tasks, ...createSetDto } = sampleSets;
+        // Exceptions are caught in the function calls
+        const set = await this.createSet(createSetDto, user);
+        tasks.forEach(async (task) => {
+            await this.createTask(set._id, task, user);
+        });
+
+        return await this.setModel
+            .findById(set._id)
+            .populate<{ createdBy: User }>('createdBy')
+            .lean();
     }
 }
