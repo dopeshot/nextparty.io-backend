@@ -187,10 +187,10 @@ export class SetController {
     @SerializeOptions({ strategy: 'excludeAll' })
     async createDataFromFullSet(
         @Request() { user }: ParameterDecorator & { user: JwtUserDto },
-        @Body() sampleSets: CreateFullSetDto
+        @Body() fullSet: CreateFullSetDto
     ): Promise<SetWithTasksResponse> {
         return new SetWithTasksResponse(
-            await this.setService.createDataFromFullSet(user, sampleSets)
+            await this.setService.createDataFromFullSet(user, fullSet)
         );
     }
 }
