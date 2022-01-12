@@ -189,8 +189,8 @@ export class SetController {
         @Request() { user }: ParameterDecorator & { user: JwtUserDto },
         @Body() sampleSets: CreateFullSetDto
     ): Promise<SetWithTasksResponse> {
-        const x = await this.setService.createDataFromFullSet(user, sampleSets);
-        console.log(x);
-        return new SetWithTasksResponse(x);
+        return new SetWithTasksResponse(
+            await this.setService.createDataFromFullSet(user, sampleSets)
+        );
     }
 }

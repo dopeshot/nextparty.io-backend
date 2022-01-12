@@ -12,6 +12,7 @@ import { Visibility } from '../src/set/enums/visibility.enum';
 import {
     SetMetadataResponse,
     SetResponse,
+    SetWithTasksResponse,
     TaskResponse,
     UpdatedCounts
 } from '../src/set/responses/set-response';
@@ -27,6 +28,7 @@ import {
 import {
     getMockAuthAdmin,
     getMockAuthUser,
+    getMockFullSet,
     getMockSet,
     getMockTask,
     getOtherMockAuthUser,
@@ -111,9 +113,47 @@ describe('Sets (e2e)', () => {
             );
         });
 
+        it('/sets/createfullset (POST) one set', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            const mockSet = getMockFullSet();
+            const res = await request(app.getHttpServer())
+                .post('/sets/createfullset')
+                .send(mockSet)
+                .expect(HttpStatus.CREATED);
+
+            // Testing contents
+            expect(res.body.name).toEqual(mockSet.name);
+            expect(res.body.language).toEqual(mockSet.language);
+            expect(res.body.category).toEqual(mockSet.category);
+            expect(res.body.visibility).toEqual(mockSet.visibility);
+            expect(res.body.tasks.length).toBe(3);
+
+            // Testing class SetWithTasksResponse
+            const set = new SetWithTasksResponse(res.body);
+            expect(res.body).toMatchObject(set);
+        });
+
+        // Negative test
+        it('/sets/createfullset (POST) one set by non admin', async () => {
+            await request(app.getHttpServer())
+                .post('/sets/createfullset')
+                .send(getMockFullSet())
+                .expect(HttpStatus.FORBIDDEN);
+        });
+
+        // Negative test
+        it('/sets/createfullset (POST) one set without tasks', async () => {
+            const mockSet = getMockFullSet();
+            const { tasks, ...tasklessMockSet } = mockSet;
+            await request(app.getHttpServer())
+                .post('/sets/createfullset')
+                .send(tasklessMockSet)
+                .expect(HttpStatus.BAD_REQUEST);
+        });
+
         // Negative test
         it('/sets (POST) wrong visibility', async () => {
-            const res = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .post('/sets')
                 .send({ ...getMockSet(), visibility: 'Some jibberish' })
                 .expect(HttpStatus.BAD_REQUEST);
@@ -215,7 +255,6 @@ describe('Sets (e2e)', () => {
                 .get(`/sets/user/${getMockAuthUser().userId}`)
                 .expect(HttpStatus.OK);
             const sets = res.body;
-            console.log(sets);
             expect(sets.length).toBe(1);
 
             // Testing class SetResponse omitted due to above test
