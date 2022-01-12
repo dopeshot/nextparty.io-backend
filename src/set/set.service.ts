@@ -70,8 +70,8 @@ export class SetService {
         } = { status: Status.ACTIVE, createdBy: userId };
 
         // Requesting others sets
-        if (userId !== user.userId && user.role !== Role.ADMIN) {
-            // Only admins can see others private sets
+        if (user && userId !== user.userId && user.role !== Role.ADMIN) {
+            // Only admins and owners can see others private sets
             queryMatch.visibility = Visibility.PUBLIC;
         }
 
@@ -81,7 +81,7 @@ export class SetService {
             .lean();
 
         // TODO: extract this function if needed later on as well
-        if (user.role !== Role.ADMIN) {
+        if (!user || user.role !== Role.ADMIN) {
             sets.forEach((set) => {
                 set.tasks = set.tasks.filter(
                     (task) => task.status === Status.ACTIVE

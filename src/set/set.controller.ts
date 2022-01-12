@@ -18,6 +18,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtUserDto } from 'src/auth/dto/jwt.dto';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
+import { OptionalJWTGuard } from '../auth/strategies/optionalJWT/optionalJWT.guard';
 import { MongoIdDto } from '../shared/dto/mongoId.dto';
 import { CreateSetDto } from './dto/create-set.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -65,7 +66,7 @@ export class SetController {
     }
 
     @Get('/user/:id')
-    @UseGuards(JwtAuthGuard)
+    @UseGuards(OptionalJWTGuard)
     @ApiOperation({ summary: 'Get one Set by author id' })
     @UseInterceptors(ClassSerializerInterceptor)
     @SerializeOptions({ strategy: 'excludeAll' })
