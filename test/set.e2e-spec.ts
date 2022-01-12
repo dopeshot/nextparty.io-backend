@@ -215,7 +215,8 @@ describe('Sets (e2e)', () => {
                 .get(`/sets/user/${getMockAuthUser().userId}`)
                 .expect(HttpStatus.OK);
             const sets = res.body;
-            expect(sets.length).toBe(2);
+            console.log(sets);
+            expect(sets.length).toBe(1);
 
             // Testing class SetResponse omitted due to above test
         });

@@ -70,7 +70,7 @@ export class SetService {
         } = { status: Status.ACTIVE, createdBy: userId };
 
         // Requesting others sets
-        if (user && userId !== user.userId && user.role !== Role.ADMIN) {
+        if (!user || (userId !== user.userId && user.role !== Role.ADMIN)) {
             // Only admins and owners can see others private sets
             queryMatch.visibility = Visibility.PUBLIC;
         }
