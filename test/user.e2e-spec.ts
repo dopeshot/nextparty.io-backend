@@ -10,6 +10,7 @@ import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { UserDocument } from '../src/user/entities/user.entity';
 import { UserStatus } from '../src/user/enums/status.enum';
+import { UserResponse } from '../src/user/responses/user-response';
 import { UserModule } from '../src/user/user.module';
 import { ThirdPartyGuardMock } from './helpers/fake-provider-strategy';
 import {
@@ -46,7 +47,7 @@ describe('UserModule (e2e)', () => {
         connection = await module.get(getConnectionToken());
         userModel = connection.model('User');
 
-        // before coming at me for using a fully fletched Nest application see here:
+        // Using a full nest application is necessary
         // https://github.com/jmcdo29/testing-nestjs/commit/0544f34ce02c1a42179aae7f36cb11fb3b62fb22
         // https://github.com/jmcdo29/testing-nestjs/issues/74
         app = module.createNestApplication<NestExpressApplication>();
@@ -85,14 +86,9 @@ describe('UserModule (e2e)', () => {
 
                 expect(res.body.length).toBe(1);
 
-                expect(res.body[0]).toEqual(
-                    expect.objectContaining({
-                        _id: expect.stringMatching(user._id.toString()),
-                        username: expect.stringMatching(user.username),
-                        role: expect.stringMatching(user.role)
-                    })
-                );
-                expect(res.body).not.toHaveProperty('password');
+                // test user response
+                const usr = new UserResponse(res.body);
+                expect(res.body).toMatchObject(usr);
             });
         });
 
@@ -108,14 +104,9 @@ describe('UserModule (e2e)', () => {
                     )
                     .expect(HttpStatus.OK);
 
-                expect(res.body).toEqual(
-                    expect.objectContaining({
-                        _id: expect.stringMatching(user._id.toString()),
-                        username: expect.stringMatching(user.username),
-                        role: expect.stringMatching(user.role)
-                    })
-                );
-                expect(res.body).not.toHaveProperty('password');
+                // test user response
+                const response = new UserResponse(res.body[0]);
+                expect(res.body).toMatchObject(response);
             });
         });
 
@@ -157,14 +148,9 @@ describe('UserModule (e2e)', () => {
                     .expect(HttpStatus.OK);
                 let user = await userModel.findOne();
                 expect(user.username).toBe('test-user-updated');
-                expect(res.body).toEqual(
-                    expect.objectContaining({
-                        _id: expect.stringMatching(user._id.toString()),
-                        username: expect.stringMatching('test-user-updated'),
-                        role: expect.stringMatching(user.role)
-                    })
-                );
-                expect(res.body).not.toHaveProperty('password');
+                // test user response
+                const response = new UserResponse(res.body[0]);
+                expect(res.body).toMatchObject(response);
             });
 
             it('/users/:id (PATCH) should fail with duplicate', async () => {
