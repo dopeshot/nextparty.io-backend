@@ -1,5 +1,6 @@
 import {
     Body,
+    ClassSerializerInterceptor,
     Controller,
     Delete,
     Get,
@@ -7,7 +8,9 @@ import {
     Param,
     Patch,
     Request,
-    UseGuards
+    SerializeOptions,
+    UseGuards,
+    UseInterceptors
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ObjectId } from 'mongoose';
@@ -17,11 +20,13 @@ import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Role } from './enums/role.enum';
 import { VerifyJWTGuard } from './guards/mail-verify-jwt.guard';
-import { returnUser } from './types/return-user.type';
+import { UserResponse } from './responses/user-response';
 import { UserService } from './user.service';
 
 @ApiTags('users')
 @Controller('users')
+@UseInterceptors(ClassSerializerInterceptor)
+@SerializeOptions({ strategy: 'excludeAll' })
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
@@ -29,13 +34,10 @@ export class UserController {
     @ApiOperation({ summary: 'Get all Users' })
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(Role.ADMIN)
-    async findAll(): Promise<returnUser[]> {
-        const users = await this.userService.findAll();
-        users.forEach(async (user) => {
-            await this.userService.transformToReturn(user);
-        });
-
-        return users;
+    async getAllSets(): Promise<UserResponse[]> {
+        return (await this.userService.findAll()).map(
+            (set) => new UserResponse(set)
+        );
     }
 
     @Get('/verify-account')
@@ -48,9 +50,10 @@ export class UserController {
     @Get('/profile')
     @ApiOperation({ summary: 'Get user profile' })
     @UseGuards(JwtAuthGuard)
-    async getProfile(@Request() req): Promise<returnUser> {
-        const user = await this.userService.findOneById(req.user.userId);
-        return await this.userService.transformToReturn(user);
+    async getProfile(@Request() req): Promise<UserResponse> {
+        return new UserResponse(
+            await this.userService.findOneById(req.user.userId)
+        );
     }
 
     @Get('/resend-account-verification')
@@ -68,13 +71,13 @@ export class UserController {
         @Param('id') id: ObjectId,
         @Body() updateUserDto: UpdateUserDto,
         @Request() req
-    ): Promise<returnUser> {
+    ): Promise<UserResponse> {
         const user = await this.userService.updateUser(
             id,
             updateUserDto,
             req.user
         );
-        return await this.userService.transformToReturn(user);
+        return new UserResponse(user);
     }
 
     @Delete('/:id')

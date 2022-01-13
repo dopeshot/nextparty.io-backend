@@ -19,7 +19,6 @@ import { User, UserDocument } from './entities/user.entity';
 import { Role } from './enums/role.enum';
 import { UserStatus } from './enums/status.enum';
 import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
-import { returnUser } from './types/return-user.type';
 
 @Injectable()
 export class UserService {
@@ -125,9 +124,7 @@ export class UserService {
      * @returns Array aus allen User
      */
     async findAll(): Promise<User[]> {
-        const users = await this.userModel.find();
-
-        return users;
+        return await this.userModel.find().lean();
     }
 
     /**
@@ -174,24 +171,26 @@ export class UserService {
         ) {
             throw new ForbiddenException();
         }
+        let updatedUser: User;
 
         try {
-            const updatedUser: User = await this.userModel.findByIdAndUpdate(
+            updatedUser = await this.userModel.findByIdAndUpdate(
                 id,
                 {
                     ...updateUserDto
                 },
                 {
                     new: true
-                }
-            );
-
-            return updatedUser;
+                })
+                .lean();
         } catch (error) {
             if (error.code === 11000)
                 throw new ConflictException('Username is already taken.');
             else throw new InternalServerErrorException('Update User failed');
         }
+        // Seperate exception to ensure that user gets a specific error
+        if (!updatedUser) throw new NotFoundException('User not found');
+        return updatedUser;
     }
 
     async remove(id: ObjectId, actingUser: JwtUserDto): Promise<User> {
@@ -237,17 +236,5 @@ export class UserService {
         }
 
         return user;
-    }
-
-    async transformToReturn(user: User): Promise<returnUser> {
-        const strip = {
-            _id: user._id,
-            username: user.username,
-            email: user.email,
-            status: user.status,
-            role: user.role,
-            provider: user.provider
-        };
-        return strip;
     }
 }
