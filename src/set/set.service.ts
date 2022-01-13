@@ -20,7 +20,6 @@ import { Task, TaskDocument } from './entities/task.entity';
 import { DeleteType } from './enums/delete-type.enum';
 import { TaskType } from './enums/tasktype.enum';
 import { Visibility } from './enums/visibility.enum';
-import { SetSampleData } from './set.data';
 
 @Injectable()
 export class SetService {
@@ -370,42 +369,6 @@ export class SetService {
         if (!set) throw new InternalServerErrorException();
 
         return set;
-    }
-
-    // Migrations / Seeder
-    /* istanbul ignore next */ // This is development only
-    public async createExampleSets(user: JwtUserDto, test: string) {
-        SetSampleData.forEach(async (setData) => {
-            const set: SetDocument = await this.createSet(
-                {
-                    name: setData.name,
-                    language: setData.language,
-                    category: setData.category,
-                    visibility: setData.visibility
-                },
-                user
-            );
-            setData.tasks.forEach(async (task) => {
-                await this.createTask(
-                    set._id,
-                    {
-                        type: task.type,
-                        currentPlayerGender: task.currentPlayerGender,
-                        message: task.message
-                    },
-                    user
-                );
-            });
-        });
-
-        // TODO: delete after envGuard implemented
-        if (user.role === Role.ADMIN && test === 'true') {
-            //await this.setModel.deleteMany({})
-        }
-        return {
-            statusCode: 201,
-            message: 'Sample data created'
-        };
     }
 
     async createDataFromFullSet(
