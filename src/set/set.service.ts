@@ -421,9 +421,6 @@ export class SetService {
             await this.createTask(set._id, task, user);
         });
 
-        return await this.setModel
-            .findById(set._id)
-            .populate<{ createdBy: User }>('createdBy')
-            .lean();
+        return await this.getOneSet(set._id);
     }
 }
