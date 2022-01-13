@@ -124,7 +124,7 @@ export class UserService {
      * @returns Array aus allen User
      */
     async findAll(): Promise<User[]> {
-        return await this.userModela.find().lean();
+        return await this.userModel.find().lean();
     }
 
     /**
