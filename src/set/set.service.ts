@@ -10,6 +10,7 @@ import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { Status } from '../shared/enums/status.enum';
 import { User } from '../user/entities/user.entity';
 import { Role } from '../user/enums/role.enum';
+import { CreateFullSetDto } from './dto/create-full-set.dto';
 import { CreateSetDto } from './dto/create-set.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateSetDto } from './dto/update-set.dto';
@@ -70,8 +71,8 @@ export class SetService {
         } = { status: Status.ACTIVE, createdBy: userId };
 
         // Requesting others sets
-        if (userId !== user.userId && user.role !== Role.ADMIN) {
-            // Only admins can see others private sets
+        if (!user || (userId !== user.userId && user.role !== Role.ADMIN)) {
+            // Only admins and owners can see others private sets
             queryMatch.visibility = Visibility.PUBLIC;
         }
 
@@ -81,7 +82,7 @@ export class SetService {
             .lean();
 
         // TODO: extract this function if needed later on as well
-        if (user.role !== Role.ADMIN) {
+        if (!user || user.role !== Role.ADMIN) {
             sets.forEach((set) => {
                 set.tasks = set.tasks.filter(
                     (task) => task.status === Status.ACTIVE
@@ -405,5 +406,24 @@ export class SetService {
             statusCode: 201,
             message: 'Sample data created'
         };
+    }
+
+    async createDataFromFullSet(
+        user: JwtUserDto,
+        sampleSets: CreateFullSetDto
+    ): Promise<SetDocumentWithUser> {
+        if (user.role !== Role.ADMIN) throw new ForbiddenException();
+
+        const { tasks, ...createSetDto } = sampleSets;
+        // Exceptions are caught in the function calls
+        const set = await this.createSet(createSetDto, user);
+        tasks.forEach(async (task) => {
+            await this.createTask(set._id, task, user);
+        });
+
+        return await this.setModel
+            .findById(set._id)
+            .populate<{ createdBy: User }>('createdBy')
+            .lean();
     }
 }

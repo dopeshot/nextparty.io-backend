@@ -7,7 +7,7 @@ export class OptionalJWTGuard extends AuthGuard('jwt') {
         const req: any = context.switchToHttp().getRequest<Request>();
 
         // If user did not provide jwt token, continue without user
-        if (!req.headers.authorization) {
+        if (!user) {
             req.user = null;
             return null;
         }

@@ -23,7 +23,7 @@ import { userDataFromProvider } from './interfaces/userDataFromProvider.interfac
 @Injectable()
 export class UserService {
     constructor(
-        @InjectModel(User.name) private userSchema: Model<UserDocument>,
+        @InjectModel(User.name) private userModel: Model<UserDocument>,
         private readonly jwtService: JwtService,
         private readonly mailService: MailService
     ) {}
@@ -41,7 +41,7 @@ export class UserService {
     async create(credentials: CreateUserDto): Promise<User> {
         try {
             const hash = await this.hashPassword(credentials.password);
-            const user = new this.userSchema({
+            const user = new this.userModel({
                 ...credentials,
                 status: UserStatus.UNVERIFIED,
                 password: hash
@@ -108,9 +108,7 @@ export class UserService {
         userDataFromProvider: userDataFromProvider
     ): Promise<User> {
         try {
-            const user: UserDocument = new this.userSchema(
-                userDataFromProvider
-            );
+            const user: UserDocument = new this.userModel(userDataFromProvider);
             const result = await user.save();
 
             return result;
@@ -126,7 +124,7 @@ export class UserService {
      * @returns Array aus allen User
      */
     async findAll(): Promise<User[]> {
-        return await this.userSchema.find().lean();
+        return await this.userModela.find().lean();
     }
 
     /**
@@ -135,7 +133,7 @@ export class UserService {
      * @returns User
      */
     async findOneById(id: ObjectId): Promise<User> {
-        const user = await this.userSchema.findById(id).lean();
+        const user = await this.userModel.findById(id).lean();
 
         if (!user) throw new NotFoundException();
 
@@ -148,7 +146,7 @@ export class UserService {
      * @returns User
      */
     async findOneByEmail(email: string): Promise<User> {
-        const user = await this.userSchema.findOne({ email }).lean();
+        const user = await this.userModel.findOne({ email }).lean();
 
         if (!user) throw new NotFoundException();
 
@@ -176,8 +174,12 @@ export class UserService {
         let updatedUser: User;
 
         try {
-            updatedUser = await this.userSchema
-                .findByIdAndUpdate(id, updateUserDto, {
+            updatedUser = await this.userModel.findByIdAndUpdate(
+                id,
+                {
+                    ...updateUserDto
+                },
+                {
                     new: true
                 })
                 .lean();
@@ -200,7 +202,7 @@ export class UserService {
             throw new ForbiddenException();
         }
 
-        const user = await this.userSchema.findByIdAndDelete(id);
+        const user = await this.userModel.findByIdAndDelete(id);
 
         if (!user) throw new NotFoundException();
 
@@ -223,7 +225,7 @@ export class UserService {
     }
 
     async verifyMail(userId: ObjectId): Promise<User> {
-        const user = await this.userSchema.findByIdAndUpdate(userId, {
+        const user = await this.userModel.findByIdAndUpdate(userId, {
             status: UserStatus.ACTIVE
         });
 

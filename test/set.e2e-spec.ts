@@ -4,6 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { JwtAuthGuard } from '../src/auth/strategies/jwt/jwt-auth.guard';
+import { OptionalJWTGuard } from '../src/auth/strategies/optionalJWT/optionalJWT.guard';
 import { SetDocument } from '../src/set/entities/set.entity';
 import { SetCategory } from '../src/set/enums/setcategory.enum';
 import { TaskType } from '../src/set/enums/tasktype.enum';
@@ -11,6 +12,7 @@ import { Visibility } from '../src/set/enums/visibility.enum';
 import {
     SetMetadataResponse,
     SetResponse,
+    SetWithTasksResponse,
     TaskResponse,
     UpdatedCounts
 } from '../src/set/responses/set-response';
@@ -26,6 +28,7 @@ import {
 import {
     getMockAuthAdmin,
     getMockAuthUser,
+    getMockFullSet,
     getMockSet,
     getMockTask,
     getOtherMockAuthUser,
@@ -51,6 +54,8 @@ describe('Sets (e2e)', () => {
             ]
         })
             .overrideGuard(JwtAuthGuard)
+            .useValue(fakeAuthGuard.getGuard())
+            .overrideGuard(OptionalJWTGuard)
             .useValue(fakeAuthGuard.getGuard())
             .compile();
 
@@ -108,9 +113,47 @@ describe('Sets (e2e)', () => {
             );
         });
 
+        it('/sets/createfullset (POST) one set', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            const mockSet = getMockFullSet();
+            const res = await request(app.getHttpServer())
+                .post('/sets/createfullset')
+                .send(mockSet)
+                .expect(HttpStatus.CREATED);
+
+            // Testing contents
+            expect(res.body.name).toEqual(mockSet.name);
+            expect(res.body.language).toEqual(mockSet.language);
+            expect(res.body.category).toEqual(mockSet.category);
+            expect(res.body.visibility).toEqual(mockSet.visibility);
+            expect(res.body.tasks.length).toBe(3);
+
+            // Testing class SetWithTasksResponse
+            const set = new SetWithTasksResponse(res.body);
+            expect(res.body).toMatchObject(set);
+        });
+
+        // Negative test
+        it('/sets/createfullset (POST) one set by non admin', async () => {
+            await request(app.getHttpServer())
+                .post('/sets/createfullset')
+                .send(getMockFullSet())
+                .expect(HttpStatus.FORBIDDEN);
+        });
+
+        // Negative test
+        it('/sets/createfullset (POST) one set without tasks', async () => {
+            const mockSet = getMockFullSet();
+            const { tasks, ...tasklessMockSet } = mockSet;
+            await request(app.getHttpServer())
+                .post('/sets/createfullset')
+                .send(tasklessMockSet)
+                .expect(HttpStatus.BAD_REQUEST);
+        });
+
         // Negative test
         it('/sets (POST) wrong visibility', async () => {
-            const res = await request(app.getHttpServer())
+            await request(app.getHttpServer())
                 .post('/sets')
                 .send({ ...getMockSet(), visibility: 'Some jibberish' })
                 .expect(HttpStatus.BAD_REQUEST);
@@ -204,6 +247,17 @@ describe('Sets (e2e)', () => {
                 status: getSetSetupData()[0].status,
                 visibility: getSetSetupData()[0].visibility
             }).toEqual({ ...getSetSetupData()[0] });
+        });
+
+        it('/sets/user/:id (GET) usersets without auth', async () => {
+            fakeAuthGuard.setUser(null);
+            const res = await request(app.getHttpServer())
+                .get(`/sets/user/${getMockAuthUser().userId}`)
+                .expect(HttpStatus.OK);
+            const sets = res.body;
+            expect(sets.length).toBe(1);
+
+            // Testing class SetResponse omitted due to above test
         });
 
         it('/sets/user/:id (GET) usersets by self', async () => {
@@ -370,7 +424,6 @@ describe('Sets (e2e)', () => {
             const res = await request(app.getHttpServer())
                 .patch(`/sets/${getSetSetupData()[0]._id}/played`)
                 .expect(HttpStatus.OK);
-            console.log(res.body);
             expect(res.body.played).toBe(1);
         });
 
