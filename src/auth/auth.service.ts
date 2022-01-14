@@ -69,6 +69,12 @@ export class AuthService {
             );
         }
 
+        if (user.status === UserStatus.BANNED) {
+            throw new UnauthorizedException(
+                `This user is banned. Please contact the administrator`
+            );
+        }
+
         return user;
     }
 

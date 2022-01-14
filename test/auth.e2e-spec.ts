@@ -247,6 +247,20 @@ describe('AuthMdoule (e2e)', () => {
                     .expect(HttpStatus.UNAUTHORIZED);
             });
 
+            it('/auth/login (POST) Banned User', async () => {
+                // add provide to test user
+                let user = await getTestUser();
+                user = { ...user, status: UserStatus.BANNED };
+                await userModel.create(user);
+                await request(app.getHttpServer())
+                    .post('/auth/login')
+                    .send({
+                        email: 'mock@mock.mock',
+                        password: 'mock password'
+                    })
+                    .expect(HttpStatus.UNAUTHORIZED);
+            });
+
             it('/auth/login (POST) User uses provider for login', async () => {
                 // add provide to test user
                 let user = await getTestUser();
@@ -268,7 +282,7 @@ describe('AuthMdoule (e2e)', () => {
         describe('JWT Guard', () => {
             it('Guard should block with invalid token', async () => {
                 await request(app.getHttpServer())
-                    .get('/user')
+                    .get('/users')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
@@ -281,7 +295,7 @@ describe('AuthMdoule (e2e)', () => {
                 user = { ...user, status: UserStatus.BANNED };
                 await userModel.create(user);
                 await request(app.getHttpServer())
-                    .get('/user')
+                    .get('/users')
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`

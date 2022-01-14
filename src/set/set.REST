@@ -1,7 +1,7 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjFjMjI1NTdlMDM4NTc3NGNjODVhOTVlIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2NDA3ODk1MTIsImV4cCI6MTY0MDgyNTUxMn0.Z_ouVxNNQpCrmznbBCHJQQ4sO2m-qC4Y2J8MEteIu-k
-@set = 61cc9d9660167e815d6f3cf3
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjFjMjI1NTdlMDM4NTc3NGNjODVhOTVlIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2NDIwMTA4MTYsImV4cCI6MTY0MjA0NjgxNn0.CG9rkWHyjfD6RuAMoMaTQp8Gg-SdnOoVrUvmPON4dPM
+@set = 61db2daf67d6f719a06bac6c
 @user = 61c22557e0385774cc85a95e
-@adress = http://localhost:3001/api/set
+@adress = http://localhost:3001/api/sets
 
 ###Create Set
 POST {{adress}}
@@ -10,13 +10,17 @@ Authorization: Bearer {{token}}
 
 {
     "name": "Jibba",
-    "category": "Classic"
+    "category": "classic"
 }
 
 ### Get all sets
 GET {{adress}}
 
 ### Get all sets by user
+GET {{adress}}/user/{{user}}
+#Authorization: Bearer {{token}}
+
+### Get all sets by user logged in
 GET {{adress}}/user/{{user}}
 Authorization: Bearer {{token}}
 
@@ -47,6 +51,29 @@ DELETE {{adress}}/{{set}}?type=hard
 Authorization: Bearer {{token}}
 
 ### Sample sets
-POST {{adress}}/migrate
+POST {{adress}}/createfullset
 Content-Type: application/json
 Authorization: Bearer {{token}}
+
+{
+    "name": "Tornardo",
+    "language": "de",
+    "category": "classic",
+    "visibility": "public",
+    "tasks": [
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wann hattest Du dein erstes Mal?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cf",
+            "message": "hast Du schon einmal einen Schwulen-Porno angeschaut?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "hattest Du schon etwas mit jemanden aus der Runde? Wenn nein, mit wem könntest Du dir etwas vorstellen?"
+        }]
+}
