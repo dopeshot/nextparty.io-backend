@@ -23,6 +23,8 @@ export class TaskResponse {
     type: string;
     @Expose()
     message: string;
+    @Expose()
+    slug: string;
 
     constructor(partial: Partial<TaskDocument>) {
         Object.assign(this, partial);
@@ -50,6 +52,8 @@ export class SetResponse {
     played: number;
     @Expose()
     visibility: Visibility;
+    @Expose()
+    slug: string;
 
     constructor(partial: Partial<SetDocumentWithUser>) {
         Object.assign(this, partial);

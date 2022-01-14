@@ -16,6 +16,9 @@ export class Set {
     tasks: Task[];
 
     @Prop({ required: true })
+    slug: string;
+
+    @Prop({ required: true })
     category: SetCategory;
 
     @Prop({ default: Status.ACTIVE })
