@@ -98,6 +98,81 @@ describe('AuthMdoule (e2e)', () => {
             });
         });
 
+        describe('/auth/google (POST)', () => {
+            it('/auth/google should create user', async () => {
+                await request(app.getHttpServer())
+                    .post('/auth/testGoogle')
+                    .send({
+                        user: {
+                            username: 'mock',
+                            email: 'mock@mock.mock',
+                            provider: 'google'
+                        }
+                    });
+                expect(await (await userModel.find()).length).toBe(1);
+            });
+
+            it('/auth/google can be used for login (given user has provider)', async () => {
+                // add provide to test user
+                let user = await getTestUser();
+                user = { ...user, provider: 'google' };
+                await userModel.create(user);
+                // send data that normally is provided by guard
+
+                await request(app.getHttpServer())
+                    .post('/auth/testGoogle')
+                    .send({
+                        user: {
+                            username: 'mock',
+                            email: 'mock@mock.mock',
+                            provider: 'google'
+                        }
+                    })
+                    .expect(HttpStatus.CREATED);
+                expect(await (await userModel.find()).length).toBe(1);
+            });
+
+            it('/auth/google should throw error on duplicate', async () => {
+                // send data that normally is provided by guard
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .post('/auth/testGoogle')
+                    .send({
+                        user: {
+                            username: 'mock',
+                            email: 'mock@mock.mock',
+                            provider: 'google'
+                        }
+                    })
+                    .expect(HttpStatus.CONFLICT);
+                expect(await (await userModel.find()).length).toBe(1);
+            });
+
+            it('/auth/google should throw error on duplicate username', async () => {
+                // send data that normally is provided by guard
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .post('/auth/testGoogle')
+                    .send({
+                        user: {
+                            username: 'mock',
+                            email: 'not@mock.mock',
+                            provider: 'google'
+                        }
+                    })
+                    .expect(HttpStatus.INTERNAL_SERVER_ERROR);
+                expect(await (await userModel.find()).length).toBe(1);
+            });
+
+            it('/auth/google should fail without token', async () => {
+                // send data that normally is provided by guard
+                await userModel.create(await getTestUser());
+                await request(app.getHttpServer())
+                    .post('/auth/google')
+                    .expect(HttpStatus.BAD_REQUEST);
+            });
+        });
+
         describe('/auth/login (POST)', () => {
             it('/auth/login (POST)', async () => {
                 await userModel.create(await getTestUser());
