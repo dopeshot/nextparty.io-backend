@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { Status } from '../shared/enums/status.enum';
-import { slugged } from '../shared/global-settings/slugged';
+import { slugged } from '../shared/global-functions/slugged';
 import { User } from '../user/entities/user.entity';
 import { Role } from '../user/enums/role.enum';
 import { CreateFullSetDto } from './dto/create-full-set.dto';

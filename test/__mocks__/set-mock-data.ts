@@ -15,6 +15,7 @@ export const getSetSetupData = () => [
         visibility: Visibility.PUBLIC,
         played: 0,
         name: 'User Set1',
+        slug: 'user-set1',
         createdBy: 'aaaaaaaaaaaaaaaaaaaaaaac',
         dareCount: 0,
         truthCount: 1,
@@ -24,7 +25,8 @@ export const getSetSetupData = () => [
                 status: Status.ACTIVE,
                 type: TaskType.TRUTH,
                 currentPlayerGender: CurrentPlayerGender.ANYONE,
-                message: '1234567890'
+                message: '1234567890',
+                slug: '1234567890'
             }
         ]
     },
@@ -36,6 +38,7 @@ export const getSetSetupData = () => [
         visibility: Visibility.PRIVATE,
         played: 0,
         name: 'User Set2',
+        slug: 'user-set2',
         createdBy: 'aaaaaaaaaaaaaaaaaaaaaaac',
         dareCount: 0,
         truthCount: 1,
@@ -45,7 +48,8 @@ export const getSetSetupData = () => [
                 status: Status.ACTIVE,
                 type: TaskType.TRUTH,
                 currentPlayerGender: CurrentPlayerGender.ANYONE,
-                message: '1234567890'
+                message: '1234567890',
+                slug: '1234567890'
             }
         ]
     },
@@ -57,6 +61,7 @@ export const getSetSetupData = () => [
         visibility: Visibility.PRIVATE,
         played: 0,
         name: 'User Set3',
+        slug: 'user-set3',
         createdBy: 'aaaaaaaaaaaaaaaaaaaaaaac',
         dareCount: 0,
         truthCount: 1,
@@ -66,7 +71,8 @@ export const getSetSetupData = () => [
                 status: Status.ACTIVE,
                 type: TaskType.TRUTH,
                 currentPlayerGender: CurrentPlayerGender.ANYONE,
-                message: '1234567890'
+                message: '1234567890',
+                slug: '1234567890'
             }
         ]
     }
@@ -127,5 +133,3 @@ export const getMockFullSet = () => ({
         }
     ]
 });
-
-export const getString = (length: number) => new Array(length + 1).join('a');

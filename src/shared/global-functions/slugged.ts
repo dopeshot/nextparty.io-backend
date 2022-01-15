@@ -1,16 +1,19 @@
 import slugify from 'slugify';
-const maxSlugLength = 50;
+
+export const maxSlugLength = 50;
+
 export function slugged(string: string): string {
     // Maximum length should be not too large and is thus stripped
     if (string.length > maxSlugLength) {
         const stringArr = string.slice(0, maxSlugLength).split(' ');
+        console.log(stringArr.slice(0, -1).join(' '));
         return stringArr.length > 1
-            ? slugify(stringArr.slice(0, -1).join())
-            : slugify(stringArr[0]);
+            ? slugged(stringArr.slice(0, -1).join(' ').toString())
+            : slugged(stringArr[0]);
     }
 
     return slugify(string, {
-        remove: /[*+~.()/'"!:@]/g,
+        remove: /[*+~.()\\/'"!:@]/g,
         lower: true
     });
 }
