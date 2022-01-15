@@ -15,6 +15,9 @@ export class Task {
     @Prop({ required: true })
     message: string;
 
+    @Prop({ required: true })
+    slug: string;
+
     @Prop({ default: Status.ACTIVE })
     status: Status | Status.ACTIVE;
 }

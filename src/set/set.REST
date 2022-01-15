@@ -1,5 +1,5 @@
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjFjMjI1NTdlMDM4NTc3NGNjODVhOTVlIiwicm9sZSI6InVzZXIiLCJpYXQiOjE2NDIwMTA4MTYsImV4cCI6MTY0MjA0NjgxNn0.CG9rkWHyjfD6RuAMoMaTQp8Gg-SdnOoVrUvmPON4dPM
-@set = 61db2daf67d6f719a06bac6c
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxvIiwic3ViIjoiNjFjMjI1NTdlMDM4NTc3NGNjODVhOTVlIiwicm9sZSI6ImFkbWluIiwiaWF0IjoxNjQyMTk5ODcyLCJleHAiOjE2NDIyMzU4NzJ9.6kr80KoeYGmaKlhNsZQpYXGqszOqX4o_4pPW2EL7RX8
+@set = 61e200552cdd19f1e6e46c7c
 @user = 61c22557e0385774cc85a95e
 @adress = http://localhost:3001/api/sets
 
@@ -9,7 +9,7 @@ Content-Type: application/json
 Authorization: Bearer {{token}}
 
 {
-    "name": "Jibba",
+    "name": "Jibba/",
     "category": "classic"
 }
 

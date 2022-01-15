@@ -8,6 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { Status } from '../shared/enums/status.enum';
+import { createSlug } from '../shared/global-functions/create-slug';
 import { User } from '../user/entities/user.entity';
 import { Role } from '../user/enums/role.enum';
 import { CreateFullSetDto } from './dto/create-full-set.dto';
@@ -36,6 +37,7 @@ export class SetService {
             const set = (
                 await this.setModel.create({
                     ...createSetDto,
+                    slug: createSlug(createSetDto.name),
                     createdBy: user.userId
                 })
             ).toObject();
@@ -119,6 +121,10 @@ export class SetService {
 
         if (user.role !== Role.ADMIN) queryMatch.createdBy = user.userId;
 
+        if (updateSetDto.name) {
+            updateSetDto.slug = createSlug(updateSetDto.name);
+        }
+
         const set: SetDocument = await this.setModel
             .findOneAndUpdate(queryMatch, updateSetDto, {
                 new: true
@@ -187,7 +193,8 @@ export class SetService {
         user: JwtUserDto
     ): Promise<Partial<TaskDocument>> {
         const task: Partial<TaskDocument> = new this.taskModel({
-            ...createTaskDto
+            ...createTaskDto,
+            slug: createSlug(createTaskDto.message)
         }).toObject();
 
         const queryMatch: { _id: ObjectId; createdBy?: ObjectId } = {
@@ -229,7 +236,8 @@ export class SetService {
         const queryUpdate = {
             'tasks.$.type': updateTaskDto.type,
             'tasks.$.message': updateTaskDto.message,
-            'tasks.$.currentPlayerGender': updateTaskDto.currentPlayerGender
+            'tasks.$.currentPlayerGender': updateTaskDto.currentPlayerGender,
+            'tasks.$.slug': createSlug(updateTaskDto.message)
         };
 
         const set: SetDocument = await this.setModel.findOneAndUpdate(
