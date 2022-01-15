@@ -103,11 +103,9 @@ describe('AuthMdoule (e2e)', () => {
                 await request(app.getHttpServer())
                     .post('/auth/testGoogle')
                     .send({
-                        user: {
-                            username: 'mock',
-                            email: 'mock@mock.mock',
-                            provider: 'google'
-                        }
+                        username: 'mock',
+                        email: 'mock@mock.mock',
+                        provider: 'google'
                     });
                 expect(await (await userModel.find()).length).toBe(1);
             });
@@ -122,11 +120,9 @@ describe('AuthMdoule (e2e)', () => {
                 await request(app.getHttpServer())
                     .post('/auth/testGoogle')
                     .send({
-                        user: {
-                            username: 'mock',
-                            email: 'mock@mock.mock',
-                            provider: 'google'
-                        }
+                        username: 'mock',
+                        email: 'mock@mock.mock',
+                        provider: 'google'
                     })
                     .expect(HttpStatus.CREATED);
                 expect(await (await userModel.find()).length).toBe(1);
@@ -138,11 +134,9 @@ describe('AuthMdoule (e2e)', () => {
                 await request(app.getHttpServer())
                     .post('/auth/testGoogle')
                     .send({
-                        user: {
-                            username: 'mock',
-                            email: 'mock@mock.mock',
-                            provider: 'google'
-                        }
+                        username: 'mock',
+                        email: 'mock@mock.mock',
+                        provider: 'google'
                     })
                     .expect(HttpStatus.CONFLICT);
                 expect(await (await userModel.find()).length).toBe(1);
@@ -154,11 +148,9 @@ describe('AuthMdoule (e2e)', () => {
                 await request(app.getHttpServer())
                     .post('/auth/testGoogle')
                     .send({
-                        user: {
-                            username: 'mock',
-                            email: 'not@mock.mock',
-                            provider: 'google'
-                        }
+                        username: 'mock',
+                        email: 'not@mock.mock',
+                        provider: 'google'
                     })
                     .expect(HttpStatus.INTERNAL_SERVER_ERROR);
                 expect(await (await userModel.find()).length).toBe(1);
