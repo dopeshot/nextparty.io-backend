@@ -1,9 +1,13 @@
-import { OmitType, PartialType } from '@nestjs/mapped-types'
-import { CreateUserDto } from './create-user.dto'
+import { OmitType, PartialType } from '@nestjs/mapped-types';
+import { IsEmpty } from 'class-validator';
+import { CreateUserDto } from './create-user.dto';
 
 export class UpdateUserDto extends PartialType(
-    OmitType(CreateUserDto, ['email'] as const),
-) {}
+    OmitType(CreateUserDto, ['email'] as const)
+) {
+    @IsEmpty()
+    slug?: string;
+}
 
 /**
  *
