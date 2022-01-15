@@ -22,7 +22,6 @@ import { Task, TaskDocument } from './entities/task.entity';
 import { DeleteType } from './enums/delete-type.enum';
 import { TaskType } from './enums/tasktype.enum';
 import { Visibility } from './enums/visibility.enum';
-import { SetSampleData } from './set.data';
 
 @Injectable()
 export class SetService {
