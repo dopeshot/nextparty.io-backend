@@ -179,7 +179,7 @@ export class UserService {
         let updatedUser: User;
 
         if (updateUserDto.username) {
-            updateUserDto.slug = createSlug(updatedUser.username);
+            updateUserDto.slug = createSlug(updateUserDto.username);
         }
 
         try {
