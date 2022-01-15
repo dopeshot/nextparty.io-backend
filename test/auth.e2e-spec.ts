@@ -6,8 +6,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
-import { DiscordAuthGuard } from '../src/auth/strategies/discord/discord-auth.guard';
-import { FacebookAuthGuard } from '../src/auth/strategies/facebook/facebook-auth.guard';
 import { GoogleAuthGuard } from '../src/auth/strategies/google/google-auth.guard';
 import { UserDocument } from '../src/user/entities/user.entity';
 import { UserStatus } from '../src/user/enums/status.enum';
@@ -40,10 +38,6 @@ describe('AuthMdoule (e2e)', () => {
             providers: [ThirdPartyGuardMock]
         })
             .overrideGuard(GoogleAuthGuard) // Overwrite guards with mocks that don´t rely on external APIs
-            .useClass(ProviderGuardFaker)
-            .overrideGuard(FacebookAuthGuard)
-            .useClass(ProviderGuardFaker)
-            .overrideGuard(DiscordAuthGuard)
             .useClass(ProviderGuardFaker)
             .compile();
 
@@ -107,10 +101,10 @@ describe('AuthMdoule (e2e)', () => {
         });
 
         describe('/auth/(third-party-provider) (GET)', () => {
-            it('/auth/google/redirect should create user', async () => {
+            it('/auth/google should create user', async () => {
                 // send data that normally is provided by guard
                 await request(app.getHttpServer())
-                    .get('/auth/google/redirect')
+                    .post('/auth/google')
                     .send({
                         user: {
                             username: 'googleman',
@@ -118,48 +112,18 @@ describe('AuthMdoule (e2e)', () => {
                             provider: 'google'
                         }
                     })
-                    .expect(HttpStatus.OK);
+                    .expect(HttpStatus.CREATED);
                 expect(await (await userModel.find()).length).toBe(1);
             });
 
-            it('/auth/facebook/redirect should create user', async () => {
-                // send data that normally is provided by guard
-                await request(app.getHttpServer())
-                    .get('/auth/facebook/redirect')
-                    .send({
-                        user: {
-                            username: 'meta slave',
-                            email: 'face@book.com',
-                            provider: 'face'
-                        }
-                    })
-                    .expect(HttpStatus.OK);
-                expect(await (await userModel.find()).length).toBe(1);
-            });
-
-            it('/auth/discord/redirect should create user', async () => {
-                // send data that normally is provided by guard
-                await request(app.getHttpServer())
-                    .get('/auth/discord/redirect')
-                    .send({
-                        user: {
-                            username: 'discorduser',
-                            email: 'user@discord.com',
-                            provider: 'discord'
-                        }
-                    })
-                    .expect(HttpStatus.OK);
-                expect(await (await userModel.find()).length).toBe(1);
-            });
-
-            it('/auth/(can be used for login)/redirect can be used for login (given user has provider)', async () => {
+            it('/auth/google can be used for login (given user has provider)', async () => {
                 // add provide to test user
                 let user = await getTestUser();
                 user = { ...user, provider: 'google' };
                 await userModel.create(user);
                 // send data that normally is provided by guard
                 await request(app.getHttpServer())
-                    .get('/auth/discord/redirect')
+                    .post('/auth/google')
                     .send({
                         user: {
                             username: 'mock',
@@ -167,15 +131,15 @@ describe('AuthMdoule (e2e)', () => {
                             provider: 'google'
                         }
                     })
-                    .expect(HttpStatus.OK);
+                    .expect(HttpStatus.CREATED);
                 expect(await (await userModel.find()).length).toBe(1);
             });
 
-            it('/auth/(any third party)/redirect should throw error on duplicate', async () => {
+            it('/auth/google should throw error on duplicate', async () => {
                 // send data that normally is provided by guard
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
-                    .get('/auth/google/redirect')
+                    .post('/auth/google')
                     .send({
                         user: {
                             username: 'mock',
@@ -187,11 +151,11 @@ describe('AuthMdoule (e2e)', () => {
                 expect(await (await userModel.find()).length).toBe(1);
             });
 
-            it('/auth/(any third party)/redirect should throw error on duplicate username', async () => {
+            it('/auth/google should throw error on duplicate username', async () => {
                 // send data that normally is provided by guard
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
-                    .get('/auth/google/redirect')
+                    .post('/auth/google')
                     .send({
                         user: {
                             username: 'mock',
@@ -203,11 +167,11 @@ describe('AuthMdoule (e2e)', () => {
                 expect(await (await userModel.find()).length).toBe(1);
             });
 
-            it('/auth/(any third party)/redirect should fail without values', async () => {
+            it('/auth/google should fail without values', async () => {
                 // send data that normally is provided by guard
                 await userModel.create(await getTestUser());
                 await request(app.getHttpServer())
-                    .get('/auth/google/redirect')
+                    .post('/auth/google')
                     .send({})
                     .expect(HttpStatus.UNAUTHORIZED);
             });

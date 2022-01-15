@@ -57,11 +57,12 @@ export class AuthService {
         }
 
         // Check if user exists and does not use third party auth
-        if (!user || user.provider)
+        if (!user || user.provider) {
+            console.log('has provider');
             throw new UnauthorizedException(
                 `Login Failed due to invalid credentials`
             );
-
+        }
         // Check if password is correct
         if (!(await bcrypt.compare(password, user.password))) {
             throw new UnauthorizedException(

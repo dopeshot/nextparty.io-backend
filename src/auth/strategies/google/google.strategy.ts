@@ -1,40 +1,47 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, VerifyCallback } from 'passport-google-oauth20';
+import { Request } from 'express';
+import { ParamsDictionary } from 'express-serve-static-core';
+import { Auth, google } from 'googleapis';
+import { Strategy } from 'passport-custom';
+import { ParsedQs } from 'qs';
 import { userDataFromProvider } from '../../../user/interfaces/userDataFromProvider.interface';
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
+    configService: ConfigService;
+    oauthClient: Auth.OAuth2Client;
     constructor() {
-        super({
-            clientID: process.env.GOOGLE_CLIENTID,
-            clientSecret: process.env.GOOGLE_CLIENTKEY,
-            callbackURL: process.env.GOOGLE_CALLBACK_URL,
-            scope: ['email', 'profile']
-        });
+        super();
+        const clientID = process.env.GOOGLE_AUTH_CLIENT_ID;
+        const clientSecret = process.env.GOOGLE_AUTH_CLIENT_SECRET;
+
+        this.oauthClient = new google.auth.OAuth2(clientID, clientSecret);
     }
 
-    /**
-     * For store userdata in @Request req
-     * @param access_token token from google
-     * @param refreshToken  token from google
-     * @param profile  user data
-     * @param done callback
-     */
-    // Eslint has to be disabled for this as google passes these params anyway
-    //eslint-disable-next-line @typescript-eslint/no-unused-vars
-    async validate(
-        accessToken: string,
-        refreshToken: string,
-        profile: any,
-        done: VerifyCallback
-    ): Promise<any> {
-        const userDataFromProvider: userDataFromProvider = {
-            username: profile.displayName,
-            email: profile.emails[0].value,
-            provider: profile.provider
-        };
+    async authenticate(
+        req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>
+    ): Promise<userDataFromProvider> {
+        console.log('dis google');
+        const token = req.body.token;
+        const infoClient = google.oauth2('v2').userinfo;
 
-        done(null, userDataFromProvider);
+        this.oauthClient.setCredentials({
+            access_token: token
+        });
+
+        const userInfoResponse = await infoClient.get({
+            auth: this.oauthClient
+        });
+
+        const userdata = userInfoResponse.data;
+
+        console.log(userdata);
+        return {
+            username: userdata.given_name,
+            email: userdata.email,
+            provider: 'google'
+        };
     }
 }
