@@ -23,7 +23,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
     async authenticate(
         req: Request<ParamsDictionary, any, any, ParsedQs, Record<string, any>>
     ): Promise<userDataFromProvider> {
-        console.log('dis google');
         const token = req.body.token;
         const infoClient = google.oauth2('v2').userinfo;
 
@@ -37,7 +36,6 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
 
         const userdata = userInfoResponse.data;
 
-        console.log(userdata);
         return {
             username: userdata.given_name,
             email: userdata.email,

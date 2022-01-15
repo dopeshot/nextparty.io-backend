@@ -20,11 +20,9 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
      */
     async validate(payload: JwtPayloadDto): Promise<JwtUserDto> {
         const user = await this.authService.isValidJWT(payload.sub);
-        console.log('this jwt');
 
         // Validate if user still exists. This keeps tokens from being valid for users that have been deleted
         if (!user) {
-            console.log('no user found');
             throw new UnauthorizedException(
                 'Your are not allowed to use this service.'
             );

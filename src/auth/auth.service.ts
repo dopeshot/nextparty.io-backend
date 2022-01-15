@@ -58,7 +58,6 @@ export class AuthService {
 
         // Check if user exists and does not use third party auth
         if (!user || user.provider) {
-            console.log('has provider');
             throw new UnauthorizedException(
                 `Login Failed due to invalid credentials`
             );
