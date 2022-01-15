@@ -31,6 +31,8 @@ export class AuthService {
         this.oauthClient = new google.auth.OAuth2(clientID, clientSecret);
     }
 
+    // Testing oauth seems a bit much...and anyway if oauth over google servers fails we are fucked anyways..
+    /* istanbul ignore next */
     async getGoogleUserdata(token: GoogleToken): Promise<userDataFromProvider> {
         const infoClient = google.oauth2('v2').userinfo;
         let userData: oauth2_v2.Schema$Userinfo;
