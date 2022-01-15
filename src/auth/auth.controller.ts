@@ -1,9 +1,10 @@
 import { Body, Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
 import { AuthService } from './auth.service';
+import { GoogleToken } from './dto/google-token.dto';
 import { AccessTokenDto } from './dto/jwt.dto';
 import { RegisterDto } from './dto/register.dto';
-import { GoogleAuthGuard } from './strategies/google/google-auth.guard';
 import { LocalAuthGuard } from './strategies/local/local-auth.guard';
 
 @ApiTags('auth')
@@ -28,8 +29,9 @@ export class AuthController {
 
     @Post('/google')
     @ApiOperation({ summary: 'Handle user data provided by google' })
-    @UseGuards(GoogleAuthGuard)
-    googleLogin(@Request() req): Promise<AccessTokenDto> {
-        return this.authService.handleProviderLogin(req.user);
+    async googleLogin(@Body() token: GoogleToken): Promise<AccessTokenDto> {
+        const user: userDataFromProvider =
+            await this.authService.getGoogleUserdata(token);
+        return await this.authService.handleProviderLogin(user);
     }
 }

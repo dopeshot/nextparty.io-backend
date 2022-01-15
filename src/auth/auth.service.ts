@@ -7,20 +7,54 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { OAuth2Client } from 'google-auth-library';
+import { google, oauth2_v2 } from 'googleapis';
 import { ObjectId } from 'mongoose';
 import { User } from '../user/entities/user.entity';
 import { UserStatus } from '../user/enums/status.enum';
 import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
 import { UserService } from '../user/user.service';
+import { GoogleToken } from './dto/google-token.dto';
 import { AccessTokenDto } from './dto/jwt.dto';
 import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
+    oauthClient: OAuth2Client;
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService
-    ) {}
+    ) {
+        const clientID = process.env.GOOGLE_AUTH_CLIENT_ID;
+        const clientSecret = process.env.GOOGLE_AUTH_CLIENT_SECRET;
+
+        this.oauthClient = new google.auth.OAuth2(clientID, clientSecret);
+    }
+
+    async getGoogleUserdata(token: GoogleToken): Promise<userDataFromProvider> {
+        const infoClient = google.oauth2('v2').userinfo;
+        let userData: oauth2_v2.Schema$Userinfo;
+
+        try {
+            this.oauthClient.setCredentials({
+                access_token: token.token
+            });
+
+            const userInfoResponse = await infoClient.get({
+                auth: this.oauthClient
+            });
+
+            userData = userInfoResponse.data;
+        } catch (e) {
+            throw new UnauthorizedException('Google auth failed');
+        }
+
+        return {
+            username: userData.given_name,
+            email: userData.email,
+            provider: 'google'
+        };
+    }
 
     /**
      * Register User (Creates a new one)
