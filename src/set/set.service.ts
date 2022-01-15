@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { Status } from '../shared/enums/status.enum';
-import { slugged } from '../shared/global-functions/slugged';
+import { createSlug } from '../shared/global-functions/slugged';
 import { User } from '../user/entities/user.entity';
 import { Role } from '../user/enums/role.enum';
 import { CreateFullSetDto } from './dto/create-full-set.dto';
@@ -38,7 +38,7 @@ export class SetService {
             const set = (
                 await this.setModel.create({
                     ...createSetDto,
-                    slug: slugged(createSetDto.name),
+                    slug: createSlug(createSetDto.name),
                     createdBy: user.userId
                 })
             ).toObject();
@@ -130,7 +130,7 @@ export class SetService {
         if (user.role !== Role.ADMIN) queryMatch.createdBy = user.userId;
 
         if (updateSetDto.name) {
-            updateSetDto.slug = slugged(updateSetDto.name);
+            updateSetDto.slug = createSlug(updateSetDto.name);
         }
         console.log(updateSetDto.slug);
         const set: SetDocument = await this.setModel
@@ -202,7 +202,7 @@ export class SetService {
     ): Promise<Partial<TaskDocument>> {
         const task: Partial<TaskDocument> = new this.taskModel({
             ...createTaskDto,
-            slug: slugged(createTaskDto.message)
+            slug: createSlug(createTaskDto.message)
         }).toObject();
 
         const queryMatch: { _id: ObjectId; createdBy?: ObjectId } = {
@@ -245,7 +245,7 @@ export class SetService {
             'tasks.$.type': updateTaskDto.type,
             'tasks.$.message': updateTaskDto.message,
             'tasks.$.currentPlayerGender': updateTaskDto.currentPlayerGender,
-            'tasks.$.slug': slugged(updateTaskDto.message)
+            'tasks.$.slug': createSlug(updateTaskDto.message)
         };
 
         const set: SetDocument = await this.setModel.findOneAndUpdate(

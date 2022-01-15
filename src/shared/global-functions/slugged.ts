@@ -2,7 +2,7 @@ import slugify from 'slugify';
 
 export const maxSlugLength = 50;
 
-export function slugged(string: string): string {
+export function createSlug(string: string): string {
     const sluggedString = slugify(string, {
         remove: /[*+~.()\\/'"!:@]/g,
         lower: true

@@ -1,23 +1,23 @@
 import { getString } from './get-string';
-import { maxSlugLength, slugged } from './slugged';
+import { createSlug, maxSlugLength } from './slugged';
 
 describe('Slugify tests', () => {
     it('Slugify to lower', () => {
-        expect(slugged('Jibba')).toBe('jibba');
-        expect(slugged('JIBBA')).toBe('jibba');
+        expect(createSlug('Jibba')).toBe('jibba');
+        expect(createSlug('JIBBA')).toBe('jibba');
     });
 
     it('Slugify remove symbols', () => {
-        expect(slugged('*+~.()/\'"!:@')).toBe('');
+        expect(createSlug('*+~.()/\'"!:@')).toBe('');
     });
 
     it('Slugify max length: no space', () => {
-        expect(slugged(getString(maxSlugLength)).length).toBe(maxSlugLength);
+        expect(createSlug(getString(maxSlugLength)).length).toBe(maxSlugLength);
     });
 
     it('Slugify max length: with space', () => {
         expect(
-            slugged(
+            createSlug(
                 'I AM a very long text that is not way too long to be allowed to slug entirely'
             )
         ).toBe('i-am-a-very-long-text-that-is-not-way-too-long-to');
