@@ -34,7 +34,7 @@ async function bootstrap() {
     SwaggerModule.setup('swagger', app, document);
     app.enableCors();
     await app.listen(+process.env.PORT || 3001, () =>
-        Logger.log(`Nest listing on ${process.env.HOST}`, 'Bootstrap')
+        Logger.log(`Nest listening on ${process.env.HOST}`, 'Bootstrap')
     );
 }
 bootstrap();

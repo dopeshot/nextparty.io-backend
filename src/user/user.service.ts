@@ -174,14 +174,16 @@ export class UserService {
         let updatedUser: User;
 
         try {
-            updatedUser = await this.userModel.findByIdAndUpdate(
-                id,
-                {
-                    ...updateUserDto
-                },
-                {
-                    new: true
-                })
+            updatedUser = await this.userModel
+                .findByIdAndUpdate(
+                    id,
+                    {
+                        ...updateUserDto
+                    },
+                    {
+                        new: true
+                    }
+                )
                 .lean();
         } catch (error) {
             if (error.code === 11000)

@@ -51,12 +51,6 @@ DELETE {{adress}}/{{set}}?type=hard
 Authorization: Bearer {{token}}
 
 ### Sample sets
-POST {{adress}}/migrate
-Content-Type: application/json
-Authorization: Bearer {{token}}
-
-
-### Sample sets
 POST {{adress}}/createfullset
 Content-Type: application/json
 Authorization: Bearer {{token}}

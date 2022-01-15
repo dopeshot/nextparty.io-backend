@@ -39,14 +39,14 @@ import { SetService } from './set.service';
 
 @ApiTags('sets')
 @Controller('sets')
+@UseInterceptors(ClassSerializerInterceptor)
+@SerializeOptions({ strategy: 'excludeAll' })
 export class SetController {
     constructor(private readonly setService: SetService) {}
 
     @Post()
     @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Create new set' })
-    @UseInterceptors(ClassSerializerInterceptor)
-    @SerializeOptions({ strategy: 'excludeAll' })
     async createSet(
         @Body() createSetDto: CreateSetDto,
         @Request() { user }: ParameterDecorator & { user: JwtUserDto }
@@ -57,8 +57,6 @@ export class SetController {
     }
 
     @Get()
-    @UseInterceptors(ClassSerializerInterceptor)
-    @SerializeOptions({ strategy: 'excludeAll' })
     @ApiOperation({ summary: 'Get all Sets' })
     async getAllSets(): Promise<SetResponse[]> {
         return (await this.setService.getAllSets()).map(
@@ -69,8 +67,6 @@ export class SetController {
     @Get('/user/:id')
     @UseGuards(OptionalJWTGuard)
     @ApiOperation({ summary: 'Get one Set by author id' })
-    @UseInterceptors(ClassSerializerInterceptor)
-    @SerializeOptions({ strategy: 'excludeAll' })
     async getSetsFromUser(
         @Param() { id }: MongoIdDto,
         @Request() { user }: ParameterDecorator & { user: JwtUserDto }
@@ -81,8 +77,6 @@ export class SetController {
     }
 
     @Get(':id')
-    @UseInterceptors(ClassSerializerInterceptor)
-    @SerializeOptions({ strategy: 'excludeAll' })
     @ApiOperation({ summary: 'Get one Set by id' })
     async getOneSet(
         @Param() { id }: MongoIdDto
@@ -93,8 +87,6 @@ export class SetController {
     @Patch(':id')
     @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Update Set by id' })
-    @UseInterceptors(ClassSerializerInterceptor)
-    @SerializeOptions({ strategy: 'excludeAll' })
     async updateMeta(
         @Param() { id }: MongoIdDto,
         @Body() updateSetDto: UpdateSetDto,
@@ -107,8 +99,6 @@ export class SetController {
 
     @Patch(':id/played')
     @ApiOperation({ summary: 'Update Set by id' })
-    @UseInterceptors(ClassSerializerInterceptor)
-    @SerializeOptions({ strategy: 'excludeAll' })
     async updatePlayed(@Param() { id }: MongoIdDto): Promise<UpdatedPlayed> {
         return new UpdatedPlayed(await this.setService.updateSetPlayed(id));
     }
@@ -130,8 +120,6 @@ export class SetController {
     @Post(':id/task')
     @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Create Task to Set via id and Json' })
-    @UseInterceptors(ClassSerializerInterceptor)
-    @SerializeOptions({ strategy: 'excludeAll' })
     async createTask(
         @Param() { id }: MongoIdDto,
         @Body() createTaskDto: CreateTaskDto,
@@ -145,8 +133,6 @@ export class SetController {
     @Put(':setId/task/:taskId')
     @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Update one Task via id and Json' })
-    @UseInterceptors(ClassSerializerInterceptor)
-    @SerializeOptions({ strategy: 'excludeAll' })
     async updateTask(
         @Param() { setId, taskId }: SetTaskMongoIdDto,
         @Body() updateTaskDto: UpdateTaskDto,
@@ -169,22 +155,9 @@ export class SetController {
         return await this.setService.removeTask(setId, taskId, type, user);
     }
 
-    /* istanbul ignore next */ // This is development only
-    @Post('migrate')
-    @UseGuards(JwtAuthGuard)
-    @ApiOperation({ summary: 'Create example data sets' })
-    public createExampelData(
-        @Request() { user }: ParameterDecorator & { user: JwtUserDto },
-        @Query('test') test: string
-    ) {
-        return this.setService.createExampleSets(user, test);
-    }
-
     @Post('createfullset')
     @UseGuards(JwtAuthGuard)
     @ApiOperation({ summary: 'Create example data sets' })
-    @UseInterceptors(ClassSerializerInterceptor)
-    @SerializeOptions({ strategy: 'excludeAll' })
     async createDataFromFullSet(
         @Request() { user }: ParameterDecorator & { user: JwtUserDto },
         @Body() fullSet: CreateFullSetDto
