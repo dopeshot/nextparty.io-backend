@@ -1,5 +1,5 @@
+import { createSlug, maxSlugLength } from './create-slug';
 import { getString } from './get-string';
-import { createSlug, maxSlugLength } from './slugged';
 
 describe('Slugify tests', () => {
     it('Slugify to lower', () => {

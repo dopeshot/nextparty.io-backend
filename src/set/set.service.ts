@@ -1,5 +1,4 @@
 import {
-    ConflictException,
     ForbiddenException,
     Injectable,
     InternalServerErrorException,
@@ -9,7 +8,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { Status } from '../shared/enums/status.enum';
-import { createSlug } from '../shared/global-functions/slugged';
+import { createSlug } from '../shared/global-functions/create-slug';
 import { User } from '../user/entities/user.entity';
 import { Role } from '../user/enums/role.enum';
 import { CreateFullSetDto } from './dto/create-full-set.dto';
@@ -49,13 +48,6 @@ export class SetService {
                 .populate<{ createdBy: User }>('createdBy')
                 .lean();
         } catch (error) {
-            if (error.code === 11000) {
-                throw new ConflictException({
-                    description: ` This ${
-                        Object.keys(error.keyValue)[0]
-                    } already exists!.`
-                });
-            }
             /* istanbul ignore next */ // Unable to test Internal server error here
             throw new InternalServerErrorException();
         }
