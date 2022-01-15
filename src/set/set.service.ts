@@ -124,7 +124,7 @@ export class SetService {
         if (updateSetDto.name) {
             updateSetDto.slug = createSlug(updateSetDto.name);
         }
-        console.log(updateSetDto.slug);
+
         const set: SetDocument = await this.setModel
             .findOneAndUpdate(queryMatch, updateSetDto, {
                 new: true
