@@ -18,6 +18,9 @@ export class UserResponse {
     @Expose()
     email: string;
 
+    @Expose()
+    slug: string;
+
     constructor(partial: Partial<UserDocument>) {
         Object.assign(this, partial);
     }

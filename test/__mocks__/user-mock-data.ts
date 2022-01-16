@@ -1,5 +1,6 @@
 import { JwtService } from '@nestjs/jwt';
 import { AuthService } from '../../src/auth/auth.service';
+import { createSlug } from '../../src/shared/global-functions/create-slug';
 import { Role } from '../../src/user/enums/role.enum';
 import { UserStatus } from '../../src/user/enums/status.enum';
 // TODO: Is this the best way to do this?
@@ -37,13 +38,13 @@ let admin = {
 export const getTestUser = async () => {
     // This ensures that altering the hashing algorith does not interfer with unit tests
     const pw = await userService.hashPassword('mock password');
-    return { ...user, password: pw };
+    return { ...user, password: pw, slug: createSlug(user.username) };
 };
 
 export const getTestAdmin = async () => {
     // This ensures that altering the hashing algorith does not interfer with unit tests
     const pw = await userService.hashPassword('mock password');
-    return { ...admin, password: pw };
+    return { ...admin, password: pw, slug: createSlug(admin.username) };
 };
 
 export const getJWT = async (x: any) => {

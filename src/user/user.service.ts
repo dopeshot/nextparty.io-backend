@@ -13,6 +13,7 @@ import { Model, ObjectId } from 'mongoose';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { MailService } from '../mail/mail.service';
 import { MailVerifyDto } from '../mail/types/mail-verify.type';
+import { createSlug } from '../shared/global-functions/create-slug';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
@@ -44,7 +45,8 @@ export class UserService {
             const user = new this.userModel({
                 ...credentials,
                 status: UserStatus.UNVERIFIED,
-                password: hash
+                password: hash,
+                slug: createSlug(credentials.username)
             });
 
             // This order of operations is important
@@ -108,7 +110,10 @@ export class UserService {
         userDataFromProvider: userDataFromProvider
     ): Promise<User> {
         try {
-            const user: UserDocument = new this.userModel(userDataFromProvider);
+            const user: UserDocument = new this.userModel({
+                ...userDataFromProvider,
+                slug: createSlug(userDataFromProvider.username)
+            });
             const result = await user.save();
 
             return result;
@@ -172,6 +177,10 @@ export class UserService {
             throw new ForbiddenException();
         }
         let updatedUser: User;
+
+        if (updateUserDto.username) {
+            updateUserDto.slug = createSlug(updateUserDto.username);
+        }
 
         try {
             updatedUser = await this.userModel
