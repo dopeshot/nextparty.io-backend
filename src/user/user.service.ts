@@ -256,16 +256,21 @@ export class UserService {
         return user;
     }
 
-    async requestReset(mail: string) {
+    async requestReset(mail: string): Promise<void> {
         let user: User;
         try {
             user = await this.findOneByEmail(mail);
         } catch (e) {
             // This prevents not found exceptions. Therefore it is not possible to use this endpoint to see if a mail address
-            // has an account attached to it
-            user = undefined;
+            // has an account attached to it#
+            return;
         }
-        if (user.provider || !user || user.status === UserStatus.UNVERIFIED) {
+
+        if (!user) {
+            return;
+        }
+
+        if (user.provider || user.status === UserStatus.UNVERIFIED) {
             // Catch not found users, users from seperate providers and users without an email adress that has been verified => security stuff
             return;
         }
@@ -276,7 +281,7 @@ export class UserService {
             process.env.RESET_JWT_EXPIRESIN
         );
 
-        this.mailService.sendMail<MailPwResetDto>(
+        await this.mailService.sendMail<MailPwResetDto>(
             user.email,
             'PasswordReset',
             {
@@ -287,7 +292,8 @@ export class UserService {
             },
             'Reset your Password'
         );
-        console.log('send');
+
+        return;
     }
 
     validateResetToken(token: string) {

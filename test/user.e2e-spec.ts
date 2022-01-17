@@ -254,13 +254,14 @@ describe('UserModule (e2e)', () => {
             });
         });
 
-        describe('/users/request-password-reset (GET)', () => {
-            it('/users/request-password-reset (POST) ', async () => {
-                await userModel.create(await getTestUser());
+        describe('/users/request-password-reset (POST)', () => {
+            it('/users/request-password-reset (POST) should work', async () => {
+                let user = await getTestUser();
+                await userModel.create(user);
                 request(app.getHttpServer())
                     .post('/users/request-password-reset')
                     .send({
-                        mail: (await getTestUser()).email
+                        mail: user.email
                     })
                     .expect(HttpStatus.OK);
             });
