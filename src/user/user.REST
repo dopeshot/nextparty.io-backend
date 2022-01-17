@@ -34,3 +34,20 @@ GET {{adress}}/verify-account?code={{verifyCode}}
 GET {{adress}}/resend-account-verification
 Authorization: Bearer {{token}}
 
+###
+
+POST {{adress}}/request-password-reset
+Content-Type: application/json
+
+{
+   "mail": "test@gmail.de"
+}
+
+###
+POST {{adress}}/reset-password
+Content-Type: application/json
+
+{
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJtYWlsIjoidGVzdEBnbWFpbC5kZSIsIm5hbWUiOiJIZWxsbyIsImlkIjoiNjFkZDdiNWYwNmMyNzcyODU5NjE5YjZkIiwiaWF0IjoxNjQyNDU0OTk5LCJleHAiOjE2NDI0OTA5OTl9.-yOuIFPkfzkjoxPHuRRGN3pqpMoi_Ocn9Au33d8le54",
+    "password": "test213123123"
+}

@@ -2,8 +2,8 @@ import { Inject, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { ObjectId } from 'mongoose';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { MailVerifyJWTDto } from '../interfaces/verify-jwt.interface';
-import { UserService } from '../user.service';
+import { MailVerifyJWTDto } from '../../interfaces/verify-jwt.interface';
+import { UserService } from '../../user.service';
 
 // Set verify-jwt as strategy name
 export class JWTVerifyStrategy extends PassportStrategy(

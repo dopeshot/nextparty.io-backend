@@ -21,6 +21,7 @@ import {
     getJWT,
     getTestAdmin,
     getTestUser,
+    getUserReset,
     getUserVerify
 } from './__mocks__/user-mock-data';
 const { mock } = require('nodemailer');
@@ -250,6 +251,79 @@ describe('UserModule (e2e)', () => {
                         )}`
                     )
                     .expect(HttpStatus.UNAUTHORIZED);
+            });
+        });
+
+        describe('/users/request-password-reset (GET)', () => {
+            it('/users/request-password-reset (POST) ', async () => {
+                await userModel.create(await getTestUser());
+                request(app.getHttpServer())
+                    .post('/users/request-password-reset')
+                    .send({
+                        mail: (await getTestUser()).email
+                    })
+                    .expect(HttpStatus.OK);
+            });
+
+            // No negative tests as no information should go out to any clients
+        });
+
+        describe('/users/reset-password (POST)', () => {
+            it('/users/reset-password (POST) should set password', async () => {
+                let user = await getTestUser();
+                await userModel.create(user);
+                const oldPassword = await (await userModel.findOne()).password;
+                const res = await request(app.getHttpServer())
+                    .post('/users/reset-password')
+                    .send({
+                        token: await getUserReset(user),
+                        password: 'new password'
+                    })
+                    .expect(HttpStatus.CREATED);
+
+                expect((await userModel.findOne()).password).not.toBe(
+                    oldPassword
+                );
+
+                // Test return type
+                const usr = new UserResponse(res.body);
+                expect(res.body).toMatchObject(usr);
+            });
+
+            it('/users/reset-password (POST) should fail with invalid user', async () => {
+                await request(app.getHttpServer())
+                    .post('/users/reset-password')
+                    .send({
+                        token: await getUserReset(getTestUser),
+                        password: 'new password'
+                    })
+                    .expect(HttpStatus.NOT_FOUND);
+            });
+
+            it('/users/reset-password (POST) should fail for user with provider', async () => {
+                let user = await getTestUser();
+                user = { ...user, provider: 'google' };
+                await userModel.create(user);
+                await request(app.getHttpServer())
+                    .post('/users/reset-password')
+                    .send({
+                        token: await getUserReset(user),
+                        password: 'new password'
+                    })
+                    .expect(HttpStatus.BAD_REQUEST);
+            });
+
+            it('/users/reset-password (POST) should fail with user that is not unverified', async () => {
+                let user = await getTestUser();
+                user = { ...user, status: UserStatus.UNVERIFIED };
+                await userModel.create(user);
+                await request(app.getHttpServer())
+                    .post('/users/reset-password')
+                    .send({
+                        token: await getUserReset(user),
+                        password: 'new password'
+                    })
+                    .expect(HttpStatus.BAD_REQUEST);
             });
         });
     });
