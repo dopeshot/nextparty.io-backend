@@ -7,7 +7,6 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { OAuth2Client } from 'google-auth-library';
 import { google, oauth2_v2 } from 'googleapis';
 import { ObjectId } from 'mongoose';
 import { User } from '../user/entities/user.entity';
@@ -20,42 +19,15 @@ import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
-    oauthClient: OAuth2Client;
+    private CLIENT_ID: string;
+    private CLIENT_SECRET: string;
+
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService
     ) {
-        const clientID = process.env.GOOGLE_AUTH_CLIENT_ID;
-        const clientSecret = process.env.GOOGLE_AUTH_CLIENT_SECRET;
-
-        this.oauthClient = new google.auth.OAuth2(clientID, clientSecret);
-    }
-
-    // Testing oauth seems a bit much...and anyway if oauth over google servers fails we are fucked anyways..
-    /* istanbul ignore next */
-    async getGoogleUserdata(token: GoogleToken): Promise<userDataFromProvider> {
-        const infoClient = google.oauth2('v2').userinfo;
-        let userData: oauth2_v2.Schema$Userinfo;
-
-        try {
-            this.oauthClient.setCredentials({
-                access_token: token.token
-            });
-
-            const userInfoResponse = await infoClient.get({
-                auth: this.oauthClient
-            });
-
-            userData = userInfoResponse.data;
-        } catch (e) {
-            throw new UnauthorizedException('Google auth failed');
-        }
-
-        return {
-            username: userData.given_name,
-            email: userData.email,
-            provider: 'google'
-        };
+        this.CLIENT_ID = process.env.GOOGLE_AUTH_CLIENT_ID;
+        this.CLIENT_SECRET = process.env.GOOGLE_AUTH_CLIENT_SECRET;
     }
 
     /**
@@ -177,6 +149,47 @@ export class AuthService {
 
         return {
             access_token: this.jwtService.sign(payload)
+        };
+    }
+
+    // Testing oauth seems a bit much...and anyway if oauth over google servers fails we are fucked either way..
+    /* istanbul ignore next */
+    async getGoogleUserdata(token: GoogleToken): Promise<userDataFromProvider> {
+        // Create instance of oauth client for every call to avoid the setCredentials function
+        // of multiple parallel calls to cause unwanted behavior
+        let userData: oauth2_v2.Schema$Userinfo;
+
+        try {
+            const infoClient = google.oauth2('v2').userinfo;
+
+            const oauthClient = new google.auth.OAuth2(
+                this.CLIENT_ID,
+                this.CLIENT_SECRET
+            );
+
+            oauthClient.setCredentials({
+                access_token: token.token
+            });
+
+            const userInfoResponse = await infoClient.get({
+                auth: oauthClient
+            });
+
+            userData = userInfoResponse.data;
+        } catch (e) {
+            // Check for error that might be caused by misconfiguration of google requests
+            throw new UnauthorizedException('Google auth failed.');
+        }
+
+        // If no userdata
+        if (!userData) {
+            throw new UnauthorizedException('Google auth failed');
+        }
+
+        return {
+            username: userData.given_name,
+            email: userData.email,
+            provider: 'google'
         };
     }
 
