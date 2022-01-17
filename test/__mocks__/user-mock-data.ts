@@ -53,6 +53,19 @@ export const getJWT = async (x: any) => {
 };
 
 export const getUserVerify = async (user: any) => {
-    let token = await userService.generateVerifyCode(user as any);
+    let token = await userService.generateToken(
+        user as any,
+        process.env.VERIFY_JWT_SECRET,
+        process.env.VERIFY_JWT_EXPIRESIN
+    );
+    return token;
+};
+
+export const getUserReset = async (user: any) => {
+    let token = await userService.generateToken(
+        user as any,
+        process.env.RESET_JWT_SECRET,
+        process.env.RESET_JWT_EXPIRESIN
+    );
     return token;
 };

@@ -7,7 +7,7 @@ import { AuthService } from '../auth/auth.service';
 import { JwtStrategy } from '../auth/strategies/jwt/jwt.strategy';
 import { MailService } from '../mail/mail.service';
 import { User, UserSchema } from './entities/user.entity';
-import { JWTVerifyStrategy } from './guards/mail-verify-jwt.strategy';
+import { JWTVerifyStrategy } from './guards/verify/mail-verify-jwt.strategy';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
 

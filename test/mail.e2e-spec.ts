@@ -131,26 +131,38 @@ describe('MailModule', () => {
                     .set(
                         'Authorization',
                         `Bearer ${await getJWT(await getTestUser())}`
-                    )
-                    .expect(HttpStatus.OK);
+                    );
 
                 //checking send mail (content is ignored as this would make changing templates annoying)
                 const sendMails = mock.getSentMail();
                 expect(sendMails.length).toBe(1);
                 expect(sendMails[0].to).toBe('mock@mock.mock');
             });
+        });
 
-            it('/auth/register (POST) should fail on mailserver fail', async () => {
-                mock.setShouldFail(true);
-                await request(app.getHttpServer())
-                    .post('/auth/register')
-                    .send({
-                        username: 'unit test',
-                        email: 'dummy@unit.test',
-                        password: 'verysecurepassword'
-                    })
-                    .expect(HttpStatus.SERVICE_UNAVAILABLE);
-            });
+        it('/auth/register (POST) should fail on mailserver fail', async () => {
+            mock.setShouldFail(true);
+            await request(app.getHttpServer())
+                .post('/auth/register')
+                .send({
+                    username: 'unit test',
+                    email: 'dummy@unit.test',
+                    password: 'verysecurepassword'
+                })
+                .expect(HttpStatus.SERVICE_UNAVAILABLE);
+        });
+        it('/users/request-password-reset (POST) should send mail for pw reset', async () => {
+            await userModel.create(await getTestUser());
+            await request(app.getHttpServer())
+                .post('/users/request-password-reset')
+                .send({
+                    mail: (await getTestUser()).email
+                });
+
+            //checking send mail (content is ignored as this would make changing templates annoying)
+            const sendMails = mock.getSentMail();
+            expect(sendMails.length).toBe(1);
+            expect(sendMails[0].to).toBe('mock@mock.mock');
         });
     });
 });

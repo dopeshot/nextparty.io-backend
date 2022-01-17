@@ -1,10 +1,12 @@
 import {
+    BadRequestException,
     ConflictException,
     ForbiddenException,
     Injectable,
     InternalServerErrorException,
     NotFoundException,
-    ServiceUnavailableException
+    ServiceUnavailableException,
+    UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
@@ -12,6 +14,7 @@ import * as bcyrpt from 'bcrypt';
 import { Model, ObjectId } from 'mongoose';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { MailService } from '../mail/mail.service';
+import { MailPwResetDto } from '../mail/types/mail-pw-reset.type';
 import { MailVerifyDto } from '../mail/types/mail-verify.type';
 import { createSlug } from '../shared/global-functions/create-slug';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -19,6 +22,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './entities/user.entity';
 import { Role } from './enums/role.enum';
 import { UserStatus } from './enums/status.enum';
+import { PwResetJWTDto } from './interfaces/reset-jwt.interface';
 import { userDataFromProvider } from './interfaces/userDataFromProvider.interface';
 
 @Injectable()
@@ -69,22 +73,25 @@ export class UserService {
         }
     }
 
-    async generateVerifyCode(user: User): Promise<string> {
+    async generateToken(user: User, secret, expiration): Promise<string> {
         const payload = {
             mail: user.email,
             name: user.username,
-            id: user._id,
-            create_time: Date.now()
+            id: user._id
         };
 
         return this.jwtService.sign(payload, {
-            secret: process.env.VERIFY_JWT_SECRET,
-            expiresIn: process.env.VERIFY_JWT_EXPIRESIN
+            secret: secret,
+            expiresIn: expiration
         });
     }
 
     async createVerification(user: User): Promise<string> {
-        const verifyCode = await this.generateVerifyCode(user);
+        const verifyCode = await this.generateToken(
+            user,
+            process.env.VERIFY_JWT_SECRET,
+            process.env.VERIFY_JWT_EXPIRESIN
+        );
 
         await this.mailService.sendMail<MailVerifyDto>(
             user.email,
@@ -244,6 +251,93 @@ export class UserService {
         /* istanbul ignore next */
         if (!user) {
             throw new NotFoundException();
+        }
+
+        return user;
+    }
+
+    async requestReset(mail: string): Promise<void> {
+        let user: User;
+        try {
+            user = await this.findOneByEmail(mail);
+        } catch (e) {
+            // This prevents not found exceptions. Therefore it is not possible to use this endpoint to see if a mail address
+            // has an account attached to it#
+            return;
+        }
+
+        if (!user) {
+            return;
+        }
+
+        if (user.provider || user.status === UserStatus.UNVERIFIED) {
+            // Catch not found users, users from seperate providers and users without an email adress that has been verified => security stuff
+            return;
+        }
+
+        const token = await this.generateToken(
+            user,
+            process.env.RESET_JWT_SECRET,
+            process.env.RESET_JWT_EXPIRESIN
+        );
+
+        await this.mailService.sendMail<MailPwResetDto>(
+            user.email,
+            'PasswordReset',
+            {
+                name: user.username,
+                link: `${
+                    process.env.FRONTEND_DOMAIN || 'https://app.nextparty.io'
+                }/account/reset-password/${token}`
+            },
+            'Reset your Password'
+        );
+
+        return;
+    }
+
+    validateResetToken(token: string) {
+        let sendUserData: PwResetJWTDto;
+        try {
+            sendUserData = this.jwtService.verify(token, {
+                secret: process.env.RESET_JWT_SECRET,
+                ignoreExpiration: false
+            });
+        } catch (e) {
+            throw new UnauthorizedException();
+        }
+
+        if (!sendUserData) {
+            throw new UnauthorizedException();
+        }
+
+        const user = this.findOneById(sendUserData.id);
+
+        if (!user) {
+            throw new UnauthorizedException();
+        }
+
+        return user;
+    }
+
+    async setPassword(userId: ObjectId, password: string) {
+        const hash = await this.hashPassword(password);
+
+        const user = await this.userModel
+            .findByIdAndUpdate(userId, {
+                password: hash
+            })
+            .lean();
+
+        if (!user) {
+            throw new NotFoundException();
+        }
+
+        // This should never occur
+        if (user.provider || user.status === UserStatus.UNVERIFIED) {
+            throw new BadRequestException(
+                'This account cannot reset their password.'
+            );
         }
 
         return user;
