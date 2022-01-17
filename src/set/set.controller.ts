@@ -19,6 +19,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtUserDto } from 'src/auth/dto/jwt.dto';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { OptionalJWTGuard } from '../auth/strategies/optionalJWT/optionalJWT.guard';
+import { LanguageDto } from '../shared/dto/lanugage.dto';
 import { MongoIdDto } from '../shared/dto/mongoId.dto';
 import { CreateFullSetDto } from './dto/create-full-set.dto';
 import { CreateSetDto } from './dto/create-set.dto';
@@ -58,8 +59,8 @@ export class SetController {
 
     @Get()
     @ApiOperation({ summary: 'Get all Sets' })
-    async getAllSets(): Promise<SetResponse[]> {
-        return (await this.setService.getAllSets()).map(
+    async getAllSets(@Query() { lang }: LanguageDto): Promise<SetResponse[]> {
+        return (await this.setService.getAllSets(lang)).map(
             (set) => new SetResponse(set)
         );
     }
