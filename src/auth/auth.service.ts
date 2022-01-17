@@ -7,20 +7,28 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { google, oauth2_v2 } from 'googleapis';
 import { ObjectId } from 'mongoose';
 import { User } from '../user/entities/user.entity';
 import { UserStatus } from '../user/enums/status.enum';
 import { userDataFromProvider } from '../user/interfaces/userDataFromProvider.interface';
 import { UserService } from '../user/user.service';
+import { GoogleToken } from './dto/google-token.dto';
 import { AccessTokenDto } from './dto/jwt.dto';
 import { RegisterDto } from './dto/register.dto';
 
 @Injectable()
 export class AuthService {
+    private CLIENT_ID: string;
+    private CLIENT_SECRET: string;
+
     constructor(
         private readonly userService: UserService,
         private readonly jwtService: JwtService
-    ) {}
+    ) {
+        this.CLIENT_ID = process.env.GOOGLE_AUTH_CLIENT_ID;
+        this.CLIENT_SECRET = process.env.GOOGLE_AUTH_CLIENT_SECRET;
+    }
 
     /**
      * Register User (Creates a new one)
@@ -57,11 +65,11 @@ export class AuthService {
         }
 
         // Check if user exists and does not use third party auth
-        if (!user || user.provider)
+        if (!user || user.provider) {
             throw new UnauthorizedException(
                 `Login Failed due to invalid credentials`
             );
-
+        }
         // Check if password is correct
         if (!(await bcrypt.compare(password, user.password))) {
             throw new UnauthorizedException(
@@ -141,6 +149,47 @@ export class AuthService {
 
         return {
             access_token: this.jwtService.sign(payload)
+        };
+    }
+
+    // Testing oauth seems a bit much...and anyway if oauth over google servers fails we are fucked either way..
+    /* istanbul ignore next */
+    async getGoogleUserdata(token: GoogleToken): Promise<userDataFromProvider> {
+        // Create instance of oauth client for every call to avoid the setCredentials function
+        // of multiple parallel calls to cause unwanted behavior
+        let userData: oauth2_v2.Schema$Userinfo;
+
+        try {
+            const infoClient = google.oauth2('v2').userinfo;
+
+            const oauthClient = new google.auth.OAuth2(
+                this.CLIENT_ID,
+                this.CLIENT_SECRET
+            );
+
+            oauthClient.setCredentials({
+                access_token: token.token
+            });
+
+            const userInfoResponse = await infoClient.get({
+                auth: oauthClient
+            });
+
+            userData = userInfoResponse.data;
+        } catch (e) {
+            // Check for error that might be caused by misconfiguration of google requests
+            throw new UnauthorizedException('Google auth failed.');
+        }
+
+        // If no userdata
+        if (!userData) {
+            throw new UnauthorizedException('Google auth failed');
+        }
+
+        return {
+            username: userData.given_name,
+            email: userData.email,
+            provider: 'google'
         };
     }
 

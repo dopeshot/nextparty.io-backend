@@ -3,6 +3,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
+import { AuthService } from '../auth/auth.service';
+import { JwtStrategy } from '../auth/strategies/jwt/jwt.strategy';
 import { MailService } from '../mail/mail.service';
 import { User, UserSchema } from './entities/user.entity';
 import { JWTVerifyStrategy } from './guards/mail-verify-jwt.strategy';
@@ -26,7 +28,13 @@ import { UserService } from './user.service';
         })
     ],
     controllers: [UserController],
-    providers: [UserService, MailService, JWTVerifyStrategy],
+    providers: [
+        UserService,
+        MailService,
+        JWTVerifyStrategy,
+        JwtStrategy,
+        AuthService
+    ],
     exports: [UserService]
 })
 export class UserModule {}
