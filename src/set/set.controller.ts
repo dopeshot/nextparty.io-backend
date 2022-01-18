@@ -78,10 +78,14 @@ export class SetController {
 
     @Get(':id')
     @ApiOperation({ summary: 'Get one Set by id' })
+    @UseGuards(OptionalJWTGuard)
     async getOneSet(
-        @Param() { id }: MongoIdDto
+        @Param() { id }: MongoIdDto,
+        @Request() { user }: ParameterDecorator & { user: JwtUserDto }
     ): Promise<SetWithTasksResponse> {
-        return new SetWithTasksResponse(await this.setService.getOneSet(id));
+        return new SetWithTasksResponse(
+            await this.setService.getOneSet(id, user)
+        );
     }
 
     @Patch(':id')
