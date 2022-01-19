@@ -1,0 +1,2132 @@
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Im5leHRwYXJ0eSIsInN1YiI6IjYxZTg4MjE5M2M5ZTFjOGJjM2E3ZDk1YSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNjQyNjI3NjUxLCJleHAiOjE2NDI2NjM2NTF9.Q0ouw-rFq9aYQMoR-UU0f1zz37lg-NTeawpFrPlu7a0
+@adress = http://localhost:3001/api/sets
+
+### 1
+POST {{adress}}/createfullset
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Wahre Liebe",
+    "language": "de",
+    "category": "couples",
+    "visibility": "public",
+    "tasks": [
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Streichle seine Wange, dann seine Hand, dann seinen Nacken"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Mach bis zur nächsten Runde mit @a rum"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Verpasse @a einen Knutschfleck"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Mache @a einen Fake-Antrag"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Küsse den unteren Bauch von @a"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Tausche alle Klamotten (einschließlich Unterwäsche) mit @a"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Stöhne sinnlich und turne damit @a an"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Klapse @a auf den Po"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Ziehe 2 Kleidungsstücke aus"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Twerke vor @a"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Küsse den Hals von @a"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Schläfst du lieber im Schlafanzug oder nackt?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Worin wärst du am liebsten besser?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Hast du noch Gefühle für deine/n Ex?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Was war der beste Tag deines Lebens?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Bist du im Bett eher dominanter oder unterwürfiger?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Was ist deine größte Angst in deiner Beziehung?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Was war dein lustigstes Date mit @a?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cf",
+            "message": "Lieber Tanga, Slip oder Oma-Unterhose?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Welchen Superhelden magst du am meisten?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Was sollte @a unbedingt haben?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Wann hast du das letzte Mal ins Bett gepinkelt?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "In wen bist du vor @a verknallt?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Würdest du Sex für Geld haben?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Wer war dein erster Schwarm?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Warst du jemals high?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "Wie lange kommst du maximal ohne Handy aus?"
+        }
+    ]
+}
+
+### 2
+POST {{adress}}/createfullset
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Vorspeise: für jeden, was dabei",
+    "language": "de",
+    "category": "kids",
+    "visibility": "public",
+    "tasks": [
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "von welchem Traum hast Du noch niemandem erzählt?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du schon einmal gelogen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wen liebst du mehr: deine Mutter oder deinen Vater?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wenn du reich wärst, was würdest Du mit deinen ersten Millionen anstellen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wie sieht für Dich das perfekte Essensmenü aus?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du selbst schon einmal Regeln gebrochen, um etwas zu bekommen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du deine Eltern schon einmal nackt gesehen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du Dich schon einmal angekotzt?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wie möchtest Du nie werden? Nenne eine Charaktereigenschaft oder eine Person."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was war das Krasseste, was Du dich bis jetzt in deinem Leben getraut hat?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was war das Teuerste, das Du jemals selbst gekauft hast?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wer ist die wichtigste Person in deinem Leben?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du schon einmal heimlich geweint?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du schon einmal schlafgewandelt?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hat dich dein Zahnarzt schon einmal angemerkt, weil deine Zähne nicht sauber seien?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du schon einmal so getan, als ob Du krank wärst?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was ist deine größte Angst?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was war das Peinlichste, was dir jemals passiert ist?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "würdest du gerne eine Superpower haben? Wenn ja, wenn welche?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was möchtest Du anders machen als Deine Eltern?"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "ziehe so lange lustige Grimassen bis jemand anderes lacht."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "verschließ deine Augen. @a sagt etwas und du musst raten, wer es war."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "renne einmal um alle Mitspielende und rufe: „Ich bin der schnellste und beste.“ "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "lache einmal laut. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "alle anderen Mitspieler verschließen die Augen. Tippe nun auf die Person, die dieses Spiel am wenigsten mag. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "alle anderen Mitspieler verschließen die Augen. Tippe nun auf die Person, die am besten kochen kann."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "alle anderen Mitspieler verschließen die Augen. Tippe nun auf die Person, die als erstes einen Preis gewinnen wird. Erzähl danach allen, welchen Preis, diese Person gewinnen wird."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "alle anderen Mitspieler verschließen die Augen. Tippe nun auf die Person, die beim Karneval als Maus kommen würde."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "alle anderen Mitspieler verschließen die Augen. Tippe nun auf die Personen, die in diesem Spiel die Fragen immer ehrlich beantworten."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "alle anderen Mitspieler verschließen die Augen. Tippe nun auf die Person, die am ehesten älter als 100 Jahre sein wird. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "alle anderen Mitspieler verschließen die Augen. Tippe nun auf die Person, der Du besonders viel Glück für die nächsten Tage wünschst. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeige auf das Körperteil, das Dir am meisten an dir selbst gefällt. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "trinke ein Glas Wasser so schnell wie möglich. Die anderen Mitspieler müssen dich anfeuern."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "stehe auf und mach fünf Squats (Kniebeugen)."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeige dein Gesichtsausdruck, wenn Du wütend bist."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "begrüße jeden in der Runde mit einem Handschlag."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "umarme @a herzlich."
+        }
+    ]
+}
+
+### 3
+POST {{adress}}/createfullset
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Gay Pride (DE)",
+    "language": "de",
+    "category": "party",
+    "visibility": "public",
+    "tasks": [
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was hältst Du von Troye Sivan? Würdest Du mit ihm ins Bett gehen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cf",
+            "message": "kannst Du dir vorstellen, mit einem Mädchen im Bett zu landen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "was ist das Attraktivste bei einem Mann? Bitte beschreib es so detailgetreu wie möglich."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "hast du es jemals bereut, schwul zu sein?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "was ist ein Vorteil, schwul zu sein?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "was ist das Attraktivste an @m?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "reinigst Du dich immer vor dem Sex? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "was ist wichtiger: Penis oder Arsch? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "würdest Du mit einem 50-Jährigen für 200 Euro schlafen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "hast du schon einmal ein Grindr-Date gehabt?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "was ist besser: Tinder oder Grindr?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde nur als Bottom unterwegs ist?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "wer bist Du lieber: bottom oder top?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "hat der Sex schon einmal so weh getan, dass Du ihn abbrechen musstest?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "magst du lieber einen Blowjob geben oder bekommen?"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "geh auf cockyboys und bewerte den ersten Porno, der Dir angezeigt wird. "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wann hattest Du dein erstes Mal?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cf",
+            "message": "hast Du schon einmal einen Schwulen-Porno angeschaut?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "hattest Du schon etwas mit jemanden aus der Runde? Wenn nein, mit wem könntest Du dir etwas vorstellen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "wie lang ist dein bestes Stück? Wenn du es nicht weißt, miss nach. "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "könntest Du dir vorstellen auch mit @f etwas zu starten?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wie viele Sexpartner hattest Du schon?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "darf er Dir in den Mund spritzen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "würdest du sagen, du bist besonders gut im Bett?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "würdest du sagen, dass Du nicht der Hässlichste in der Runde bist?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "gibt es jemanden in der Runde, mit dem Du schon einmal eine sexuelle Fantasie hattest?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "gibt es jemanden in der Runde, den du gerne mal nackt sehen würdest?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "gibt es jemanden in der Runde, der bestimmt einen Mikropenis hat?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wie oft in der Woche schaust du Porno an? Auf welcher Seite?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "nenn uns alle Pornostars, die dir einfallen."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "was ist wichtiger: guter Sex oder viel Geld?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "hattest Du schon einmal etwas auf einer Klubtoilette?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hattest Du schon einmal Sex im Zug?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "musstest Du schon einmal beim Sex an deinen Ex denken, damit du kommen konntest?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast du Nacktfotos von dir?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast du jemals im Bett etwas bereut?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "bist Du eifersüchtig auf jemanden in der Runde? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "bist Du mit deinem Körper zufrieden? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was gefällt dir an deinem Körper am wenigsten?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wenn Du eine Sache an deinem Körper ändern könntest, welche wäre es?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde langweilig im Bett ist?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde garkeinen Sex hat? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde mit Dir gerne Sex hätte?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde bei diesem Spiel lügt?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde dich nicht mag? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde heute schon Sex hatte? Wenn ja, wer? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du schon einmal Vergewaltigungserfahrungen gemacht?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du eine sexuelle Fantasie, die Du niemals aussprechen würdest?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "findest Du es geil, wenn jemand beim Sex leidet?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "kannst Du dir Sex mit einem 10-Jahre Jüngeren vorstellen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was ist dein Alterslimit bei SexpartnerInnen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "hattest Du schon einmal im Auto Sex?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "findest Du Handjobs langweilig?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "bist Du beschnitten oder nicht? "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "küsse @a auf die Wange (oder auf den Mund)"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "twerk like Miley: Twerk eine Runde und lass die anderen auf deinen Arsch klopfen."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "gib @a einen Kuss auf den Mund (gerne auch mit Zunge)"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cf",
+            "message": "fass @m in den Schritt!"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "stöhne laut "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "du hast Glück: such dir zwei Personen aus der Runde, die sich küssen müssen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig dein letztes Foto in deiner Handygalerie. Wenn das zu langweilig ist, zeig ein sexuelles Foto von dir. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "zeig deinen Penis. Wenn das zu hart ist, beschreib ihn detailgetreu."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cf",
+            "message": "zeig deine Vagina. Wenn das zu hart ist, beschreib sie detailgetreu."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "küsst euch in der Runde alle ab. Wenn jemand nicht einverstanden ist, dann werft euch einen Kuss zu."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig auf den Spieler mit dem meisten Sexpotential"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler an, der am attraktivsten ist. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler an, der am schlausten ist. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den größten Playboy in der Runde an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler mit dem besten Körper an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler mit den schönsten Augen an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler mit der schönsten Frisur an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler an, mit Du am ehesten ins Bett gehen würdest. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den ehrlichsten Spieler an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe sozial stabilsten Spieler an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den emotionalsten Spieler an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler an, dem du am meisten wünschen würdest, im Lotto zu gewinnen. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "stelle eine Sexposition mit @a nach. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "stelle deine Lieblingssexposition alleine nach."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "googele einen Star mit dem Du gerne ins Bett gehen würdest und zeig dein Ergebnis in der Runde."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "schrei einmal laut in die Runde: Ihr seid die geilsten!"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "steh auf und renne einmal um alle rum. Die anderen klatschen währenddessen. Wenn die Aufgabe scheiße ist, bleib sitzen und zeig uns deinen Sexblick."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "lecke den Finger von @m ab. Wenn ihr kein Bock darauf habt, klatscht eure Hände ab."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig uns deine Nippel"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig uns deinen Bauch"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig uns deine Unterhose"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig uns deine Achseln. Wenn das zu ekelhaft ist, zeig uns deine angespannten Oberarme"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "berühre die Zähne eines anderen Spielers mit deinen Zähnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig auf die Person mit dem schönsten Namen deiner Meinung nach."
+        }
+    ]
+}
+
+### 4
+POST {{adress}}/createfullset
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Gay Pride (EN)",
+    "language": "de",
+    "category": "classic",
+    "visibility": "public",
+    "tasks": [
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "do you prefer to give or receive a blowjob?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "who would you prefer to be: bottom or top?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "has sex ever hurt you so much that you had to stop it?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "what do you think of Troye Sivan? Would you go to bed with him?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cf",
+            "message": "can you imagine ending up in bed with a girl?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "what's an advantage of being gay?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "have you ever regretted being gay?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "do you always clean yourself before sex?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "what is more important: penis or ass?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "would you sleep with a 50-year-old for 200 euros?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "have you ever had a Grindr date?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "what is better: Tinder or Grindr?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think that someone in the group is only a bottom?"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "go to cockyboys and rate the first porn that is shown to you."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "when did you have your first time sex?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cf",
+            "message": "have you ever watched gay porn?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "have you had anything with someone from the group? If not, who could you imagine?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "what is the most attractive thing about a man? Please describe it as detailed as possible."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "how long is your best piece? If you don't know, measure it."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "what is the most attractive thing about @m?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "could you imagine starting something with @f?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "how many sex partners have you had?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "is he allowed to shoot his sperm in your mouth?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "would you say you are particularly good in bed?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "would you say that you are not the ugliest in the group?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "is there anyone around with whom you have had a sexual fantasy before?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "is there anyone around that you would like to see naked?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "is there anyone in the group who definitely has a micropenis?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "how many times a week do you watch porn? On which side?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "name all the pornstars you can think of."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "what is more important: good sex or a lot of money?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "have you ever had something on a club toilet?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "have you ever had sex on the train?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "did you ever have to think about your ex during sex to be able to cum?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you have nudes of yourself?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "have you ever regretted something in bed?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "are you jealous of someone around?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "are you satisfied with your body?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "what do you like the least about your body?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "if you could change one thing about your body, what would it be?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think that someone around is boring in bed?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think that someone around doesn’t have sex at all?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think someone in the group is lying in this game?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think that someone in the group doesn't like you?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think someone in the group has had sex today? If so, who?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "have you ever had rape experiences?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you have a sexual fantasy that you would never express?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think it's cool when someone suffers during sex?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "can you imagine having sex with someone 10 years younger?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "what is your age limit for sex partners?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "have you ever had sex in the car?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "do you find hand jobs boring?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "are you circumcised or not?"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "kiss your player on the left side on the cheek (or on the mouth)"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "twerk like Miley: Twerk around and let the others pat your ass."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "give the player a kiss on the mouth (with tongue, if you like)"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "grab @m in his crotch!"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "moan loudly"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "you're lucky: find two people in the group who have to kiss."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "show your last photo in your cell phone gallery. If that's too boring, show a sexual photo of yourself."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "show your penis. If that's too harsh, describe it in great detail."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cf",
+            "message": "show your vagina. If that's too harsh, describe it in great detail."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "kiss everyone in the round. If someone disagrees, give each other a kiss in the hand."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "point to the player with the most sex potential"
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m Tap the player who is the most attractive. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m Tap the player who is the smartest. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the biggest playboy in the group. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the player with the best body. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the player with the most beautiful eyes. Everyone can open their eyes again. "
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the player with the most beautiful hairstyle. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the player you would most likely go to bed with. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the most honest player. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the most socially stable player. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the most emotional player. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m - Tap the player you would most wish to win the lottery. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "recreate a sex position with @a."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "recreate your favorite sex position on your own."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "google a star with whom you would like to go to bed and show your result to the group."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "hout out loud once: You are the hottest!"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "et up and run around everyone. The others clap meanwhile. If this task sucks, sit back and show us your sex gaze."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "lick @m's finger. If you don't feel like it, clap your hands."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "show us your nipples"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "show us your stomach"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "show us your underwear"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "show us your armpits. If that's too gross, show us your tense upper arms"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "touch another player's teeth with your teeth."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "point to the person with the most beautiful name in your opinion. "
+        }
+    ]
+}
+
+### 5
+POST {{adress}}/createfullset
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Wir sind keine Freunde mehr",
+    "language": "de",
+    "category": "crazy",
+    "visibility": "public",
+    "tasks": [
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "magst du lieber Oralsex geben oder bekommen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "würdest Du mit einem 50-Jährigen für 200 Euro schlafen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "was ist das Attraktivste an @f? Bitte beschreib es so detailgetreu wie möglich."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "kannst Du dir vorstellen, mit @a im Bett zu landen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wann hattest Du dein erstes Mal?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cf",
+            "message": "hast Du schon einmal einen Schwulen-Porno angeschaut?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "hattest Du schon etwas mit jemanden aus der Runde? Wenn nein, mit wem könntest Du dir etwas vorstellen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "wie lang ist dein bestes Stück? Wenn du es nicht weißt, miss nach. "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "könntest Du dir vorstellen auch mit @f etwas zu starten?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wie viele Sexpartner hattest Du schon?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "darf er Dir in den Mund spritzen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "würdest du sagen, du bist besonders gut im Bett?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "würdest du sagen, dass Du nicht der Hässlichste in der Runde bist?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "gibt es jemanden in der Runde, mit dem Du schon einmal eine sexuelle Fantasie hattest?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "gibt es jemanden in der Runde, den du gerne mal nackt sehen würdest?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "gibt es jemanden in der Runde, der bestimmt einen Mikropenis hat?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wie oft in der Woche schaust du Porno an? Auf welcher Seite?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "nenn uns alle Pornostars, die dir einfallen."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "was ist wichtiger: guter Sex oder viel Geld?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "hattest Du schon einmal etwas auf einer Klubtoilette?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hattest Du schon einmal Sex im Zug?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "musstest Du schon einmal beim Sex an deinen Ex denken, damit du kommen konntest?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast du Nacktfotos von dir?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast du jemals im Bett etwas bereut?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "bist Du eifersüchtig auf jemanden in der Runde? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "bist Du mit deinem Körper zufrieden? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was gefällt dir an deinem Körper am wenigsten?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "wenn Du eine Sache an deinem Körper ändern könntest, welche wäre es?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde langweilig im Bett ist?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde garkeinen Sex hat? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde mit Dir gerne Sex hätte?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde bei diesem Spiel lügt?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde dich nicht mag? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "glaubst Du, dass jemand in der Runde heute schon Sex hatte? Wenn ja, wer? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du schon einmal Vergewaltigungserfahrungen gemacht?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du eine sexuelle Fantasie, die Du niemals aussprechen würdest?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "findest Du es geil, wenn jemand beim Sex leidet?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "kannst Du dir Sex mit einem 10-Jahre Jüngeren vorstellen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was ist dein Alterslimit bei SexpartnerInnen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "hattest Du schon einmal im Auto Sex?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "findest Du Handjobs langweilig?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "bist Du beschnitten oder nicht? "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "küsse @a auf die Wange (oder auf den Mund)"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "twerk like Miley: Twerk eine Runde und lass die anderen auf deinen Arsch klopfen."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "gib @a einen Kuss auf den Mund (gerne auch mit Zunge)"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cf",
+            "message": "fass @m in den Schritt!"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "stöhne laut "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "du hast Glück: such dir zwei Personen aus der Runde, die sich küssen müssen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig dein letztes Foto in deiner Handygalerie. Wenn das zu langweilig ist, zeig ein sexuelles Foto von dir. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "zeig deinen Penis. Wenn das zu hart ist, beschreib ihn detailgetreu."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cf",
+            "message": "zeig deine Vagina. Wenn das zu hart ist, beschreib sie detailgetreu."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "küsst euch in der Runde alle ab. Wenn jemand nicht einverstanden ist, dann werft euch einen Kuss zu."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig auf den Spieler mit dem meisten Sexpotential"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler an, der am attraktivsten ist. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler an, der am schlausten ist. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den größten Playboy in der Runde an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler mit dem besten Körper an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler mit den schönsten Augen an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler mit der schönsten Frisur an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler an, mit Du am ehesten ins Bett gehen würdest. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den ehrlichsten Spieler an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe sozial stabilsten Spieler an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den emotionalsten Spieler an. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "Alle müssen die Augen schließen. Tippe den Spieler an, dem du am meisten wünschen würdest, im Lotto zu gewinnen. Auf dein Kommando dürfen alle die Augen wieder öffnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "stelle eine Sexposition mit @a nach. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "stelle deine Lieblingssexposition alleine nach."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "googele einen Star mit dem Du gerne ins Bett gehen würdest und zeig dein Ergebnis in der Runde."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "schrei einmal laut in die Runde: Ihr seid die geilsten!"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "steh auf und renne einmal um alle rum. Die anderen klatschen währenddessen. Wenn die Aufgabe scheiße ist, bleib sitzen und zeig uns deinen Sexblick."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "lecke den Finger von @m ab. Wenn ihr kein Bock darauf habt, klatscht eure Hände ab."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig uns deine Nippel"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig uns deinen Bauch"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig uns deine Unterhose"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig uns deine Achseln. Wenn das zu ekelhaft ist, zeig uns deine angespannten Oberarme"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "berühre die Zähne eines anderen Spielers mit deinen Zähnen. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig auf die Person mit dem schönsten Namen deiner Meinung nach."
+        }
+    ]
+}
+### 6
+POST {{adress}}/createfullset
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Secrects of Having Sex",
+    "language": "en",
+    "category": "sexy",
+    "visibility": "public",
+    "tasks": [
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "when did you have your first time sex?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cf",
+            "message": "have you ever watched gay porn?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "do you prefer to give or receive a blowjob?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "has sex ever hurt you so much that you had to stop it?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "can you imagine ending up in bed with @a?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "have you had anything with someone from the group? If not, who could you imagine?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "what is the most attractive thing about a man? Please describe it as detailed as possible."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "how long is your best piece? If you don't know, measure it."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "what is the most attractive thing about @m?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "could you imagine starting something with @f?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "how many sex partners have you had?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "is he allowed to shoot his sperm in your mouth?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "would you say you are particularly good in bed?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "would you say that you are not the ugliest in the group?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "is there anyone around with whom you have had a sexual fantasy before?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "is there anyone around that you would like to see naked?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "is there anyone in the group who definitely has a micropenis?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "how many times a week do you watch porn? On which side?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "name all the pornstars you can think of."
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "what is more important: good sex or a lot of money?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "have you ever had something on a club toilet?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "have you ever had sex on the train?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "did you ever have to think about your ex during sex to be able to cum?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you have nudes of yourself?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "have you ever regretted something in bed?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "are you jealous of someone around?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "are you satisfied with your body?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "what do you like the least about your body?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "if you could change one thing about your body, what would it be?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think that someone around is boring in bed?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think that someone around doesn’t have sex at all?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think someone in the group is lying in this game?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think that someone in the group doesn't like you?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think someone in the group has had sex today? If so, who?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "have you ever had rape experiences?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you have a sexual fantasy that you would never express?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "do you think it's cool when someone suffers during sex?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "can you imagine having sex with someone 10 years younger?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "what is your age limit for sex partners?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "have you ever had sex in the car?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "do you find hand jobs boring?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@cm",
+            "message": "are you circumcised or not?"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "kiss your player on the left side on the cheek (or on the mouth)"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "twerk like Miley: Twerk around and let the others pat your ass."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "give the player a kiss on the mouth (with tongue, if you like)"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "grab @m in his crotch!"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "moan loudly"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "you're lucky: find two people in the group who have to kiss."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "show your last photo in your cell phone gallery. If that's too boring, show a sexual photo of yourself."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "show your penis. If that's too harsh, describe it in great detail."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cf",
+            "message": "show your vagina. If that's too harsh, describe it in great detail."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "kiss everyone in the round. If someone disagrees, give each other a kiss in the hand."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "point to the player with the most sex potential"
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m Tap the player who is the most attractive. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m Tap the player who is the smartest. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the biggest playboy in the group. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the player with the best body. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the player with the most beautiful eyes. Everyone can open their eyes again. "
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the player with the most beautiful hairstyle. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the player you would most likely go to bed with. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the most honest player. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the most socially stable player. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m tap the most emotional player. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "message": "yone has to close their eyes. @m - Tap the player you would most wish to win the lottery. Everyone can open their eyes again."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "recreate a sex position with @a."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "recreate your favorite sex position on your own."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "google a star with whom you would like to go to bed and show your result to the group."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "hout out loud once: You are the hottest!"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "et up and run around everyone. The others clap meanwhile. If this task sucks, sit back and show us your sex gaze."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@cm",
+            "message": "lick @m's finger. If you don't feel like it, clap your hands."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "show us your nipples"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "show us your stomach"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "show us your underwear"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "show us your armpits. If that's too gross, show us your tense upper arms"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "touch another player's teeth with your teeth."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "point to the person with the most beautiful name in your opinion. "
+        }
+    ]
+}
+
+### 7
+POST {{adress}}/createfullset
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+    "name": "Unter Akademikern",
+    "language": "de",
+    "category": "party",
+    "visibility": "public",
+    "tasks": [
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du in der Uni schon einmal sexuelle Aktivitäten ausgelebt?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "findest Du einen Professor besonders attraktiv? Wenn ja, wen?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du schon einmal, daran gedacht zu exmatrikulieren? "
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "von eins bis zehn, wie sehr macht dir das Studium Spaß?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was nervt dich an deinen Mitkommilitonen am meisten?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "was ist typisch für dein Studiengang?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "gibt es jemanden, der schlechter im Studium ist als Du?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "hast Du schon einmal an der Universität geschummelt?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "mit wem aus dem Studium würdest Du in den Semesterferien auf eine einsame Insel fahren?"
+        },
+        {
+            "type": "truth",
+            "currentPlayerGender": "@ca",
+            "message": "welcher Kurs läuft für dich persönlich am schlechtesten?"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "mache einen Professor nach. Die anderen müssen raten, wen Du meinst."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "mache einen Mitkommilitone nach. Die anderen müssen raten, wen Du meinst."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "zeig dein Studium in einem Gesichtsausdruck. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "rufe deine Universität an und frage die Person, die den Hörer abnimmt, ob sie selbst studiert hat. Wenn das aktuell nicht geht, schreibe einer Vertrauensperson, dass Du dein Studium jetzt abbrechen wirst."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "poste auf einer Social-Media-Plattform, dass Du jemanden zum Lernen suchst."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "frag in die Uni-WhatsApp-Gruppe, wer auch kein Bock auf Studieren hat?"
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "alle anderen Mitspieler verschließen die Augen. Tippe nun auf die Person, die jeden Tag in der Mensa isst und das Essen dort liebt. "
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "alle anderen Mitspieler verschließen die Augen. Tippe nun auf die Person, die sich als erstes einen Professor klärt."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "alle anderen Mitspieler verschließen die Augen. Tippe nun auf die Person, die der größte Streber in der Runde ist."
+        },
+        {
+            "type": "dare",
+            "currentPlayerGender": "@ca",
+            "message": "alle anderen Mitspieler verschließen die Augen. Tippe nun auf die Person, die als letztes das Studium beendet."
+        }
+    ]
+}
