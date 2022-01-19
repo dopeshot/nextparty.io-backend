@@ -3,6 +3,8 @@ import { AuthGuard } from '@nestjs/passport';
 
 // Can´t use AuthGuard(jwt) as that interfers with other jwt guards...passport is global because reasons
 export class OptionalJWTGuard extends AuthGuard('jwt') {
+    // This just extends upon an already tested component
+    /* istanbul ignore next */
     handleRequest(err, user, info, context: ExecutionContext) {
         const req: any = context.switchToHttp().getRequest<Request>();
 
