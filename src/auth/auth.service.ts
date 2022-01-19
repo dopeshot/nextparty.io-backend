@@ -126,10 +126,31 @@ export class AuthService {
         if (alreadyCreatedUser)
             return this.createLoginPayload(alreadyCreatedUser);
 
-        // Create User
-        const newUser: User = await this.userService.createUserFromProvider(
+        // Create User with original name
+        let newUser: User = await this.userService.createUserFromProvider(
             userDataFromProvider
         );
+
+        let attempts = 0;
+
+        // In Case username is already taken
+        while (newUser === null) {
+            // Make sure that this cannot run forever
+            if (attempts === 5)
+                throw new InternalServerErrorException(
+                    'User could not be created'
+                );
+
+            // Try creating user with random suffix
+            newUser = await this.userService.createUserFromProvider({
+                ...userDataFromProvider,
+                username:
+                    userDataFromProvider.username +
+                    Math.random().toString(36).substring(2, 15)
+            });
+
+            attempts++;
+        }
 
         // Create Payload and JWT
         return this.createLoginPayload(newUser);

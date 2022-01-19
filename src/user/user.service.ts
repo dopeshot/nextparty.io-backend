@@ -108,7 +108,7 @@ export class UserService {
      */
     async createUserFromProvider(
         userDataFromProvider: userDataFromProvider
-    ): Promise<User> {
+    ): Promise<User | null> {
         try {
             const user: UserDocument = new this.userModel({
                 ...userDataFromProvider,
@@ -118,9 +118,8 @@ export class UserService {
 
             return result;
         } catch (error) {
-            throw new InternalServerErrorException(
-                'Error occured while saving user from provider.'
-            );
+            if (error.code === 11000 && error.keyPattern.username) return null;
+            throw new InternalServerErrorException('User could not be created');
         }
     }
 

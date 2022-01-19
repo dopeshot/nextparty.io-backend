@@ -20,7 +20,7 @@ import { SetModule } from '../src/set/set.module';
 import { Language } from '../src/shared/enums/language.enum';
 import { Status } from '../src/shared/enums/status.enum';
 import { getString } from '../src/shared/global-functions/get-string';
-import { UserSchema } from '../src/user/entities/user.entity';
+import { UserDocument, UserSchema } from '../src/user/entities/user.entity';
 import { FakeAuthGuardFactory } from './helpers/fake-auth-guard.factory';
 import {
     closeInMongodConnection,
@@ -34,12 +34,14 @@ import {
     getMockTask,
     getOtherMockAuthUser,
     getSetSetupData,
+    getUserSetupData,
     getWrongId
 } from './__mocks__/set-mock-data';
 
 describe('Sets (e2e)', () => {
     let app: INestApplication;
     let setModel: Model<SetDocument>;
+    let userModel: Model<UserDocument>;
     const fakeAuthGuard = new FakeAuthGuardFactory();
     let connection: Connection;
 
@@ -48,6 +50,7 @@ describe('Sets (e2e)', () => {
             imports: [
                 rootMongooseTestModule(),
                 SetModule,
+                // User collection only needed for populate functions, no actual code is tested in here
                 MongooseModule.forFeature([
                     { name: 'User', schema: UserSchema }
                 ])
@@ -61,6 +64,7 @@ describe('Sets (e2e)', () => {
 
         connection = await module.get(getConnectionToken());
         setModel = connection.model('Set');
+        userModel = connection.model('User');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();
@@ -68,12 +72,14 @@ describe('Sets (e2e)', () => {
 
     beforeEach(async () => {
         await setModel.insertMany(getSetSetupData());
+        await userModel.insertMany(getUserSetupData());
         fakeAuthGuard.setActive(true);
         fakeAuthGuard.setUser(getMockAuthUser());
     });
 
     afterEach(async () => {
         await setModel.deleteMany();
+        await userModel.deleteMany();
         fakeAuthGuard.setUser(null);
     });
 
@@ -245,7 +251,8 @@ describe('Sets (e2e)', () => {
             expect(res.body).toMatchObject(set);
         });
 
-        it('/sets/:id (GET) by id', async () => {
+        it('/sets/:id (GET) by id without auth', async () => {
+            fakeAuthGuard.setUser(null);
             const res = await request(app.getHttpServer())
                 .get(`/sets/${getSetSetupData()[0]._id}`)
                 .expect(HttpStatus.OK);
@@ -267,6 +274,22 @@ describe('Sets (e2e)', () => {
                 status: getSetSetupData()[0].status,
                 visibility: getSetSetupData()[0].visibility
             }).toEqual({ ...getSetSetupData()[0] });
+        });
+
+        it('/sets/:id (GET) private by id with auth owner', async () => {
+            const res = await request(app.getHttpServer())
+                .get(`/sets/${getSetSetupData()[1]._id}`)
+                .expect(HttpStatus.OK);
+            expect(res.body.visibility).toBe(Visibility.PRIVATE);
+            expect(res.body.createdBy._id).toBe(getMockAuthUser().userId);
+        });
+
+        it('/sets/:id (GET) private by id with auth admin', async () => {
+            fakeAuthGuard.setUser(getMockAuthAdmin());
+            const res = await request(app.getHttpServer())
+                .get(`/sets/${getSetSetupData()[1]._id}`)
+                .expect(HttpStatus.OK);
+            expect(res.body.visibility).toBe(Visibility.PRIVATE);
         });
 
         it('/sets/user/:id (GET) usersets without auth', async () => {
@@ -320,7 +343,8 @@ describe('Sets (e2e)', () => {
         });
 
         // Negative test
-        it('/sets/:id (GET) private set by id', async () => {
+        it('/sets/:id (GET) private by id with wrong user', async () => {
+            fakeAuthGuard.setUser(getOtherMockAuthUser());
             await request(app.getHttpServer())
                 .get(`/sets/${getSetSetupData()[1]._id}`)
                 .expect(HttpStatus.NOT_FOUND);

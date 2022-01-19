@@ -104,17 +104,36 @@ export class SetService {
         return sets;
     }
 
-    async getOneSet(id: ObjectId): Promise<SetDocumentWithUser> {
+    async getOneSet(
+        id: ObjectId,
+        user: JwtUserDto
+    ): Promise<SetDocumentWithUser> {
         const set: SetDocumentWithUser = await this.setModel
             .findOne({
                 _id: id,
-                status: Status.ACTIVE,
-                visibility: Visibility.PUBLIC
+                status: Status.ACTIVE
             })
+
             .populate<{ createdBy: User }>('createdBy')
             .lean();
 
-        if (!set) throw new NotFoundException();
+        // Only Admins and Owners can see the private sets
+        if (
+            // No Set at all
+            !set ||
+            // Set is private => check further
+            (set.visibility === Visibility.PRIVATE &&
+                // No Authentification
+                (!user ||
+                    // No Admin
+                    (user.role !== Role.ADMIN &&
+                        // No User in Database (deleted for example)
+                        (!set.createdBy ||
+                            // Not the correct user
+                            set.createdBy._id.toString() !==
+                                user.userId.toString()))))
+        )
+            throw new NotFoundException();
 
         // Remove tasks from array that are not active
         set.tasks = set.tasks.filter((task) => task.status === Status.ACTIVE);
@@ -402,6 +421,6 @@ export class SetService {
             await this.createTask(set._id, task, user);
         });
 
-        return await this.getOneSet(set._id);
+        return await this.getOneSet(set._id, user);
     }
 }
