@@ -104,11 +104,7 @@ export class SetService {
                 status: Status.ACTIVE
             })
 
-            .populate<{ createdBy: User }>({
-                path: 'createdBy',
-                select: '_id username',
-                model: 'User'
-            })
+            .populate<{ createdBy: User }>('createdBy')
             .lean();
 
         // Only Admins and Owners can see the private sets
