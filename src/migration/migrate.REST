@@ -1,0 +1,7 @@
+@adress = http://localhost:3001/api/migrations
+
+### Import sample data
+POST {{adress}}/import
+
+### Export data
+POST {{adress}}/import

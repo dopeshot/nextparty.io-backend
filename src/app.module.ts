@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
+import { MigrationModule } from './migration/migration.module';
 import { SetModule } from './set/set.module';
 import { UserModule } from './user/user.module';
 
@@ -24,7 +25,8 @@ import { UserModule } from './user/user.module';
         AuthModule,
         UserModule,
         SetModule,
-        MailModule
+        MailModule,
+        MigrationModule
     ],
     controllers: [],
     providers: []

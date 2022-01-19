@@ -5,6 +5,7 @@ import {
     Delete,
     Get,
     HttpCode,
+    HttpStatus,
     Param,
     Patch,
     Post,
@@ -110,7 +111,7 @@ export class SetController {
 
     @Delete(':id')
     @UseGuards(JwtAuthGuard)
-    @HttpCode(204)
+    @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Delete Set by id' })
     async deleteSet(
         @Param() { id }: MongoIdDto,
@@ -150,7 +151,7 @@ export class SetController {
 
     @Delete(':setId/task/:taskId')
     @UseGuards(JwtAuthGuard)
-    @HttpCode(204)
+    @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Remove one Task via id' })
     async removeTask(
         @Param() { setId, taskId }: SetTaskMongoIdDto,

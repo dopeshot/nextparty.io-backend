@@ -4,9 +4,9 @@ POST {{adress}}/register
 Content-Type: application/json
 
 {
-    "username": "Heawdassdllo",
-    "email": "teasdawdawst@gmail.de",
-    "password": "12345678"
+    "username": "Normal User",
+    "email": "normaluser@gmail.de",
+    "password": "adsdfhjngegra"
 }
 
 ### Login User
@@ -14,8 +14,8 @@ POST {{adress}}/login
 Content-Type: application/json
 
 {
-    "email": "test@gmail.de",
-    "password": "12345678"
+    "email": "normaluser@gmail.de",
+    "password": "adsdfhjngegra"
 }
 
 ### Facebook Auth
