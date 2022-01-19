@@ -231,6 +231,26 @@ describe('Sets (e2e)', () => {
             expect(res.body).toMatchObject(set);
         });
 
+        it('/sets?lang=en (GET) all sets in english ', async () => {
+            const res = await request(app.getHttpServer())
+                .get('/sets?lang=en')
+                .expect(HttpStatus.OK);
+            const sets = res.body;
+            expect(sets.length).toBe(0);
+        });
+
+        it('/sets?lang=de (GET) all sets in deutsch ', async () => {
+            const res = await request(app.getHttpServer())
+                .get('/sets?lang=de')
+                .expect(HttpStatus.OK);
+            const sets = res.body;
+            expect(sets.length === 1).toBeTruthy();
+            expect(sets[0].language).toBe(Language.DE);
+            // Testing class SetResponse
+            const set = new SetResponse(res.body);
+            expect(res.body).toMatchObject(set);
+        });
+
         it('/sets/:id (GET) by id without auth', async () => {
             fakeAuthGuard.setUser(null);
             const res = await request(app.getHttpServer())
@@ -313,6 +333,13 @@ describe('Sets (e2e)', () => {
             expect(sets.length).toBe(2);
 
             // Testing class SetResponse omitted due to above test
+        });
+
+        // Negative test
+        it('/sets?lang=ef (GET) all sets in wrong language ', async () => {
+            await request(app.getHttpServer())
+                .get('/sets/lang=ef')
+                .expect(HttpStatus.BAD_REQUEST);
         });
 
         // Negative test

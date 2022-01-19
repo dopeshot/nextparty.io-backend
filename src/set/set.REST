@@ -13,8 +13,8 @@ Authorization: Bearer {{token}}
     "category": "classic"
 }
 
-### Get all sets
-GET {{adress}}
+### Get all sets (query optional language enum)
+GET {{adress}}?lang=en
 
 ### Get all sets by user
 GET {{adress}}/user/{{user}}

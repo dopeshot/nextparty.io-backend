@@ -10,7 +10,7 @@ export const getSetSetupData = () => [
     {
         _id: 'aaaaaaaaaaaaaaaaaaaaaaaa',
         status: Status.ACTIVE,
-        language: Language.EN,
+        language: Language.DE,
         category: SetCategory.CLASSIC,
         visibility: Visibility.PUBLIC,
         played: 0,

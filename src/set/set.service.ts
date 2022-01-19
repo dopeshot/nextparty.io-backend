@@ -7,6 +7,7 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, ObjectId, Types } from 'mongoose';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
+import { Language } from '../shared/enums/language.enum';
 import { Status } from '../shared/enums/status.enum';
 import { createSlug } from '../shared/global-functions/create-slug';
 import { User } from '../user/entities/user.entity';
@@ -53,9 +54,18 @@ export class SetService {
         }
     }
 
-    async getAllSets(): Promise<SetDocumentWithUser[]> {
+    async getAllSets(language: Language): Promise<SetDocumentWithUser[]> {
+        const matchQuery: {
+            status: Status;
+            visibility: Visibility;
+            language?: Language;
+        } = {
+            status: Status.ACTIVE,
+            visibility: Visibility.PUBLIC
+        };
+        if (language) matchQuery.language = language;
         return await this.setModel
-            .find({ status: Status.ACTIVE, visibility: Visibility.PUBLIC })
+            .find(matchQuery)
             .populate<{ createdBy: User }>('createdBy')
             .lean();
     }
