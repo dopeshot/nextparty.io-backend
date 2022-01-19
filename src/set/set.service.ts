@@ -103,23 +103,31 @@ export class SetService {
                 _id: id,
                 status: Status.ACTIVE
             })
-            .populate<{ createdBy: User }>('createdBy')
+
+            .populate<{ createdBy: User }>({
+                path: 'createdBy',
+                select: '_id username',
+                model: 'User'
+            })
             .lean();
 
-        if (!set) throw new NotFoundException();
-
-        if (set.visibility === Visibility.PRIVATE) {
-            // The second case SHOULD never occur unless provoked
-            if (!user || !set.createdBy) throw new NotFoundException();
-
-            // It should not be visible to unauthorized clients that a set with this ID exists
-            if (
-                user.userId.toString() !== set.createdBy._id.toString() &&
-                user.role !== Role.ADMIN
-            ) {
-                throw new NotFoundException();
-            }
-        }
+        // Only Admins and Owners can see the private sets
+        if (
+            // No Set at all
+            !set ||
+            // Set is private => check further
+            (set.visibility === Visibility.PRIVATE &&
+                // No Authentification
+                (!user ||
+                    // No Admin
+                    (user.role !== Role.ADMIN &&
+                        // No User in Database (deleted for example)
+                        (!set.createdBy ||
+                            // Not the correct user
+                            set.createdBy._id.toString() !==
+                                user.userId.toString()))))
+        )
+            throw new NotFoundException();
 
         // Remove tasks from array that are not active
         set.tasks = set.tasks.filter((task) => task.status === Status.ACTIVE);

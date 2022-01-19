@@ -77,6 +77,18 @@ export const getSetSetupData = () => [
         ]
     }
 ];
+export const getUserSetupData = () => [
+    {
+        _id: 'aaaaaaaaaaaaaaaaaaaaaaac',
+        status: 'unverified',
+        role: 'user',
+        password:
+            '$2b$12$K9Ss9alRrTtXuroPxI8EOeFFmsP1R1cuX/li//qdDq3Dq/wEKRdt.',
+        slug: 'heawdassdllo',
+        email: 'teasdawdawst@gmail.de',
+        username: 'Heawdassdllo'
+    }
+];
 export const getMockSet = () => ({
     language: Language.DE,
     name: 'Set number 0',
