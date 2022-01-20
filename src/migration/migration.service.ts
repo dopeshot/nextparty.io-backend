@@ -13,8 +13,8 @@ import { User, UserDocument } from '../user/entities/user.entity';
 import { Role } from '../user/enums/role.enum';
 import { UserService } from '../user/user.service';
 import { MigrationDto } from './dto/migration.dto';
-import { MigrateSets } from './migrate-data/sets';
-import { MigrateUsers } from './migrate-data/users';
+import { MigrateSets } from './migration-data/sets';
+import { MigrateUsers } from './migration-data/users';
 
 @Injectable()
 export class MigrationService {
@@ -34,6 +34,7 @@ export class MigrationService {
             if (error.code === 11000) {
                 counts.setDuplicates++;
             } else {
+                /* istanbul ignore next */ // Not able to test server errors
                 throw error;
             }
         }
@@ -45,6 +46,7 @@ export class MigrationService {
             if (error.code === 11000) {
                 counts.userDuplicates++;
             } else {
+                /* istanbul ignore next */ // Not able to test server errors
                 throw error;
             }
         }
@@ -53,11 +55,12 @@ export class MigrationService {
 
     async export(user) {
         if (user.role !== Role.ADMIN) {
-            throw ForbiddenException;
+            throw new ForbiddenException();
         }
         const sets = await this.setModel.find().lean();
         const users = await this.userModel.find().lean();
-        return JSON.stringify({ sets: sets, users: users });
+        console.log({ sets: sets, users: users });
+        return { sets: sets, users: users };
     }
 
     /* istanbul ignore next */ // This is development only

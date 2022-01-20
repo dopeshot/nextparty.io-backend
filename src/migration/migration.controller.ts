@@ -34,7 +34,7 @@ export class MigrationController {
     @Post('import')
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
-    @ApiOperation({ summary: 'Create example data sets' })
+    @ApiOperation({ summary: 'Import sets and insert non duplicates' })
     async import(
         @Request() { user }: ParameterDecorator & { user: JwtUserDto },
         @Body() importData: MigrationDto
@@ -47,7 +47,7 @@ export class MigrationController {
     @ApiOperation({ summary: 'Export all data from database' })
     async export(
         @Request() { user }: ParameterDecorator & { user: JwtUserDto }
-    ): Promise<string> {
+    ): Promise<MigrationDto> {
         return await this.migrationService.export(user);
     }
 }

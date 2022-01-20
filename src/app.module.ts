@@ -1,8 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from './auth/auth.module';
-import { MailModule } from './mail/mail.module';
 import { MigrationModule } from './migration/migration.module';
 
 @Module({
@@ -20,8 +18,6 @@ import { MigrationModule } from './migration/migration.module';
             }),
             inject: [ConfigService]
         }),
-        AuthModule,
-        MailModule,
         MigrationModule
     ],
     controllers: [],

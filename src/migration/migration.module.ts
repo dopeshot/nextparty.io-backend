@@ -13,8 +13,8 @@ import { MigrationService } from './migration.service';
         MongooseModule.forFeature([{ name: Set.name, schema: SetSchema }]),
         MongooseModule.forFeature([{ name: Task.name, schema: TaskSchema }]),
         MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-        SetModule,
-        UserModule
+        UserModule,
+        SetModule
     ],
     controllers: [MigrationController],
     providers: [MigrationService],
