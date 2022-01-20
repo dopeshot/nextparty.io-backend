@@ -4,8 +4,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
 import { MigrationModule } from './migration/migration.module';
-import { SetModule } from './set/set.module';
-import { UserModule } from './user/user.module';
 
 @Module({
     imports: [
@@ -23,8 +21,6 @@ import { UserModule } from './user/user.module';
             inject: [ConfigService]
         }),
         AuthModule,
-        UserModule,
-        SetModule,
         MailModule,
         MigrationModule
     ],

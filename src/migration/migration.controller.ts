@@ -1,4 +1,5 @@
 import {
+    Body,
     Controller,
     Get,
     HttpCode,
@@ -10,6 +11,8 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { JwtUserDto } from '../auth/dto/jwt.dto';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
+import { ENVGuard } from '../shared/guards/environment.guard';
+import { MigrationDto } from './dto/migration.dto';
 import { MigrationService } from './migration.service';
 
 @ApiTags('migration')
@@ -17,14 +20,26 @@ import { MigrationService } from './migration.service';
 export class MigrationController {
     constructor(private readonly migrationService: MigrationService) {}
 
+    @Post('importsamples')
+    @UseGuards(ENVGuard, JwtAuthGuard)
+    @HttpCode(HttpStatus.CREATED)
+    @ApiOperation({ summary: 'Create example data sets' })
+    /* istanbul ignore next */ // This is development only
+    async importSamples(
+        @Request() { user }: ParameterDecorator & { user: JwtUserDto }
+    ): Promise<void> {
+        await this.migrationService.importSamples(user);
+    }
+
     @Post('import')
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiOperation({ summary: 'Create example data sets' })
     async import(
-        @Request() { user }: ParameterDecorator & { user: JwtUserDto }
-    ): Promise<void> {
-        await this.migrationService.import(user);
+        @Request() { user }: ParameterDecorator & { user: JwtUserDto },
+        @Body() importData: MigrationDto
+    ): Promise<{ setDuplicates: number; userDuplicates: number }> {
+        return await this.migrationService.import(user, importData);
     }
 
     @Get('export')
