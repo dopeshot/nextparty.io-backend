@@ -1,4 +1,3 @@
-import { MailerModule } from '@nestjs-modules/mailer';
 import { HttpStatus, INestApplication, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { getConnectionToken } from '@nestjs/mongoose';
@@ -7,6 +6,7 @@ import { Connection, Model } from 'mongoose';
 import * as request from 'supertest';
 import { AuthModule } from '../src/auth/auth.module';
 import { AuthService } from '../src/auth/auth.service';
+import { MailModule } from '../src/mail/mail.module';
 import { UserDocument } from '../src/user/entities/user.entity';
 import { UserStatus } from '../src/user/enums/status.enum';
 import { UserModule } from '../src/user/user.module';
@@ -30,7 +30,7 @@ describe('AuthMdoule (e2e)', () => {
                 rootMongooseTestModule(),
                 UserModule,
                 AuthModule,
-                MailerModule,
+                MailModule,
                 ConfigModule.forRoot({
                     envFilePath: ['.env', '.development.env']
                 })
@@ -254,6 +254,25 @@ describe('AuthMdoule (e2e)', () => {
                         `Bearer ${await getJWT(await getTestUser())}`
                     )
                     .expect(HttpStatus.UNAUTHORIZED);
+            });
+        });
+        describe('ENV Guard', () => {
+            it('Guard should block when env is prod and return 404', async () => {
+                jest.resetModules();
+                process.env.RUNTIME_ENV = 'prod';
+                await request(app.getHttpServer())
+                    .post('/mail')
+                    .expect(HttpStatus.NOT_FOUND);
+            });
+
+            it('Guard should pass if env is not prod ', async () => {
+                jest.resetModules();
+                process.env.RUNTIME_ENV = 'dev';
+                let user = await getTestUser();
+                await userModel.create(user);
+                await request(app.getHttpServer())
+                    .post('/mail')
+                    .expect(HttpStatus.CREATED);
             });
         });
     });

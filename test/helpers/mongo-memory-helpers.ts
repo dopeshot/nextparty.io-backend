@@ -1,3 +1,6 @@
+// Testing these is not necessary
+/* istanbul ignore file */
+
 import { MongooseModule, MongooseModuleOptions } from '@nestjs/mongoose';
 import { MongoMemoryServer } from 'mongodb-memory-server';
 

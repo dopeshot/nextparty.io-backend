@@ -59,7 +59,6 @@ export class MigrationService {
         }
         const sets = await this.setModel.find().lean();
         const users = await this.userModel.find().lean();
-        console.log({ sets: sets, users: users });
         return { sets: sets, users: users };
     }
 
