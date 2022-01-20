@@ -119,6 +119,7 @@ export class UserService {
             return result;
         } catch (error) {
             if (error.code === 11000 && error.keyPattern.username) return null;
+            /* istanbul ignore next */ // Not testing server errors
             throw new InternalServerErrorException('User could not be created');
         }
     }

@@ -35,13 +35,11 @@ export class SetService {
         user: JwtUserDto
     ): Promise<SetDocumentWithUser> {
         try {
-            const set = (
-                await this.setModel.create({
-                    ...createSetDto,
-                    slug: createSlug(createSetDto.name),
-                    createdBy: user.userId
-                })
-            ).toObject();
+            const set = await this.setModel.create({
+                ...createSetDto,
+                slug: createSlug(createSetDto.name),
+                createdBy: user.userId
+            });
 
             // Since populate is used, the database is queried again
             return await this.setModel
