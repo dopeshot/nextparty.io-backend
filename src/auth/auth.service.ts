@@ -6,7 +6,7 @@ import {
     UnauthorizedException
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcryptjs';
 import { google, oauth2_v2 } from 'googleapis';
 import { ObjectId } from 'mongoose';
 import { User } from '../user/entities/user.entity';
