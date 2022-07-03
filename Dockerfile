@@ -1,24 +1,36 @@
-FROM node:16 as dev
+FROM node:lts-alpine As dev
 
-RUN mkdir -p /home/node/app
-RUN chown -R node:node /home/node/app
-WORKDIR /home/node/app
+WORKDIR /usr/src/app
 
-EXPOSE 3000
-
-FROM dev as full
-
-#copy package.json and package-lock.json
 COPY --chown=node:node package*.json ./
 
-#install dependencies
-RUN npm install
+RUN npm ci --ignore-scripts
 
-#copy source
 COPY --chown=node:node . .
 
 USER node
 
+
+FROM node:lts-alpine As build
+
+WORKDIR /usr/src/app
+
+COPY --chown=node:node package*.json ./
+
+COPY --chown=node:node --from=dev /usr/src/app/node_modules ./node_modules
+
+COPY --chown=node:node . .
+
 RUN npm run build
 
-CMD ["npm", "run", "start:prod"]
+RUN npm ci --only=production --ignore-scripts && npm cache clean --force
+
+USER node
+
+FROM node:lts-alpine As production
+
+COPY --chown=node:node --from=build /usr/src/app/node_modules ./node_modules
+COPY --chown=node:node --from=build /usr/src/app/dist ./dist
+
+# Start the server using the production build
+CMD [ "node", "dist/main.js" ]
