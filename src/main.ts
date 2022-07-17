@@ -19,15 +19,15 @@ async function bootstrap() {
         .setVersion('0.1')
         .addTag('auth', 'All related to authorization')
         .addTag(
-            'category',
+            'categories',
             'Categories are only for admins. Categories contains Sets'
         )
-        .addTag('report', 'Report User, Task or Set')
+        .addTag('reports', 'Report Users, Tasks or Sets')
         .addTag('search')
-        .addTag('set', 'Set is a collection of task')
-        .addTag('system')
-        .addTag('task', 'Task is either a Truth or Dare')
-        .addTag('user', 'User related content')
+        .addTag('sets', 'Set is a collection of task')
+        .addTag('tasks', 'Task is either a Truth or Dare')
+        .addTag('users', 'User related content')
+        .addTag('migration', 'Import and export data')
         .build();
 
     const document = SwaggerModule.createDocument(app, config);
