@@ -1,3 +1,4 @@
+import { ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum, IsOptional, IsString, Length } from 'class-validator';
 import { Language } from '../../shared/enums/language.enum';
 import { SetCategory } from '../enums/setcategory.enum';
@@ -17,5 +18,6 @@ export class CreateSetDto {
 
     @IsOptional()
     @IsEnum(Visibility)
+    @ApiPropertyOptional()
     visibility: Visibility;
 }
