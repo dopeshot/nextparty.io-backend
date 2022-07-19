@@ -251,7 +251,7 @@ describe('Sets (e2e)', () => {
             expect(res.body).toMatchObject(set);
         });
 
-        it('/sets/:id (GET) by id without auth', async () => {
+        it('/sets/:id (GET) public set by id without auth', async () => {
             fakeAuthGuard.setUser(null);
             const res = await request(app.getHttpServer())
                 .get(`/sets/${getSetSetupData()[0]._id}`)
