@@ -16,12 +16,23 @@ import {
     UseGuards,
     UseInterceptors
 } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+    ApiBearerAuth,
+    ApiOperation,
+    ApiResponse,
+    ApiResponseProperty,
+    ApiTags
+} from '@nestjs/swagger';
 import { JwtUserDto } from 'src/auth/dto/jwt.dto';
 import { JwtAuthGuard } from '../auth/strategies/jwt/jwt-auth.guard';
 import { OptionalJWTGuard } from '../auth/strategies/optionalJWT/optionalJWT.guard';
 import { LanguageDto } from '../shared/dto/lanugage.dto';
 import { MongoIdDto } from '../shared/dto/mongoId.dto';
+import {
+    apiResponseBadRequest,
+    apiResponseNotFound,
+    apiResponseUnauthorized
+} from '../shared/response/api-responses';
 import { CreateFullSetDto } from './dto/create-full-set.dto';
 import { CreateSetDto } from './dto/create-set.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -48,17 +59,16 @@ export class SetController {
 
     @Post()
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Create new set | Uses JwtAuthGuard' })
+    @ApiResponseProperty({ type: SetResponse })
     @ApiResponse({
         status: HttpStatus.CREATED,
         type: SetResponse,
         description: 'Set created'
     })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        type: UpdatedCounts,
-        description: 'Jwt not valid'
-    })
+    @ApiResponse(apiResponseUnauthorized)
+    @ApiResponse(apiResponseBadRequest)
     async createSet(
         @Body() createSetDto: CreateSetDto,
         @Request() { user }: ParameterDecorator & { user: JwtUserDto }
@@ -68,18 +78,35 @@ export class SetController {
         );
     }
 
+    @Post('createfullset')
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    @ApiOperation({ summary: 'Create example data sets | Uses JwtAuthGuard' })
+    @ApiResponse({
+        status: HttpStatus.CREATED,
+        type: SetWithTasksResponse,
+        description: 'Set has been created'
+    })
+    @ApiResponse(apiResponseUnauthorized)
+    @ApiResponse(apiResponseBadRequest)
+    async createDataFromFullSet(
+        @Request() { user }: ParameterDecorator & { user: JwtUserDto },
+        @Body() fullSet: CreateFullSetDto
+    ): Promise<SetWithTasksResponse> {
+        return new SetWithTasksResponse(
+            await this.setService.createDataFromFullSet(user, fullSet)
+        );
+    }
+
     @Get()
     @ApiOperation({ summary: 'Get all Sets | Uses no Guard' })
     @ApiResponse({
         status: HttpStatus.OK,
-        type: [SetResponse],
-        description: 'Got all sets'
+        type: SetResponse,
+        description: 'Got all sets',
+        isArray: true
     })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        type: null,
-        description: 'the requested language does not exist'
-    })
+    @ApiResponse(apiResponseBadRequest)
     async getAllSets(@Query() { lang }: LanguageDto): Promise<SetResponse[]> {
         return (await this.setService.getAllSets(lang)).map(
             (set) => new SetResponse(set)
@@ -93,14 +120,11 @@ export class SetController {
     })
     @ApiResponse({
         status: HttpStatus.OK,
-        type: [SetResponse],
-        description: 'Got all sets from one player'
+        type: SetResponse,
+        description: 'Got all sets from one player',
+        isArray: true
     })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        type: null,
-        description: "request doesn't match dto"
-    })
+    @ApiResponse(apiResponseBadRequest)
     async getSetsFromUser(
         @Param() { id }: MongoIdDto,
         @Request() { user }: ParameterDecorator & { user: JwtUserDto }
@@ -116,19 +140,11 @@ export class SetController {
     })
     @ApiResponse({
         status: HttpStatus.OK,
-        type: [SetWithTasksResponse],
+        type: SetWithTasksResponse,
         description: 'Got one set with tasks'
     })
-    @ApiResponse({
-        status: HttpStatus.NOT_FOUND,
-        type: null,
-        description: 'Set could not be found, maybe permissions are missing'
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        type: null,
-        description: "request doesn't match dto"
-    })
+    @ApiResponse(apiResponseNotFound)
+    @ApiResponse(apiResponseBadRequest)
     @UseGuards(OptionalJWTGuard)
     async getOneSet(
         @Param() { id }: MongoIdDto,
@@ -141,22 +157,16 @@ export class SetController {
 
     @Patch(':id')
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({ summary: 'Update Set by id | Uses JwtAuthGuard' })
     @ApiResponse({
         status: HttpStatus.OK,
-        type: [SetMetadataResponse],
+        type: SetMetadataResponse,
         description: 'Set has been updated'
     })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        type: null,
-        description: "request doesn't match dto"
-    })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        type: UpdatedCounts,
-        description: 'Jwt not valid'
-    })
+    @ApiResponse(apiResponseNotFound)
+    @ApiResponse(apiResponseBadRequest)
+    @ApiResponse(apiResponseUnauthorized)
     async updateMeta(
         @Param() { id }: MongoIdDto,
         @Body() updateSetDto: UpdateSetDto,
@@ -176,22 +186,15 @@ export class SetController {
         type: UpdatedPlayed,
         description: 'Set has been updated'
     })
-    @ApiResponse({
-        status: HttpStatus.NOT_FOUND,
-        type: null,
-        description: 'Set could not be found'
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        type: null,
-        description: 'id is not viable'
-    })
+    @ApiResponse(apiResponseNotFound)
+    @ApiResponse(apiResponseBadRequest)
     async updatePlayed(@Param() { id }: MongoIdDto): Promise<UpdatedPlayed> {
         return new UpdatedPlayed(await this.setService.updateSetPlayed(id));
     }
 
     @Delete(':id')
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Delete Set by id | Uses JwtAuthGuard' })
     @ApiResponse({
@@ -199,11 +202,7 @@ export class SetController {
         type: null,
         description: "Set has been deleted or didn't exist"
     })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        type: UpdatedCounts,
-        description: 'Jwt not valid'
-    })
+    @ApiResponse(apiResponseUnauthorized)
     async deleteSet(
         @Param() { id }: MongoIdDto,
         @Query() { type }: DeleteTypeDto,
@@ -216,6 +215,7 @@ export class SetController {
 
     @Post(':id/task')
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({
         summary: 'Create Task to Set via id and Json | Uses JwtAuthGuard'
     })
@@ -224,21 +224,9 @@ export class SetController {
         type: TaskResponse,
         description: 'Task has been added to set'
     })
-    @ApiResponse({
-        status: HttpStatus.NOT_FOUND,
-        type: null,
-        description: 'Set could not be found'
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        type: null,
-        description: 'id or dto is not viable'
-    })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        type: UpdatedCounts,
-        description: 'Jwt not valid'
-    })
+    @ApiResponse(apiResponseNotFound)
+    @ApiResponse(apiResponseBadRequest)
+    @ApiResponse(apiResponseUnauthorized)
     async createTask(
         @Param() { id }: MongoIdDto,
         @Body() createTaskDto: CreateTaskDto,
@@ -251,6 +239,7 @@ export class SetController {
 
     @Put(':setId/task/:taskId')
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @ApiOperation({
         summary: 'Update one Task via id and Json | Uses JwtAuthGuard'
     })
@@ -259,21 +248,9 @@ export class SetController {
         type: UpdatedCounts,
         description: 'Task and counts have been updated'
     })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        type: UpdatedCounts,
-        description: 'Jwt not valid'
-    })
-    @ApiResponse({
-        status: HttpStatus.NOT_FOUND,
-        type: null,
-        description: 'Set could not be found'
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        type: null,
-        description: 'ids or dto is not viable'
-    })
+    @ApiResponse(apiResponseUnauthorized)
+    @ApiResponse(apiResponseNotFound)
+    @ApiResponse(apiResponseBadRequest)
     async updateTask(
         @Param() { setId, taskId }: SetTaskMongoIdDto,
         @Body() updateTaskDto: UpdateTaskDto,
@@ -286,6 +263,7 @@ export class SetController {
 
     @Delete(':setId/task/:taskId')
     @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
     @HttpCode(HttpStatus.NO_CONTENT)
     @ApiOperation({ summary: 'Remove one Task via id | Uses JwtAuthGuard' })
     @ApiResponse({
@@ -293,48 +271,13 @@ export class SetController {
         type: null,
         description: "Task has been deleted or didn't exist"
     })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        type: UpdatedCounts,
-        description: 'Jwt not valid'
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        type: null,
-        description: 'ids or dto is not viable'
-    })
+    @ApiResponse(apiResponseUnauthorized)
+    @ApiResponse(apiResponseBadRequest)
     async removeTask(
         @Param() { setId, taskId }: SetTaskMongoIdDto,
         @Query() { type }: DeleteTypeDto,
         @Request() { user }: ParameterDecorator & { user: JwtUserDto }
     ) {
         return await this.setService.removeTask(setId, taskId, type, user);
-    }
-
-    @Post('createfullset')
-    @UseGuards(JwtAuthGuard)
-    @ApiOperation({ summary: 'Create example data sets | Uses JwtAuthGuard' })
-    @ApiResponse({
-        status: HttpStatus.CREATED,
-        type: null,
-        description: "Task has been deleted or didn't exist"
-    })
-    @ApiResponse({
-        status: HttpStatus.UNAUTHORIZED,
-        type: UpdatedCounts,
-        description: 'Jwt not valid'
-    })
-    @ApiResponse({
-        status: HttpStatus.BAD_REQUEST,
-        type: null,
-        description: 'dto is not viable'
-    })
-    async createDataFromFullSet(
-        @Request() { user }: ParameterDecorator & { user: JwtUserDto },
-        @Body() fullSet: CreateFullSetDto
-    ): Promise<SetWithTasksResponse> {
-        return new SetWithTasksResponse(
-            await this.setService.createDataFromFullSet(user, fullSet)
-        );
     }
 }
