@@ -14,7 +14,7 @@ jobs:
         name: End 2 End Tests
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - uses: actions/setup-node@v2
               with:
                   node-version: 14
@@ -40,7 +40,7 @@ jobs:
         env:
             REPO: ${{secrets.DOCKER_REPO}}
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - uses: actions/setup-node@v2
 
             - name: create deploy env
