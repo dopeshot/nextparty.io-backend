@@ -1,6 +1,9 @@
 name: Build/Push Docker, Stop/Start Task
 
 on:
+    pull_request:
+        branches:
+            - 'deploy-aws'
     push:
         branches:
             - 'deploy-aws'
