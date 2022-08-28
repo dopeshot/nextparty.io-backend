@@ -10,13 +10,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # install/cache npm dependencies
-      - uses: actions/setup-node@v2
+      - uses: actions/setup-node@v3
         with:
           node-version: 14
-      - uses: actions/cache@v2
+      - uses: actions/cache@v3
         with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
@@ -27,11 +27,11 @@ jobs:
     needs: setup
     steps:
     
-     - uses: actions/checkout@v2
-     - uses: actions/setup-node@v2
+     - uses: actions/checkout@v3
+     - uses: actions/setup-node@v3
        with:
          node-version: 14
-     - uses: actions/cache@v2
+     - uses: actions/cache@v3
        with:
           path: node_modules
           key: node-modules-${{ hashFiles('package-lock.json') }}
@@ -54,6 +54,6 @@ jobs:
        run: npm run test
        
      - name: Upload coverage to Codecov
-       uses: codecov/codecov-action@v1
+       uses: codecov/codecov-action@v3
        with:
         token: ${{ secrets.CODECOV_SECRET }}

@@ -1,4 +1,3 @@
-import { MailerModule } from '@nestjs-modules/mailer';
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { getConnectionToken } from '@nestjs/mongoose';
@@ -36,7 +35,6 @@ describe('UserModule (e2e)', () => {
                 rootMongooseTestModule(),
                 UserModule,
                 AuthModule,
-                MailerModule,
                 ConfigModule.forRoot({
                     envFilePath: ['.env', '.development.env']
                 })
