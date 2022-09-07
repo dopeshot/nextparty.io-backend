@@ -76,7 +76,7 @@
         "eslint-plugin-prettier": "^4.0.0",
         "husky": "^7.0.4",
         "jest": "^27.4.7",
-        "lint-staged": "^12.1.7",
+        "lint-staged": "^13.0.3",
         "passport-custom": "^1.1.1",
         "prettier": "^2.5.1",
         "supertest": "^6.2.4",
