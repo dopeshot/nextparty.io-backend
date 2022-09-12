@@ -31,7 +31,7 @@
         "@nestjs/mapped-types": "^1.0.1",
         "@nestjs/mongoose": "^9.0.2",
         "@nestjs/passport": "^8.1.0",
-        "@nestjs/platform-express": "^8.2.5",
+        "@nestjs/platform-express": "^8.4.7",
         "@nestjs/swagger": "^5.1.5",
         "@nestjs/throttler": "^2.0.1",
         "@types/bcryptjs": "^2.4.2",
@@ -83,7 +83,7 @@
         "ts-jest": "^27.1.2",
         "ts-loader": "^9.2.6",
         "ts-node": "^10.4.0",
-        "tsconfig-paths": "^3.12.0",
+        "tsconfig-paths": "^4.1.0",
         "typescript": "^4.5.2"
     },
     "jest": {
