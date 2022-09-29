@@ -43,7 +43,7 @@ describe('UserModule (e2e)', () => {
         }).compile();
 
         connection = await module.get(getConnectionToken());
-        userModel = connection.model('User');
+        userModel = connection.model<UserDocument>('User');
 
         // Using a full nest application is necessary
         // https://github.com/jmcdo29/testing-nestjs/commit/0544f34ce02c1a42179aae7f36cb11fb3b62fb22
