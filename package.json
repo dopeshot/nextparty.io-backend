@@ -65,7 +65,7 @@
         "@types/jest": "^29.1.0",
         "@types/node": "^18.7.23",
         "@types/passport-google-oauth20": "^2.0.11",
-        "@types/passport-jwt": "^3.0.6",
+        "@types/passport-jwt": "^3.0.7",
         "@types/passport-local": "^1.0.34",
         "@types/supertest": "^2.0.12",
         "@typescript-eslint/eslint-plugin": "^5.38.1",
