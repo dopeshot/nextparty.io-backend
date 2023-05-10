@@ -71,12 +71,14 @@ jobs:
                 org.opencontainers.image.description: Backend for nextparty
                 
     redeploy:
-        name: Call redeploy webhook
-        runs-on: ubuntu-latest
-        needs: [docker-build-and-push]
-        if: github.ref == 'refs/heads/stable'
-        steps:
-            - name: Deploy docker container webhook
-              uses: joelwmale/webhook-action@master
-              env:
-                  WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK  }}
+      if: github.ref == 'refs/heads/stable'
+      name: Call redeploy webhook
+      runs-on: ubuntu-latest
+      needs: [docker-build-and-push]  
+      env:
+        deploy_secret: ${{ secrets.DEPLOY_SECRET }}
+        webhook: ${{ secrets.DEPLOY_WEBHOOK }}
+      steps:
+        - name: trigger redeploy
+          run: |
+            curl -X GET -H "x-deploy-secret: $deploy_secret" $webhook
