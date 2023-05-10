@@ -63,8 +63,8 @@ describe('Sets (e2e)', () => {
             .compile();
 
         connection = await module.get(getConnectionToken());
-        setModel = connection.model('Set');
-        userModel = connection.model('User');
+        setModel = connection.model<SetDocument>('Set');
+        userModel = connection.model<UserDocument>('User');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();

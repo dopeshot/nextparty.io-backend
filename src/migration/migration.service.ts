@@ -26,8 +26,8 @@ export class MigrationService {
     ) {}
 
     async import(user: JwtUserDto, importData: MigrationDto) {
-        const counts = { setDuplicates: 0, userDuplicates: 0 };
         if (user.role !== Role.ADMIN) throw new ForbiddenException();
+        const counts = { setDuplicates: 0, userDuplicates: 0 };
         try {
             await this.setModel.insertMany(importData.sets, { ordered: false });
         } catch (error) {
@@ -65,36 +65,54 @@ export class MigrationService {
     /* istanbul ignore next */ // This is development only
     async importSamples(user: JwtUserDto) {
         MigrateSets.forEach(async (setData) => {
-            const set: SetDocument = await this.setService.createSet(
-                {
-                    name: setData.name,
-                    language: setData.language as Language,
-                    category: setData.category as SetCategory,
-                    visibility: setData.visibility as Visibility
-                },
-                user
-            );
-
-            setData.tasks.forEach(async (task) => {
-                await this.setService.createTask(
-                    set._id,
+            try {
+                const set: SetDocument = await this.setService.createSet(
                     {
-                        type: task.type as TaskType,
-                        currentPlayerGender:
-                            task.currentPlayerGender as CurrentPlayerGender,
-                        message: task.message
+                        name: setData.name,
+                        language: setData.language as Language,
+                        category: setData.category as SetCategory,
+                        visibility: setData.visibility as Visibility
                     },
                     user
                 );
-            });
+
+                setData.tasks.forEach(async (task) => {
+                    await this.setService.createTask(
+                        set._id,
+                        {
+                            type: task.type as TaskType,
+                            currentPlayerGender:
+                                task.currentPlayerGender as CurrentPlayerGender,
+                            message: task.message
+                        },
+                        user
+                    );
+                });
+            } catch (error) {
+                if (error.code === 11000) {
+                    console.warn('Duplicate in seeder');
+                } else {
+                    /* istanbul ignore next */ // Not able to test server errors
+                    throw error;
+                }
+            }
         });
 
         MigrateUsers.forEach(async (userData) => {
-            await this.userService.create({
-                username: userData.username,
-                email: userData.email,
-                password: userData.password
-            });
+            try {
+                await this.userService.create({
+                    username: userData.username,
+                    email: userData.email,
+                    password: userData.password
+                });
+            } catch (error) {
+                if (error.response.statusCode === 409) {
+                    console.warn('Duplicate in seeder');
+                } else {
+                    /* istanbul ignore next */ // Not able to test server errors
+                    throw error;
+                }
+            }
         });
 
         return;

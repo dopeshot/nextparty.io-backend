@@ -415,10 +415,9 @@ export class SetService {
         const { tasks, ...createSetDto } = sampleSets;
         // Exceptions are caught in the function calls
         const set = await this.createSet(createSetDto, user);
-        tasks.forEach(async (task) => {
+        for (const task of tasks) {
             await this.createTask(set._id, task, user);
-        });
-
+        }
         return await this.getOneSet(set._id, user);
     }
 }

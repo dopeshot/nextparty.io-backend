@@ -40,7 +40,7 @@ describe('AuthMdoule (e2e)', () => {
 
         connection = await module.get(getConnectionToken());
         authService = module.get<AuthService>(AuthService);
-        userModel = connection.model('User');
+        userModel = connection.model<UserDocument>('User');
         app = module.createNestApplication();
         app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
         await app.init();

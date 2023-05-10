@@ -40,7 +40,7 @@ beforeAll(async () => {
     }).compile();
 
     connection = await moduleFixture.get(getConnectionToken());
-    userModel = connection.model('User');
+    userModel = connection.model<UserDocument>('User');
 
     app = moduleFixture.createNestApplication();
     app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
